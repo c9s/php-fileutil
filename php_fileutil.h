@@ -8,6 +8,7 @@
 PHP_FUNCTION(futil_readdir);
 PHP_FUNCTION(futil_readdir_for_dir);
 
+bool _futil_stream_is_dir(php_stream *stream);
 bool _futil_is_dir(char* dirname, int dirname_len);
 
 extern zend_module_entry fileutil_module_entry;

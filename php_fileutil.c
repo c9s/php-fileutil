@@ -47,10 +47,16 @@ ZEND_GET_MODULE(fileutil)
 
 
 
+bool _futil_stream_is_dir(php_stream *stream)
+{
+    return (stream->flags & PHP_STREAM_FLAG_IS_DIR);
+}
+
 bool _futil_is_dir(char* dirname, int dirname_len)
 {
     zval tmp;
     php_stat(dirname, dirname_len, FS_IS_DIR, &tmp TSRMLS_CC);
+
     bool ret = Z_LVAL(tmp) ? true : false;
     // FREE_ZVAL(&tmp);
     return ret;
@@ -84,6 +90,7 @@ PHP_FUNCTION(futil_readdir)
         RETURN_FALSE;
     }
 
+
     zval *z_handle;
     php_stream_context *context = NULL;
     php_stream *dirp;
@@ -96,14 +103,9 @@ PHP_FUNCTION(futil_readdir)
         RETURN_FALSE;
     }
 
+    // it's not fclose-able
     dirp->flags |= PHP_STREAM_FLAG_NO_FCLOSE;
         
-    // php_set_default_dir(dirp->rsrc_id TSRMLS_CC);
-
-    if (!(dirp->flags & PHP_STREAM_FLAG_IS_DIR)) {
-        php_error_docref(NULL TSRMLS_CC, E_WARNING, "%d is not a valid Directory resource", dirp->rsrc_id);
-        RETURN_FALSE;
-    }
 
 
     php_stream_dirent entry;
