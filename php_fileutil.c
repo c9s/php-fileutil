@@ -94,7 +94,8 @@ PHP_FUNCTION(futil_readdir_for_dir)
 
 PHP_FUNCTION(futil_readdir)
 {
-
+    dirp *dirp;
+    zval *z_list;
     char *dirname;
     int dirname_len;
 
@@ -115,11 +116,10 @@ PHP_FUNCTION(futil_readdir)
 
 
 
-    zval *z_list;
     ALLOC_INIT_ZVAL( z_list );
     array_init(z_list);
 
-    dirp * dirp = dirp_open(dirname);
+    dirp = dirp_open(dirname);
 
     if( dirp == NULL ) {
         RETURN_FALSE;
