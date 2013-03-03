@@ -8,12 +8,17 @@
 #include <ext/standard/php_standard.h>
 #include <ext/standard/php_filestat.h>
 
-ZEND_BEGIN_ARG_INFO_EX(arginfo_fileutil_readdir, 0, 0, 1)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_futil_readdir, 0, 0, 1)
+    ZEND_ARG_INFO(0, dir)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_futil_readdir_for_dir, 0, 0, 1)
     ZEND_ARG_INFO(0, dir)
 ZEND_END_ARG_INFO()
 
 static const zend_function_entry fileutil_functions[] = {
-    PHP_FE(fileutil_readdir, arginfo_fileutil_readdir)
+    PHP_FE(futil_readdir, arginfo_futil_readdir)
+    PHP_FE(futil_readdir_for_dir, arginfo_futil_readdir_for_dir)
     {NULL, NULL, NULL}
 };
 
@@ -39,7 +44,12 @@ zend_module_entry fileutil_module_entry = {
 ZEND_GET_MODULE(fileutil)
 #endif
 
-PHP_FUNCTION(fileutil_readdir)
+PHP_FUNCTION(futil_readdir_for_dir)
+{
+
+}
+
+PHP_FUNCTION(futil_readdir)
 {
     zval *z_list;
 
