@@ -83,19 +83,20 @@ PHP_FUNCTION(fileutil_readdir)
         
     php_set_default_dir(dirp->rsrc_id TSRMLS_CC);
 
-    int createobject = 0;
-    if (createobject) {
-        // object_init_ex(return_value, dir_class_entry_ptr);
-        // add_property_stringl(return_value, "path", dirname, dirname_len, 1);
-        // add_property_resource(return_value, "handle", dirp->rsrc_id);
-        // php_stream_auto_cleanup(dirp); /* so we don't get warnings under debug */
-    } else {
-        // convert php stream to zval
-        php_stream_to_zval(dirp, z_handle);
+    if (!(dirp->flags & PHP_STREAM_FLAG_IS_DIR)) {
+        php_error_docref(NULL TSRMLS_CC, E_WARNING, "%d is not a valid Directory resource", dirp->rsrc_id);
+        RETURN_FALSE;
+    }
+    
+    php_stream_dirent entry;
+    while (php_stream_readdir(dirp, &entry)) {
+        add_next_index_string(z_list, entry.d_name, strlen(entry.d_name)  );
     }
 
-
-    // add_next_index_string(z_list, "", 1);
-    // RETURN_STRING("Hello World", 1);
+    // closedir
+    // rsrc_id = dirp->rsrc_id;
+    zend_list_delete(dirp->rsrc_id);
+    return_value = z_list;
+    zval_copy_ctor(return_value);
 }
 
