@@ -3,6 +3,7 @@ WORKDIR=$(pwd)
 PHPUNITBIN=$(which phpunit)
 EXTENSION_NAME=fileutil
 TESTS_DIR=tests
+make > /dev/null && \
 php -n -d "output_handler=" \
     -d "open_basedir=" \
     -d "safe_mode=0" \

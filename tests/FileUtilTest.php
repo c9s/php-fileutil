@@ -15,7 +15,10 @@ class FileUtilTest extends PHPUnit_Framework_ExtensionTestCase
     {
         $files = fileutil_readdir("tests");
         ok($files,"Should return a file list");
+
+        count_ok(1, $files);
     }
+
 }
 
 

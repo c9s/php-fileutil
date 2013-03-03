@@ -79,7 +79,6 @@ PHP_FUNCTION(fileutil_readdir)
         RETURN_FALSE;
     }
 
-
     dirp->flags |= PHP_STREAM_FLAG_NO_FCLOSE;
         
     // php_set_default_dir(dirp->rsrc_id TSRMLS_CC);
@@ -88,7 +87,8 @@ PHP_FUNCTION(fileutil_readdir)
         php_error_docref(NULL TSRMLS_CC, E_WARNING, "%d is not a valid Directory resource", dirp->rsrc_id);
         RETURN_FALSE;
     }
-    
+
+
     php_stream_dirent entry;
     while (php_stream_readdir(dirp, &entry)) {
         if (strcmp(entry.d_name, "..") == 0 || strcmp(entry.d_name, ".") == 0)
@@ -104,7 +104,7 @@ PHP_FUNCTION(fileutil_readdir)
     // closedir
     // rsrc_id = dirp->rsrc_id;
     zend_list_delete(dirp->rsrc_id);
-    return_value = z_list;
+    *return_value = *z_list;
     zval_copy_ctor(return_value);
 }
 
