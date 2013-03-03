@@ -69,6 +69,16 @@ dirp* dirp_open(char * dirname)
     return dirp;
 }
 
+void dirp_readdir_with_func( dirp * dirp , void (*func)(php_stream_dirent*) ) 
+{
+    php_stream_dirent entry;
+    while (php_stream_readdir(dirp->stream, &entry)) {
+        if (strcmp(entry.d_name, "..") == 0 || strcmp(entry.d_name, ".") == 0)
+            continue;
+        (*func)(&entry);
+    }
+}
+
 void dirp_close( dirp * dirp ) 
 {
     zend_list_delete(dirp->stream->rsrc_id);
@@ -88,8 +98,14 @@ bool _futil_is_dir(char* dirname, int dirname_len)
     return Z_LVAL(tmp) ? true : false;
 }
 
+
 PHP_FUNCTION(futil_readdir_for_dir)
 {
+
+
+
+
+
 }
 
 PHP_FUNCTION(futil_readdir)
