@@ -52,16 +52,17 @@ PHP_FUNCTION(fileutil_readdir)
     /* parse parameters */
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s",
                     &dirname, &dirname_len ) == FAILURE) {
+        php_error_docref(NULL TSRMLS_CC, E_WARNING, "Wrong parameters.");
         RETURN_FALSE;
     }
 
 
     zval tmp;
     php_stat(dirname, dirname_len, FS_IS_DIR, &tmp TSRMLS_CC);
-    if (Z_LVAL(tmp)) {
+    if (! Z_LVAL(tmp)) {
+        php_error_docref(NULL TSRMLS_CC, E_WARNING, "The path is not a directory.");
         RETURN_FALSE;
     }
-
 
     zval *z_handle;
     php_stream_context *context = NULL;
@@ -81,7 +82,7 @@ PHP_FUNCTION(fileutil_readdir)
 
     dirp->flags |= PHP_STREAM_FLAG_NO_FCLOSE;
         
-    php_set_default_dir(dirp->rsrc_id TSRMLS_CC);
+    // php_set_default_dir(dirp->rsrc_id TSRMLS_CC);
 
     if (!(dirp->flags & PHP_STREAM_FLAG_IS_DIR)) {
         php_error_docref(NULL TSRMLS_CC, E_WARNING, "%d is not a valid Directory resource", dirp->rsrc_id);
@@ -93,7 +94,11 @@ PHP_FUNCTION(fileutil_readdir)
         if (strcmp(entry.d_name, "..") == 0 || strcmp(entry.d_name, ".") == 0)
             continue;
 
-        add_next_index_string(z_list, entry.d_name, strlen(entry.d_name)  );
+        char *newpath = (char *) emalloc(1024);
+        int newpath_len = dirname_len + 1 + strlen(entry.d_name);
+        sprintf(newpath,"%s%c%s", dirname, DEFAULT_SLASH, entry.d_name);
+        // add_next_index_string(z_list, entry.d_name, strlen(entry.d_name)  );
+        add_next_index_string(z_list, newpath ,  newpath_len );
     }
 
     // closedir
