@@ -2,6 +2,7 @@
 #include "php.h"
 #include "php_fileutil.h"
 #include "dirp.h"
+#include "path.h"
 
 #include <Zend/zend.h>
 #include <ext/standard/php_standard.h>
@@ -15,6 +16,12 @@ dirp* dirp_open(char * dirname)
     dirp->zcontext = NULL;
     dirp->stream = NULL;
     dirp->context = php_stream_context_from_zval(dirp->zcontext, 0);
+
+    if(dirp->context == NULL) {
+        efree(dirp);
+        return NULL;
+    }
+
     dirp->stream = php_stream_opendir(dirname, REPORT_ERRORS, dirp->context);
     if (dirp->stream == NULL) {
         efree(dirp);
@@ -26,10 +33,10 @@ dirp* dirp_open(char * dirname)
     return dirp;
 }
 
-zval* dirp_scandir_with_func( dirp * dirp, 
+zval* dirp_scandir_with_handler( dirp * dirp, 
         char* dirname, 
         int dirname_len,
-        char* (*func)(char*, int, php_stream_dirent*) ) 
+        char* (*handler)(char*, int, php_stream_dirent*) ) 
 {
     zval *z_list;
     ALLOC_INIT_ZVAL( z_list );
@@ -39,7 +46,7 @@ zval* dirp_scandir_with_func( dirp * dirp,
     while (php_stream_readdir(dirp->stream, &entry)) {
         if (strcmp(entry.d_name, "..") == 0 || strcmp(entry.d_name, ".") == 0)
             continue;
-        char * newpath = (*func)(dirname, dirname_len, &entry);
+        char * newpath = (*handler)(dirname, dirname_len, &entry);
         if(newpath != NULL) {
             add_next_index_string(z_list, newpath ,  strlen(newpath) );
         }
@@ -59,17 +66,17 @@ char* dirp_entry_handler(
         int dirname_len, 
         php_stream_dirent * entry )
 {
-    return concat_path(dirname, dirname_len, entry->d_name);
+    return path_concat(dirname, dirname_len, entry->d_name);
 }
 
 
 char* dirp_dir_entry_handler(
         char* dirname, 
-        int dirname_len, 
+        int dirname_len,
         php_stream_dirent * entry )
 {
-    char * path = concat_path(dirname, dirname_len, entry->d_name);
-    int    path_len = strlen(path);
+    char * path = path_concat(dirname, dirname_len, entry->d_name);
+    int    path_len = dirname_len + strlen(entry->d_name) + 1;
     if( futil_is_dir(path, path_len) ) {
         return path;
     }

@@ -4,6 +4,7 @@
 #include "php.h"
 #include "php_fileutil.h"
 #include "dirp.h"
+#include "path.h"
 
 #include <Zend/zend.h>
 #include <ext/standard/php_standard.h>
@@ -68,28 +69,6 @@ void string_free(string *s)
     efree(s);
 }
 
-char * concat_path( char* path1, int len1, char * path2 ) 
-{
-    int len2 = strlen(path2);
-    char * newpath = emalloc( sizeof(char) * (len1 + len2 + 1) );
-    char * p = path1;
-    char * p2 = newpath;
-    while( len1-- ) {
-        *p2 = *p;
-        p2++;
-        p++;
-    }
-    *newpath = DEFAULT_SLASH;
-    newpath++;
-    p = path2;
-    while( len2-- ) {
-        *p2 = *p;
-        p++;
-        p2++;
-    }
-    *newpath = '\0';
-    return newpath;
-}
 
 bool futil_stream_is_dir(php_stream *stream)
 {
@@ -128,7 +107,9 @@ PHP_FUNCTION(futil_scandir_dir)
         RETURN_FALSE;
     }
 
-    z_list = dirp_scandir_with_func(dirp, dirname, dirname_len, dirp_dir_entry_handler );
+    z_list = dirp_scandir_with_handler(dirp, 
+            dirname, dirname_len, 
+            dirp_dir_entry_handler );
 
     *return_value = *z_list;
     // add reference count
@@ -137,8 +118,6 @@ PHP_FUNCTION(futil_scandir_dir)
     // closedir
     // rsrc_id = dirp->rsrc_id;
     dirp_close(dirp);
-
-
 }
 
 PHP_FUNCTION(futil_scandir)
@@ -162,12 +141,11 @@ PHP_FUNCTION(futil_scandir)
     }
 
     dirp = dirp_open(dirname);
-
     if( dirp == NULL ) {
         RETURN_FALSE;
     }
 
-    z_list = dirp_scandir_with_func(dirp, dirname, dirname_len, dirp_entry_handler );
+    z_list = dirp_scandir_with_handler(dirp, dirname, dirname_len, dirp_entry_handler );
 
     *return_value = *z_list;
     // add reference count
