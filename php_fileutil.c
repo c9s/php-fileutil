@@ -67,9 +67,8 @@ void string_free(string *s)
     efree(s);
 }
 
-char * concat_path( char* path1, char * path2 ) 
+char * concat_path( char* path1, int len1, char * path2 ) 
 {
-    int len1 = strlen(path1);
     int len2 = strlen(path2);
     char * newpath = emalloc( sizeof(char) * (len1 + len2 + 1) );
     char * p = path1;
@@ -93,11 +92,6 @@ char * concat_path( char* path1, char * path2 )
 
 
 
-typedef struct { 
-    php_stream_context *context;
-    php_stream *stream;
-    zval *zcontext;
-} dirp;
 
 dirp* dirp_open(char * dirname) 
 {
@@ -117,14 +111,25 @@ dirp* dirp_open(char * dirname)
     return dirp;
 }
 
-void dirp_scandir_with_func( dirp * dirp , void (*func)(php_stream_dirent*) ) 
+zval* dirp_scandir_with_func( dirp * dirp, 
+        char* dirname, 
+        int dirname_len,
+        char* (*func)(char*, int, php_stream_dirent*) ) 
 {
+    zval *z_list;
+    ALLOC_INIT_ZVAL( z_list );
+    array_init(z_list);
+    
     php_stream_dirent entry;
     while (php_stream_readdir(dirp->stream, &entry)) {
         if (strcmp(entry.d_name, "..") == 0 || strcmp(entry.d_name, ".") == 0)
             continue;
-        (*func)(&entry);
+        char * newpath = (*func)(dirname, dirname_len, &entry);
+        if(newpath != NULL) {
+            add_next_index_string(z_list, newpath ,  strlen(newpath) );
+        }
     }
+    return z_list;
 }
 
 void dirp_close( dirp * dirp ) 
@@ -134,6 +139,13 @@ void dirp_close( dirp * dirp )
     // efree(dirp);
 }
 
+char* dirp_scandir_entry_handler(
+        char* dirname, 
+        int dirname_len, 
+        php_stream_dirent * entry )
+{
+    return concat_path(dirname, dirname_len, entry->d_name);
+}
 
 bool _futil_stream_is_dir(php_stream *stream)
 {
@@ -176,30 +188,13 @@ PHP_FUNCTION(futil_scandir)
         RETURN_FALSE;
     }
 
-    ALLOC_INIT_ZVAL( z_list );
-    array_init(z_list);
-
     dirp = dirp_open(dirname);
 
     if( dirp == NULL ) {
         RETURN_FALSE;
     }
 
-    php_stream_dirent entry;
-    while (php_stream_readdir(dirp->stream, &entry)) {
-        if (strcmp(entry.d_name, "..") == 0 || strcmp(entry.d_name, ".") == 0)
-            continue;
-
-        char *newpath = concat_path(dirname, entry.d_name);
-        add_next_index_string(z_list, newpath ,  strlen(newpath) );
-
-        /*
-        char *newpath = (char *) emalloc(512);
-        int newpath_len = dirname_len + 1 + strlen(entry.d_name);
-        sprintf(newpath,"%s%c%s", dirname, DEFAULT_SLASH, entry.d_name);
-        add_next_index_string(z_list, newpath ,  strlen(newpath) );
-        */
-    }
+    z_list = dirp_scandir_with_func(dirp, dirname, dirname_len, dirp_scandir_entry_handler );
 
     *return_value = *z_list;
     // add reference count
