@@ -44,9 +44,20 @@ zend_module_entry fileutil_module_entry = {
 ZEND_GET_MODULE(fileutil)
 #endif
 
+
+
+
+bool _futil_is_dir(char* dirname, int dirname_len)
+{
+    zval tmp;
+    php_stat(dirname, dirname_len, FS_IS_DIR, &tmp TSRMLS_CC);
+    bool ret = Z_LVAL(tmp) ? true : false;
+    // FREE_ZVAL(&tmp);
+    return ret;
+}
+
 PHP_FUNCTION(futil_readdir_for_dir)
 {
-
 }
 
 PHP_FUNCTION(futil_readdir)
@@ -67,9 +78,8 @@ PHP_FUNCTION(futil_readdir)
     }
 
 
-    zval tmp;
-    php_stat(dirname, dirname_len, FS_IS_DIR, &tmp TSRMLS_CC);
-    if (! Z_LVAL(tmp)) {
+    // run is_dir
+    if( ! _futil_is_dir(dirname, dirname_len) ) {
         php_error_docref(NULL TSRMLS_CC, E_WARNING, "The path is not a directory.");
         RETURN_FALSE;
     }
@@ -78,13 +88,10 @@ PHP_FUNCTION(futil_readdir)
     php_stream_context *context = NULL;
     php_stream *dirp;
     zval *zcontext = NULL;
-
-
     context = php_stream_context_from_zval(zcontext, 0);
-    
-    // let's open it
-    dirp = php_stream_opendir(dirname, REPORT_ERRORS, context);
 
+    // opendir
+    dirp = php_stream_opendir(dirname, REPORT_ERRORS, context);
     if (dirp == NULL) {
         RETURN_FALSE;
     }
