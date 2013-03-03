@@ -12,6 +12,8 @@ bool _futil_stream_is_dir(php_stream *stream);
 bool _futil_is_dir(char* dirname, int dirname_len);
 
 
+char * concat_path( char* path1, char * path2 );
+
 
 
 

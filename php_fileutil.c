@@ -67,34 +67,29 @@ void string_free(string *s)
     efree(s);
 }
 
-/*
-char * concat_path( char* path1, char * path2 ) {
-    return NULL;
+char * concat_path( char* path1, char * path2 ) 
+{
     int len1 = strlen(path1);
     int len2 = strlen(path2);
-    char * newpath = emalloc( sizeof(char) * (len1 + len2 + 2) );
-
+    char * newpath = emalloc( sizeof(char) * (len1 + len2 + 1) );
     char * p = path1;
-
-    while( p != NULL ) {
-        *newpath = *p;
+    char * p2 = newpath;
+    while( len1-- ) {
+        *p2 = *p;
+        p2++;
         p++;
-        newpath++;
     }
-
     *newpath = DEFAULT_SLASH;
     newpath++;
-
     p = path2;
-    while( p != NULL ) {
-        *newpath = *p;
+    while( len2-- ) {
+        *p2 = *p;
         p++;
-        newpath++;
+        p2++;
     }
     *newpath = '\0';
     return newpath;
 }
-*/
 
 
 
@@ -195,12 +190,15 @@ PHP_FUNCTION(futil_scandir)
         if (strcmp(entry.d_name, "..") == 0 || strcmp(entry.d_name, ".") == 0)
             continue;
 
-        // char *newpath = concat_path(dirname, entry.d_name);
-        // add_next_index_string(z_list, newpath ,  strlen(newpath) );
+        char *newpath = concat_path(dirname, entry.d_name);
+        add_next_index_string(z_list, newpath ,  strlen(newpath) );
+
+        /*
         char *newpath = (char *) emalloc(512);
         int newpath_len = dirname_len + 1 + strlen(entry.d_name);
         sprintf(newpath,"%s%c%s", dirname, DEFAULT_SLASH, entry.d_name);
         add_next_index_string(z_list, newpath ,  strlen(newpath) );
+        */
     }
 
     *return_value = *z_list;
