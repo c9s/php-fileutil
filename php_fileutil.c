@@ -44,7 +44,36 @@ zend_module_entry fileutil_module_entry = {
 ZEND_GET_MODULE(fileutil)
 #endif
 
+typedef struct { 
+    php_stream_context *context;
+    php_stream *stream;
+    zval *zcontext;
+} dirp;
 
+dirp* dirp_open(char * dirname) 
+{
+    dirp * dirp = emalloc(sizeof(dirp));
+    dirp->context = NULL;
+    dirp->zcontext = NULL;
+    dirp->stream = NULL;
+    dirp->context = php_stream_context_from_zval(dirp->zcontext, 0);
+
+    dirp->stream = php_stream_opendir(dirname, REPORT_ERRORS, dirp->context);
+    if (dirp->stream == NULL) {
+        efree(dirp);
+        return NULL;
+    }
+
+    // it's not fclose-able
+    dirp->stream->flags |= PHP_STREAM_FLAG_NO_FCLOSE;
+    return dirp;
+}
+
+void dirp_close( dirp * dirp ) 
+{
+    zend_list_delete(dirp->stream->rsrc_id);
+    efree(dirp);
+}
 
 
 bool _futil_stream_is_dir(php_stream *stream)
@@ -88,22 +117,15 @@ PHP_FUNCTION(futil_readdir)
     }
 
 
-    zval *z_handle;
-    php_stream_context *context = NULL;
-    php_stream *dirp;
-    zval *zcontext = NULL;
-    context = php_stream_context_from_zval(zcontext, 0);
 
-    // opendir
-    dirp = php_stream_opendir(dirname, REPORT_ERRORS, context);
-    if (dirp == NULL) {
+    dirp * dirp = dirp_open(dirname);
+
+    if( dirp == NULL ) {
         RETURN_FALSE;
     }
-    // it's not fclose-able
-    dirp->flags |= PHP_STREAM_FLAG_NO_FCLOSE;
-        
+
     php_stream_dirent entry;
-    while (php_stream_readdir(dirp, &entry)) {
+    while (php_stream_readdir(dirp->stream, &entry)) {
         if (strcmp(entry.d_name, "..") == 0 || strcmp(entry.d_name, ".") == 0)
             continue;
         char *newpath = (char *) emalloc(512);
@@ -114,8 +136,10 @@ PHP_FUNCTION(futil_readdir)
 
     // closedir
     // rsrc_id = dirp->rsrc_id;
-    zend_list_delete(dirp->rsrc_id);
+    dirp_close(dirp);
+
     *return_value = *z_list;
+    // add reference count
     zval_copy_ctor(return_value);
 }
 
