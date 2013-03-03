@@ -99,21 +99,16 @@ PHP_FUNCTION(futil_readdir)
     if (dirp == NULL) {
         RETURN_FALSE;
     }
-
     // it's not fclose-able
     dirp->flags |= PHP_STREAM_FLAG_NO_FCLOSE;
         
-
-
     php_stream_dirent entry;
     while (php_stream_readdir(dirp, &entry)) {
         if (strcmp(entry.d_name, "..") == 0 || strcmp(entry.d_name, ".") == 0)
             continue;
-
-        char *newpath = (char *) emalloc(1024);
+        char *newpath = (char *) emalloc(512);
         int newpath_len = dirname_len + 1 + strlen(entry.d_name);
         sprintf(newpath,"%s%c%s", dirname, DEFAULT_SLASH, entry.d_name);
-        // add_next_index_string(z_list, entry.d_name, strlen(entry.d_name)  );
         add_next_index_string(z_list, newpath ,  newpath_len );
     }
 
