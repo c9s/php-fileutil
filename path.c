@@ -3,6 +3,7 @@
 #include "php_fileutil.h"
 #include "path.h"
 
+
 char * path_concat( char* path1, int len1, char * path2 ) 
 {
     int len2 = strlen(path2);
