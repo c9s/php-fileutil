@@ -22,4 +22,4 @@ php -n -d "output_handler=" \
     -d "session.auto_start=0" \
     -d "zlib.output_compression=Off" \
     -d "mbstring.func_overload=0" \
-    $PHPUNITBIN $TESTS_DIR
+    $PHPUNITBIN --colors $TESTS_DIR
