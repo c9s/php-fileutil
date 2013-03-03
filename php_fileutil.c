@@ -90,6 +90,9 @@ PHP_FUNCTION(fileutil_readdir)
     
     php_stream_dirent entry;
     while (php_stream_readdir(dirp, &entry)) {
+        if (strcmp(entry.d_name, "..") == 0 || strcmp(entry.d_name, ".") == 0)
+            continue;
+
         add_next_index_string(z_list, entry.d_name, strlen(entry.d_name)  );
     }
 
