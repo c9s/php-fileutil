@@ -14,14 +14,14 @@ class FileUtilTest extends PHPUnit_Framework_ExtensionTestCase
     public function getFunctions()
     {
         return array(
-            'futil_readdir',
-            'futil_readdir_for_dir',
+            'futil_scandir',
+            'futil_scandir_dir',
         );
     }
 
     public function testReadDir()
     {
-        $files = futil_readdir("tests");
+        $files = futil_scandir("tests");
         ok($files,"Should return a file list");
         count_ok(1, $files);
     }

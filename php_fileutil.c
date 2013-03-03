@@ -8,17 +8,17 @@
 #include <ext/standard/php_standard.h>
 #include <ext/standard/php_filestat.h>
 
-ZEND_BEGIN_ARG_INFO_EX(arginfo_futil_readdir, 0, 0, 1)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_futil_scandir, 0, 0, 1)
     ZEND_ARG_INFO(0, dir)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_INFO_EX(arginfo_futil_readdir_for_dir, 0, 0, 1)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_futil_scandir_dir, 0, 0, 1)
     ZEND_ARG_INFO(0, dir)
 ZEND_END_ARG_INFO()
 
 static const zend_function_entry fileutil_functions[] = {
-    PHP_FE(futil_readdir, arginfo_futil_readdir)
-    PHP_FE(futil_readdir_for_dir, arginfo_futil_readdir_for_dir)
+    PHP_FE(futil_scandir, arginfo_futil_scandir)
+    PHP_FE(futil_scandir_dir, arginfo_futil_scandir_dir)
     {NULL, NULL, NULL}
 };
 
@@ -44,6 +44,60 @@ zend_module_entry fileutil_module_entry = {
 ZEND_GET_MODULE(fileutil)
 #endif
 
+
+typedef struct {
+    char * string;
+    int len;
+    int alloc;
+} string ;
+
+string * string_new() 
+{
+    string * s = emalloc(sizeof(string));
+    s->string = emalloc(sizeof(char) * 512);
+    s->alloc = 512;
+    s->len = 1;
+    s->string = '\0';
+    return s;
+}
+
+void string_free(string *s)
+{
+    efree(s->string);
+    efree(s);
+}
+
+/*
+char * concat_path( char* path1, char * path2 ) {
+    return NULL;
+    int len1 = strlen(path1);
+    int len2 = strlen(path2);
+    char * newpath = emalloc( sizeof(char) * (len1 + len2 + 2) );
+
+    char * p = path1;
+
+    while( p != NULL ) {
+        *newpath = *p;
+        p++;
+        newpath++;
+    }
+
+    *newpath = DEFAULT_SLASH;
+    newpath++;
+
+    p = path2;
+    while( p != NULL ) {
+        *newpath = *p;
+        p++;
+        newpath++;
+    }
+    *newpath = '\0';
+    return newpath;
+}
+*/
+
+
+
 typedef struct { 
     php_stream_context *context;
     php_stream *stream;
@@ -57,7 +111,6 @@ dirp* dirp_open(char * dirname)
     dirp->zcontext = NULL;
     dirp->stream = NULL;
     dirp->context = php_stream_context_from_zval(dirp->zcontext, 0);
-
     dirp->stream = php_stream_opendir(dirname, REPORT_ERRORS, dirp->context);
     if (dirp->stream == NULL) {
         efree(dirp);
@@ -69,7 +122,7 @@ dirp* dirp_open(char * dirname)
     return dirp;
 }
 
-void dirp_readdir_with_func( dirp * dirp , void (*func)(php_stream_dirent*) ) 
+void dirp_scandir_with_func( dirp * dirp , void (*func)(php_stream_dirent*) ) 
 {
     php_stream_dirent entry;
     while (php_stream_readdir(dirp->stream, &entry)) {
@@ -82,7 +135,8 @@ void dirp_readdir_with_func( dirp * dirp , void (*func)(php_stream_dirent*) )
 void dirp_close( dirp * dirp ) 
 {
     zend_list_delete(dirp->stream->rsrc_id);
-    efree(dirp);
+    php_stream_close(dirp->stream);
+    // efree(dirp);
 }
 
 
@@ -99,16 +153,13 @@ bool _futil_is_dir(char* dirname, int dirname_len)
 }
 
 
-PHP_FUNCTION(futil_readdir_for_dir)
+PHP_FUNCTION(futil_scandir_dir)
 {
-
-
-
 
 
 }
 
-PHP_FUNCTION(futil_readdir)
+PHP_FUNCTION(futil_scandir)
 {
     dirp *dirp;
     zval *z_list;
@@ -130,8 +181,6 @@ PHP_FUNCTION(futil_readdir)
         RETURN_FALSE;
     }
 
-
-
     ALLOC_INIT_ZVAL( z_list );
     array_init(z_list);
 
@@ -145,18 +194,21 @@ PHP_FUNCTION(futil_readdir)
     while (php_stream_readdir(dirp->stream, &entry)) {
         if (strcmp(entry.d_name, "..") == 0 || strcmp(entry.d_name, ".") == 0)
             continue;
+
+        // char *newpath = concat_path(dirname, entry.d_name);
+        // add_next_index_string(z_list, newpath ,  strlen(newpath) );
         char *newpath = (char *) emalloc(512);
         int newpath_len = dirname_len + 1 + strlen(entry.d_name);
         sprintf(newpath,"%s%c%s", dirname, DEFAULT_SLASH, entry.d_name);
-        add_next_index_string(z_list, newpath ,  newpath_len );
+        add_next_index_string(z_list, newpath ,  strlen(newpath) );
     }
-
-    // closedir
-    // rsrc_id = dirp->rsrc_id;
-    dirp_close(dirp);
 
     *return_value = *z_list;
     // add reference count
     zval_copy_ctor(return_value);
+
+    // closedir
+    // rsrc_id = dirp->rsrc_id;
+    dirp_close(dirp);
 }
 
