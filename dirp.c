@@ -54,11 +54,27 @@ void dirp_close( dirp * dirp )
     // efree(dirp);
 }
 
-char* dirp_scandir_entry_handler(
+char* dirp_entry_handler(
         char* dirname, 
         int dirname_len, 
         php_stream_dirent * entry )
 {
     return concat_path(dirname, dirname_len, entry->d_name);
 }
+
+
+char* dirp_dir_entry_handler(
+        char* dirname, 
+        int dirname_len, 
+        php_stream_dirent * entry )
+{
+    char * path = concat_path(dirname, dirname_len, entry->d_name);
+    int    path_len = strlen(path);
+    if( futil_is_dir(path, path_len) ) {
+        return path;
+    }
+    efree(path);
+    return NULL;
+}
+
 

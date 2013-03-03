@@ -91,13 +91,12 @@ char * concat_path( char* path1, int len1, char * path2 )
     return newpath;
 }
 
-
-bool _futil_stream_is_dir(php_stream *stream)
+bool futil_stream_is_dir(php_stream *stream)
 {
     return (stream->flags & PHP_STREAM_FLAG_IS_DIR);
 }
 
-bool _futil_is_dir(char* dirname, int dirname_len)
+bool futil_is_dir(char* dirname, int dirname_len)
 {
     zval tmp;
     php_stat(dirname, dirname_len, FS_IS_DIR, &tmp TSRMLS_CC);
@@ -107,6 +106,37 @@ bool _futil_is_dir(char* dirname, int dirname_len)
 
 PHP_FUNCTION(futil_scandir_dir)
 {
+    dirp *dirp;
+    zval *z_list;
+    char *dirname;
+    int dirname_len;
+
+    /* parse parameters */
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s",
+                    &dirname, &dirname_len ) == FAILURE) {
+        php_error_docref(NULL TSRMLS_CC, E_WARNING, "Path argument is required.");
+        RETURN_FALSE;
+    }
+
+    // run is_dir
+    if( ! futil_is_dir(dirname, dirname_len) ) {
+        RETURN_FALSE;
+    }
+
+    dirp = dirp_open(dirname);
+    if( dirp == NULL ) {
+        RETURN_FALSE;
+    }
+
+    z_list = dirp_scandir_with_func(dirp, dirname, dirname_len, dirp_dir_entry_handler );
+
+    *return_value = *z_list;
+    // add reference count
+    zval_copy_ctor(return_value);
+
+    // closedir
+    // rsrc_id = dirp->rsrc_id;
+    dirp_close(dirp);
 
 
 }
@@ -126,10 +156,8 @@ PHP_FUNCTION(futil_scandir)
         RETURN_FALSE;
     }
 
-
     // run is_dir
-    if( ! _futil_is_dir(dirname, dirname_len) ) {
-        php_error_docref(NULL TSRMLS_CC, E_WARNING, "The path is not a directory.");
+    if( ! futil_is_dir(dirname, dirname_len) ) {
         RETURN_FALSE;
     }
 
@@ -139,7 +167,7 @@ PHP_FUNCTION(futil_scandir)
         RETURN_FALSE;
     }
 
-    z_list = dirp_scandir_with_func(dirp, dirname, dirname_len, dirp_scandir_entry_handler );
+    z_list = dirp_scandir_with_func(dirp, dirname, dirname_len, dirp_entry_handler );
 
     *return_value = *z_list;
     // add reference count

@@ -12,6 +12,7 @@ dirp* dirp_open(char * dirname);
 zval* dirp_scandir_with_func( dirp * dirp, char* dirname, int dirname_len, char* (*func)(char*, int, php_stream_dirent*) );
 void dirp_close( dirp * dirp );
 
-char* dirp_scandir_entry_handler( char* dirname, int dirname_len, php_stream_dirent * entry);
+char* dirp_entry_handler( char* dirname, int dirname_len, php_stream_dirent * entry);
+char* dirp_dir_entry_handler( char* dirname, int dirname_len, php_stream_dirent * entry );
 
 #endif

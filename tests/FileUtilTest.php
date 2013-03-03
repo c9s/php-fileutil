@@ -19,11 +19,23 @@ class FileUtilTest extends PHPUnit_Framework_ExtensionTestCase
         );
     }
 
-    public function testReadDir()
+    public function testReadDirOnExistingDir()
     {
         $files = futil_scandir("tests");
         ok($files,"Should return a file list");
         count_ok(1, $files);
+    }
+
+    public function testReadDirOnExistingFile()
+    {
+        $files = futil_scandir("tests/FileUtilTest.php");
+        is(false,$files,"Should return false on file path");
+    }
+
+    public function testReadDirOnNonExistingPath()
+    {
+        $files = futil_scandir("blah/blah");
+        is(false,$files,"Should return false on file path");
     }
 
 }
