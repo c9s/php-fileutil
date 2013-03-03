@@ -56,10 +56,7 @@ bool _futil_is_dir(char* dirname, int dirname_len)
 {
     zval tmp;
     php_stat(dirname, dirname_len, FS_IS_DIR, &tmp TSRMLS_CC);
-
-    bool ret = Z_LVAL(tmp) ? true : false;
-    // FREE_ZVAL(&tmp);
-    return ret;
+    return Z_LVAL(tmp) ? true : false;
 }
 
 PHP_FUNCTION(futil_readdir_for_dir)
