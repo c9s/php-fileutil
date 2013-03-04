@@ -79,6 +79,7 @@ char* path_concat_fill(
     if( remove_first_slash && *src == DEFAULT_SLASH ) {
         // remove the first slash
         src++;
+        subpath_len--;
     }
     while( subpath_len-- && *src != '\0' ) {
         *dst = *src;
@@ -224,8 +225,6 @@ PHP_FUNCTION(futil_join)
         char **paths;
         int  *lens;
         char *dst;
-        char *subpath;
-        int   subpath_len;
         
         zval **arr = varargs[0];
         zval **entry_data;
@@ -233,31 +232,35 @@ PHP_FUNCTION(futil_join)
         HashPosition pointer;
         int array_count;
 
+
         arr_hash = Z_ARRVAL_PP(arr);
         array_count = zend_hash_num_elements(arr_hash);
 
         paths = emalloc(sizeof(char*) * array_count);
         lens = emalloc(sizeof(int) * array_count);
         total_len = array_count;
-        newpath = emalloc( sizeof(char) * total_len );
-
 
         int i = 0;
         for(zend_hash_internal_pointer_reset_ex(arr_hash, &pointer); 
                 zend_hash_get_current_data_ex(arr_hash, (void**) &entry_data, &pointer) == SUCCESS; 
                 zend_hash_move_forward_ex(arr_hash, &pointer)) 
         {
-            if (Z_TYPE_PP(entry_data) == IS_STRING) {
-                paths[i] = Z_STRVAL_PP(entry_data);
+            if ( Z_TYPE_PP(entry_data) == IS_STRING ) {
                 lens[i]  = Z_STRLEN_PP(entry_data);
+                paths[i] = Z_STRVAL_PP(entry_data);
                 total_len += lens[i];
+                i++;
             }
         }
+
+        newpath = ecalloc( sizeof(char), total_len );
         dst = newpath;
+
         for (i = 0; i < array_count ; i++ ) {
-            subpath = paths[i];
-            subpath_len = lens[i];
-            if( subpath_len == 0 ) {
+            char *subpath = paths[i];
+            int subpath_len = lens[i];
+
+            if ( subpath_len == 0 ) {
                 continue;
             }
 
@@ -267,11 +270,12 @@ PHP_FUNCTION(futil_join)
                 dst++;
             }
         }
+        *dst = '\0';
         efree(paths);
         efree(lens);
 
     } 
-    else if ( num_varargs > 1 ) 
+    else if ( num_varargs > 1  && Z_TYPE_PP(varargs[0]) == IS_STRING ) 
     {
         newpath = path_concat_from_zargs( num_varargs , varargs );
     } 
