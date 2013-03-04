@@ -60,48 +60,70 @@ bool futil_is_dir(char* dirname, int dirname_len)
     return Z_LVAL(tmp) ? true : false;
 }
 
-
-
-char* path_concat_from_args( int num_varargs , zval ***varargs ) 
+/*char* path_concat_from_zarray() 
 {
-    char *newpath;
-    char *dst;
+    return '';
+}*/
+
+
+// concat paths and copy them to *src.
+// returns the last copy pointer.
+char* path_concat_fill( 
+        char* dst, 
+        char *subpath, 
+        int subpath_len , 
+        bool remove_first_slash )
+{
+    // printf("%s\n", Z_STRVAL_PP(arg) );
+    char lastch;
     char *src;
+
+    src = subpath;
+
+    // check if we need remove the first slash.
+    if( remove_first_slash && *src == DEFAULT_SLASH ) {
+        // remove the first slash
+        src++;
+    }
+    while( subpath_len-- ) {
+        if(subpath_len == 0) {
+            lastch = *src;
+        }
+        *dst = *src;
+        dst++;
+        src++;
+    }
+    return dst;
+}
+
+char* path_concat_from_zargs( int num_varargs , zval ***varargs ) 
+{
+    char *dst;
+    char *newpath;
     int i;
-    int len = 0;
+    int len;
     zval **arg;
 
     for (i = 0; i < num_varargs; i++) {
         arg = varargs[i];
         len += Z_STRLEN_PP(arg);
-        len += 1;
     }
 
+    len = num_varargs;
     newpath = emalloc( sizeof(char) * len );
 
     dst = newpath;
-
     for (i = 0; i < num_varargs; i++ ) {
         arg = varargs[i];
-
-        // printf("%s\n", Z_STRVAL_PP(arg) );
         char *subpath = Z_STRVAL_PP(arg);
         int  subpath_len = Z_STRLEN_PP(arg);
-        char lastch;
-        src = subpath;
 
-        if( i > 0 && *src == DEFAULT_SLASH ) {
-            src++;
+        if( subpath_len == 0 ) {
+            continue;
         }
-        while( subpath_len-- ) {
-            if(subpath_len == 0) {
-                lastch = *src;
-            }
-            *dst = *src;
-            dst++;
-            src++;
-        }
-        if( lastch != DEFAULT_SLASH && i < (num_varargs - 1) ) {
+
+        dst = path_concat_fill(dst, subpath, subpath_len, i > 0);
+        if ( *(dst-1) != DEFAULT_SLASH && i < (num_varargs - 1) ) {
             *dst = DEFAULT_SLASH;
             dst++;
         }
@@ -203,8 +225,56 @@ PHP_FUNCTION(futil_join)
     if( num_varargs == 1 && Z_TYPE_PP(varargs[0]) == IS_ARRAY ) {
         // handle join from array
         php_error_docref(NULL TSRMLS_CC, E_WARNING, "Not implemented");
+
+        int total_len = 0;
+        char **paths;
+        int  *lens;
+        
+        zval **arr = varargs[0];
+        zval **entry_data;
+        HashTable *arr_hash;
+        HashPosition pointer;
+        int array_count;
+
+        arr_hash = Z_ARRVAL_PP(arr);
+        array_count = zend_hash_num_elements(arr_hash);
+
+        paths = emalloc(sizeof(char*) * array_count);
+        lens = emalloc(sizeof(int) * array_count);
+        total_len = array_count;
+
+        int i = 0;
+        for(zend_hash_internal_pointer_reset_ex(arr_hash, &pointer); 
+                zend_hash_get_current_data_ex(arr_hash, (void**) &entry_data, &pointer) == SUCCESS; 
+                zend_hash_move_forward_ex(arr_hash, &pointer)) 
+        {
+            if (Z_TYPE_PP(entry_data) == IS_STRING) {
+                paths[i] = Z_STRVAL_PP(entry_data);
+                lens[i]  = Z_STRLEN_PP(entry_data);
+                total_len += lens[i];
+            }
+        }
+
+        char *dst;
+        newpath = emalloc( sizeof(char) * total_len );
+        for (i = 0; i < array_count ; i++ ) {
+            char *subpath = paths[i];
+            int   subpath_len = lens[i];
+            if( subpath_len == 0 ) {
+                continue;
+            }
+            dst = path_concat_fill(dst, subpath, subpath_len, i > 0);
+
+            if ( *(dst-1) != DEFAULT_SLASH && i < (num_varargs - 1) ) {
+                *dst = DEFAULT_SLASH;
+                dst++;
+            }
+        }
+        efree(paths);
+        efree(lens);
+
     } else {
-        newpath = path_concat_from_args( num_varargs , varargs );
+        newpath = path_concat_from_zargs( num_varargs , varargs );
     }
 
 
