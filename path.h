@@ -16,6 +16,6 @@ char* path_concat_from_zargs( int num_varargs , zval ***varargs );
 
 void path_remove_tailing_slash(char *path);
 
-void path_remove_tailing_slash_a2(char *path, int len);
+void path_remove_tailing_slash_n(char *path, int len);
 
 #endif
