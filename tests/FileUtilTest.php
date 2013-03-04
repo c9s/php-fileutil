@@ -47,6 +47,20 @@ class FileUtilTest extends PHPUnit_Framework_ExtensionTestCase
         }
     }
 
+    public function testJoin()
+    {
+        $joined = futil_join('path1','path2');
+        $this->assertEquals( 'path1/path2' , $joined );
+    }
+
+    public function testJoinWithDuplicateSlash()
+    {
+        $joined = futil_join('path1/','path2');
+        $this->assertEquals( 'path1/path2' , $joined );
+
+        $joined = futil_join('path1/','/path2');
+        $this->assertEquals( 'path1/path2' , $joined );
+    }
 }
 
 
