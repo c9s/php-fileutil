@@ -198,7 +198,15 @@ PHP_FUNCTION(futil_join)
         RETURN_FALSE;
     }
 
-    char *newpath = path_concat_from_args( num_varargs , varargs );
+    char *newpath;
+
+    if( num_varargs == 1 && Z_TYPE_PP(varargs[0]) == IS_ARRAY ) {
+        // handle join from array
+        php_error_docref(NULL TSRMLS_CC, E_WARNING, "Not implemented");
+    } else {
+        newpath = path_concat_from_args( num_varargs , varargs );
+    }
+
 
     if (varargs) {
         efree(varargs);
