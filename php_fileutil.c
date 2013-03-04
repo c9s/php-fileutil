@@ -48,29 +48,6 @@ ZEND_GET_MODULE(fileutil)
 #endif
 
 
-typedef struct {
-    char * string;
-    int len;
-    int alloc;
-} string ;
-
-string * string_new() 
-{
-    string * s = emalloc(sizeof(string));
-    s->string = emalloc(sizeof(char) * 512);
-    s->alloc = 512;
-    s->len = 1;
-    s->string = '\0';
-    return s;
-}
-
-void string_free(string *s)
-{
-    efree(s->string);
-    efree(s);
-}
-
-
 bool futil_stream_is_dir(php_stream *stream)
 {
     return (stream->flags & PHP_STREAM_FLAG_IS_DIR);
@@ -170,6 +147,9 @@ PHP_FUNCTION(futil_join)
         RETURN_FALSE;
     }
 
+
+
+
     char *newpath;
     char *dst;
     char *src;
@@ -190,7 +170,6 @@ PHP_FUNCTION(futil_join)
         arg = varargs[i];
 
         // printf("%s\n", Z_STRVAL_PP(arg) );
-
         char *subpath = Z_STRVAL_PP(arg);
         int  subpath_len = Z_STRLEN_PP(arg);
         char lastch;
@@ -199,7 +178,6 @@ PHP_FUNCTION(futil_join)
         if( i > 0 && *src == DEFAULT_SLASH ) {
             src++;
         }
-
         while( subpath_len-- ) {
             if(subpath_len == 0) {
                 lastch = *src;
