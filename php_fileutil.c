@@ -74,15 +74,12 @@ char* path_concat_fill(
     int  subpath_len,
     bool remove_first_slash )
 {
-    // printf("%s\n", Z_STRVAL_PP(arg) );
-    char lastch;
-
     // check if we need remove the first slash.
     if( remove_first_slash && *src == DEFAULT_SLASH ) {
         // remove the first slash
         src++;
     }
-    while( subpath_len-- ) {
+    while( subpath_len-- && *src != '\0' ) {
         *dst = *src;
         dst++;
         src++;
@@ -117,6 +114,7 @@ char* path_concat_from_zargs( int num_varargs , zval ***varargs )
         }
 
         dst = path_concat_fill(dst, subpath, subpath_len, i > 0);
+        // printf("%d) path %s <= %s (%d)\n" , i , newpath, subpath, subpath_len );
 
         // concat slash to the end
         if ( *(dst-1) != DEFAULT_SLASH && i < (num_varargs - 1) ) {
@@ -218,7 +216,9 @@ PHP_FUNCTION(futil_join)
 
     char *newpath;
 
-    if( num_varargs == 1 && Z_TYPE_PP(varargs[0]) == IS_ARRAY ) {
+    if ( num_varargs == 1 && Z_TYPE_PP(varargs[0]) == IS_ARRAY ) 
+    {
+
         int total_len = 0;
         char **paths;
         int  *lens;
@@ -238,6 +238,8 @@ PHP_FUNCTION(futil_join)
         paths = emalloc(sizeof(char*) * array_count);
         lens = emalloc(sizeof(int) * array_count);
         total_len = array_count;
+        newpath = emalloc( sizeof(char) * total_len );
+
 
         int i = 0;
         for(zend_hash_internal_pointer_reset_ex(arr_hash, &pointer); 
@@ -250,11 +252,7 @@ PHP_FUNCTION(futil_join)
                 total_len += lens[i];
             }
         }
-
-
-        newpath = emalloc( sizeof(char) * total_len );
         dst = newpath;
-
         for (i = 0; i < array_count ; i++ ) {
             subpath = paths[i];
             subpath_len = lens[i];
@@ -271,13 +269,20 @@ PHP_FUNCTION(futil_join)
         efree(paths);
         efree(lens);
 
-    } else {
+    } 
+    else if ( num_varargs > 1 ) 
+    {
         newpath = path_concat_from_zargs( num_varargs , varargs );
+    } 
+    else 
+    {
+        php_error_docref(NULL TSRMLS_CC, E_WARNING, "Wrong parameters.");
     }
 
     if (varargs) {
         efree(varargs);
     }
+
     RETVAL_STRING(newpath,1);
 }
 
