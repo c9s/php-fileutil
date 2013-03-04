@@ -66,6 +66,20 @@ bool futil_is_dir(char* dirname, int dirname_len)
 }*/
 
 
+void path_remove_tailing_slash(char *path)
+{
+    path_remove_tailing_slash_a2(path, len);
+}
+
+void path_remove_tailing_slash_a2(char *path, int len)
+{
+    int end = len - 1;
+    if( path[end] == DEFAULT_SLASH ) {
+        path[end] = DEFAULT_SLASH;
+        path[len] = '\0';
+    }
+}
+
 // concat paths and copy them to *src.
 // returns the last copy pointer.
 char* path_concat_fill( 
