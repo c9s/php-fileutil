@@ -61,6 +61,57 @@ bool futil_is_dir(char* dirname, int dirname_len)
 }
 
 
+
+char* path_concat_from_args( int num_varargs , zval ***varargs ) 
+{
+    char *newpath;
+    char *dst;
+    char *src;
+    int i;
+    int len = 0;
+    zval **arg;
+
+    for (i = 0; i < num_varargs; i++) {
+        arg = varargs[i];
+        len += Z_STRLEN_PP(arg);
+        len += 1;
+    }
+
+    newpath = emalloc( sizeof(char) * len );
+
+    dst = newpath;
+
+    for (i = 0; i < num_varargs; i++ ) {
+        arg = varargs[i];
+
+        // printf("%s\n", Z_STRVAL_PP(arg) );
+        char *subpath = Z_STRVAL_PP(arg);
+        int  subpath_len = Z_STRLEN_PP(arg);
+        char lastch;
+        src = subpath;
+
+        if( i > 0 && *src == DEFAULT_SLASH ) {
+            src++;
+        }
+        while( subpath_len-- ) {
+            if(subpath_len == 0) {
+                lastch = *src;
+            }
+            *dst = *src;
+            dst++;
+            src++;
+        }
+        if( lastch != DEFAULT_SLASH && i < (num_varargs - 1) ) {
+            *dst = DEFAULT_SLASH;
+            dst++;
+        }
+    }
+    *dst = '\0';
+    return newpath;
+}
+
+
+
 PHP_FUNCTION(futil_scandir_dir)
 {
     dirp *dirp;
@@ -137,7 +188,7 @@ PHP_FUNCTION(futil_scandir)
 
 PHP_FUNCTION(futil_join)
 {
-    int i, num_varargs;
+    int num_varargs;
     zval ***varargs = NULL;
 
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "*",
@@ -147,51 +198,7 @@ PHP_FUNCTION(futil_join)
         RETURN_FALSE;
     }
 
-
-
-
-    char *newpath;
-    char *dst;
-    char *src;
-    int len = 0;
-    zval **arg;
-
-    for (i = 0; i < num_varargs; i++) {
-        arg = varargs[i];
-        len += Z_STRLEN_PP(arg);
-        len += 1;
-    }
-
-    newpath = emalloc( sizeof(char) * len );
-
-    dst = newpath;
-
-    for (i = 0; i < num_varargs; i++ ) {
-        arg = varargs[i];
-
-        // printf("%s\n", Z_STRVAL_PP(arg) );
-        char *subpath = Z_STRVAL_PP(arg);
-        int  subpath_len = Z_STRLEN_PP(arg);
-        char lastch;
-        src = subpath;
-
-        if( i > 0 && *src == DEFAULT_SLASH ) {
-            src++;
-        }
-        while( subpath_len-- ) {
-            if(subpath_len == 0) {
-                lastch = *src;
-            }
-            *dst = *src;
-            dst++;
-            src++;
-        }
-        if( lastch != DEFAULT_SLASH && i < (num_varargs - 1) ) {
-            *dst = DEFAULT_SLASH;
-            dst++;
-        }
-    }
-    *dst = '\0';
+    char *newpath = path_concat_from_args( num_varargs , varargs );
 
     if (varargs) {
         efree(varargs);
