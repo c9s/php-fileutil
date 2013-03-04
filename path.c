@@ -103,6 +103,7 @@ char* path_concat_from_zarray(zval **arr)
         }
     }
     *dst = '\0';
+
     efree(paths);
     efree(lens);
     return newpath;
