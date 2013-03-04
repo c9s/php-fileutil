@@ -1,4 +1,6 @@
-run -d 'output_handler=' -d 'open_basedir=' -d 'safe_mode=0' -d \
+# file /Users/c9s/.phpbrew/php/php-5.4.10/bin/php
+file php
+set args -d 'output_handler=' -d 'open_basedir=' -d 'safe_mode=0' -d \
     'disable_functions=' -d 'output_buffering=Off' -d 'error_reporting=32767' -d \
     'display_errors=1' -d 'display_startup_errors=1' -d 'log_errors=0' -d \
     'html_errors=0' -d 'track_errors=1' -d 'report_memleaks=1' -d \
