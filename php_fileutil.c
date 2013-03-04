@@ -60,11 +60,6 @@ bool futil_is_dir(char* dirname, int dirname_len)
     return Z_LVAL(tmp) ? true : false;
 }
 
-/*char* path_concat_from_zarray() 
-{
-    return '';
-}*/
-
 
 
 
@@ -156,69 +151,11 @@ PHP_FUNCTION(futil_join)
 
     char *newpath;
 
-    if ( num_varargs == 1 && Z_TYPE_PP(varargs[0]) == IS_ARRAY ) 
-    {
-
-        int total_len = 0;
-        char **paths;
-        int  *lens;
-        char *dst;
-        
-        zval **arr = varargs[0];
-        zval **entry_data;
-        HashTable *arr_hash;
-        HashPosition pointer;
-        int array_count;
-
-
-        arr_hash = Z_ARRVAL_PP(arr);
-        array_count = zend_hash_num_elements(arr_hash);
-
-        paths = emalloc(sizeof(char*) * array_count);
-        lens = emalloc(sizeof(int) * array_count);
-        total_len = array_count;
-
-        int i = 0;
-        for(zend_hash_internal_pointer_reset_ex(arr_hash, &pointer); 
-                zend_hash_get_current_data_ex(arr_hash, (void**) &entry_data, &pointer) == SUCCESS; 
-                zend_hash_move_forward_ex(arr_hash, &pointer)) 
-        {
-            if ( Z_TYPE_PP(entry_data) == IS_STRING ) {
-                lens[i]  = Z_STRLEN_PP(entry_data);
-                paths[i] = Z_STRVAL_PP(entry_data);
-                total_len += lens[i];
-                i++;
-            }
-        }
-
-        newpath = ecalloc( sizeof(char), total_len );
-        dst = newpath;
-
-        for (i = 0; i < array_count ; i++ ) {
-            char *subpath = paths[i];
-            int subpath_len = lens[i];
-
-            if ( subpath_len == 0 ) {
-                continue;
-            }
-
-            dst = path_concat_fill(dst, subpath, subpath_len, i > 0);
-            if ( *(dst-1) != DEFAULT_SLASH && i < (num_varargs - 1) ) {
-                *dst = DEFAULT_SLASH;
-                dst++;
-            }
-        }
-        *dst = '\0';
-        efree(paths);
-        efree(lens);
-
-    } 
-    else if ( num_varargs > 1  && Z_TYPE_PP(varargs[0]) == IS_STRING ) 
-    {
+    if ( num_varargs == 1 && Z_TYPE_PP(varargs[0]) == IS_ARRAY ) {
+        newpath = path_concat_from_zarray(varargs[0]);
+    } else if ( num_varargs > 1  && Z_TYPE_PP(varargs[0]) == IS_STRING ) {
         newpath = path_concat_from_zargs( num_varargs , varargs );
-    } 
-    else 
-    {
+    } else {
         php_error_docref(NULL TSRMLS_CC, E_WARNING, "Wrong parameters.");
     }
 

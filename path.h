@@ -14,8 +14,11 @@ char* path_concat_fill(
 
 char* path_concat_from_zargs( int num_varargs , zval ***varargs );
 
+char* path_concat_from_zarray(zval **arr);
+
 void path_remove_tailing_slash(char *path);
 
 void path_remove_tailing_slash_n(char *path, int len);
+
 
 #endif
