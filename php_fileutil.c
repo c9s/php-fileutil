@@ -68,6 +68,7 @@ bool futil_is_dir(char* dirname, int dirname_len)
 
 void path_remove_tailing_slash(char *path)
 {
+    int len = strlen(path);
     path_remove_tailing_slash_a2(path, len);
 }
 
