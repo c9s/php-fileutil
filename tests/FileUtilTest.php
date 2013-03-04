@@ -62,6 +62,13 @@ class FileUtilTest extends PHPUnit_Framework_ExtensionTestCase
         $this->assertEquals( 'path1/path2' , $joined );
     }
 
+/*
+    public function testJoinArray()
+    {
+        $joined = futil_join(array('path1/','path2/','path3/'));
+        $this->assertEquals( 'path1/path2/path3' , $joined );
+    }
+*/
 
 }
 

@@ -69,16 +69,13 @@ bool futil_is_dir(char* dirname, int dirname_len)
 // concat paths and copy them to *src.
 // returns the last copy pointer.
 char* path_concat_fill( 
-        char* dst, 
-        char *subpath, 
-        int subpath_len , 
-        bool remove_first_slash )
+    char * dst, 
+    char * src, 
+    int  subpath_len,
+    bool remove_first_slash )
 {
     // printf("%s\n", Z_STRVAL_PP(arg) );
     char lastch;
-    char *src;
-
-    src = subpath;
 
     // check if we need remove the first slash.
     if( remove_first_slash && *src == DEFAULT_SLASH ) {
@@ -86,9 +83,6 @@ char* path_concat_fill(
         src++;
     }
     while( subpath_len-- ) {
-        if(subpath_len == 0) {
-            lastch = *src;
-        }
         *dst = *src;
         dst++;
         src++;
@@ -123,6 +117,8 @@ char* path_concat_from_zargs( int num_varargs , zval ***varargs )
         }
 
         dst = path_concat_fill(dst, subpath, subpath_len, i > 0);
+
+        // concat slash to the end
         if ( *(dst-1) != DEFAULT_SLASH && i < (num_varargs - 1) ) {
             *dst = DEFAULT_SLASH;
             dst++;
@@ -223,12 +219,12 @@ PHP_FUNCTION(futil_join)
     char *newpath;
 
     if( num_varargs == 1 && Z_TYPE_PP(varargs[0]) == IS_ARRAY ) {
-        // handle join from array
-        php_error_docref(NULL TSRMLS_CC, E_WARNING, "Not implemented");
-
         int total_len = 0;
         char **paths;
         int  *lens;
+        char *dst;
+        char *subpath;
+        int   subpath_len;
         
         zval **arr = varargs[0];
         zval **entry_data;
@@ -255,16 +251,18 @@ PHP_FUNCTION(futil_join)
             }
         }
 
-        char *dst;
+
         newpath = emalloc( sizeof(char) * total_len );
+        dst = newpath;
+
         for (i = 0; i < array_count ; i++ ) {
-            char *subpath = paths[i];
-            int   subpath_len = lens[i];
+            subpath = paths[i];
+            subpath_len = lens[i];
             if( subpath_len == 0 ) {
                 continue;
             }
-            dst = path_concat_fill(dst, subpath, subpath_len, i > 0);
 
+            dst = path_concat_fill(dst, subpath, subpath_len, i > 0);
             if ( *(dst-1) != DEFAULT_SLASH && i < (num_varargs - 1) ) {
                 *dst = DEFAULT_SLASH;
                 dst++;
@@ -276,7 +274,6 @@ PHP_FUNCTION(futil_join)
     } else {
         newpath = path_concat_from_zargs( num_varargs , varargs );
     }
-
 
     if (varargs) {
         efree(varargs);
