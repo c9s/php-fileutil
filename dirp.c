@@ -66,7 +66,7 @@ char* dirp_entry_handler(
         int dirname_len, 
         php_stream_dirent * entry )
 {
-    return path_concat(dirname, dirname_len, entry->d_name);
+    return path_concat(dirname, dirname_len, entry->d_name, strlen(entry->d_name) );
 }
 
 
@@ -75,7 +75,7 @@ char* dirp_dir_entry_handler(
         int dirname_len,
         php_stream_dirent * entry )
 {
-    char * path = path_concat(dirname, dirname_len, entry->d_name);
+    char * path = path_concat(dirname, dirname_len, entry->d_name, strlen(entry->d_name) );
     int    path_len = dirname_len + strlen(entry->d_name) + 1;
     if( futil_is_dir(path, path_len) ) {
         return path;

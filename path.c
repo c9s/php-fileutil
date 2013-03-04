@@ -4,9 +4,8 @@
 #include "path.h"
 
 
-char * path_concat( char* path1, int len1, char * path2 ) 
+char * path_concat( char* path1, int len1, char * path2, int len2 ) 
 {
-    int len2 = strlen(path2);
     char * newpath = emalloc( sizeof(char) * (len1 + len2 + 2) );
     char * src = path1;
     char * p2 = newpath;
@@ -31,4 +30,19 @@ char * path_concat( char* path1, int len1, char * path2 )
     }
     *p2 = '\0';
     return newpath;
+}
+
+void path_remove_tailing_slash(char *path)
+{
+    int len = strlen(path);
+    path_remove_tailing_slash_a2(path, len);
+}
+
+void path_remove_tailing_slash_a2(char *path, int len)
+{
+    int end = len - 1;
+    if( path[end] == DEFAULT_SLASH ) {
+        path[end] = DEFAULT_SLASH;
+        path[len] = '\0';
+    }
 }
