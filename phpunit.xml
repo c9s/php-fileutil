@@ -3,6 +3,7 @@
     bootstrap="tests/bootstrap.php"
     backupGlobals="false"
     verbose="true"
+    debug="true"
     syntaxCheck="true"
     colors="true"
     convertErrorsToExceptions="true"
