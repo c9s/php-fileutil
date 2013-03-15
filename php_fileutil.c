@@ -91,9 +91,9 @@ PHP_FUNCTION(futil_scandir_dir)
             dirname, dirname_len, 
             dirp_dir_entry_handler );
 
-    *return_value = *z_list;
     // add reference count
-    zval_copy_ctor(return_value);
+    zval_copy_ctor(z_list);
+    *return_value = *z_list;
 
     // closedir
     // rsrc_id = dirp->rsrc_id;

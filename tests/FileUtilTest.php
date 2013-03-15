@@ -54,6 +54,7 @@ class FileUtilTest extends PHPUnit_Framework_ExtensionTestCase
         $i = 100;
         while( $i-- ) {
             $paths = futil_scandir_dir("/");
+            ok( $paths );
             foreach($paths as $path) {
                 ok(is_dir($path),'is_dir ok');
             }
