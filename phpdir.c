@@ -1,39 +1,38 @@
 
 #include "php.h"
 #include "php_fileutil.h"
-#include "dirp.h"
+#include "phpdir.h"
 #include "path.h"
 
 #include <Zend/zend.h>
 #include <ext/standard/php_standard.h>
 #include <ext/standard/php_filestat.h>
 
-
-dirp* dirp_open(char * dirname) 
+phpdir* phpdir_open(char * dirname) 
 {
-    dirp * dirp = emalloc(sizeof(dirp));
-    dirp->context = NULL;
-    dirp->zcontext = NULL;
-    dirp->stream = NULL;
-    dirp->context = php_stream_context_from_zval(dirp->zcontext, 0);
+    phpdir * phpdir = emalloc(sizeof(phpdir));
+    phpdir->context = NULL;
+    phpdir->zcontext = NULL;
+    phpdir->stream = NULL;
+    phpdir->context = php_stream_context_from_zval(phpdir->zcontext, 0);
 
-    if(dirp->context == NULL) {
-        efree(dirp);
+    if(phpdir->context == NULL) {
+        efree(phpdir);
         return NULL;
     }
 
-    dirp->stream = php_stream_opendir(dirname, REPORT_ERRORS, dirp->context);
-    if (dirp->stream == NULL) {
-        efree(dirp);
+    phpdir->stream = php_stream_opendir(dirname, REPORT_ERRORS, phpdir->context);
+    if (phpdir->stream == NULL) {
+        efree(phpdir);
         return NULL;
     }
 
     // it's not fclose-able
-    dirp->stream->flags |= PHP_STREAM_FLAG_NO_FCLOSE;
-    return dirp;
+    phpdir->stream->flags |= PHP_STREAM_FLAG_NO_FCLOSE;
+    return phpdir;
 }
 
-zval* dirp_scandir_with_handler( dirp * dirp, 
+zval* phpdir_scandir_with_handler( phpdir * phpdir, 
         char* dirname, 
         int dirname_len,
         char* (*handler)(char*, int, php_stream_dirent*) ) 
@@ -43,7 +42,7 @@ zval* dirp_scandir_with_handler( dirp * dirp,
     array_init(z_list);
     
     php_stream_dirent entry;
-    while (php_stream_readdir(dirp->stream, &entry)) {
+    while (php_stream_readdir(phpdir->stream, &entry)) {
         if (strcmp(entry.d_name, "..") == 0 || strcmp(entry.d_name, ".") == 0)
             continue;
         char * newpath = (*handler)(dirname, dirname_len, &entry);
@@ -54,14 +53,14 @@ zval* dirp_scandir_with_handler( dirp * dirp,
     return z_list;
 }
 
-void dirp_close( dirp * dirp ) 
+void phpdir_close( phpdir * phpdir ) 
 {
-    zend_list_delete(dirp->stream->rsrc_id);
-    php_stream_close(dirp->stream);
-    // efree(dirp);
+    zend_list_delete(phpdir->stream->rsrc_id);
+    php_stream_close(phpdir->stream);
+    // efree(phpdir);
 }
 
-char* dirp_entry_handler(
+char* phpdir_entry_handler(
         char* dirname, 
         int dirname_len, 
         php_stream_dirent * entry )
@@ -70,7 +69,7 @@ char* dirp_entry_handler(
 }
 
 
-char* dirp_dir_entry_handler(
+char* phpdir_dir_entry_handler(
         char* dirname, 
         int dirname_len,
         php_stream_dirent * entry )

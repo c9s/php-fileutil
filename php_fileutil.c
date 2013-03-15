@@ -3,7 +3,7 @@
 #endif
 #include "php.h"
 #include "php_fileutil.h"
-#include "dirp.h"
+#include "phpdir.h"
 #include "path.h"
 
 #include <Zend/zend.h>
@@ -65,7 +65,7 @@ bool futil_is_dir(char* dirname, int dirname_len)
 
 PHP_FUNCTION(futil_scandir_dir)
 {
-    dirp *dirp;
+    phpdir *phpdir;
     zval *z_list;
     char *dirname;
     int dirname_len;
@@ -82,27 +82,28 @@ PHP_FUNCTION(futil_scandir_dir)
         RETURN_FALSE;
     }
 
-    dirp = dirp_open(dirname);
-    if( dirp == NULL ) {
+    phpdir = phpdir_open(dirname);
+    if( phpdir == NULL ) {
         RETURN_FALSE;
     }
 
-    z_list = dirp_scandir_with_handler(dirp, 
+    z_list = phpdir_scandir_with_handler(phpdir, 
             dirname, dirname_len, 
-            dirp_dir_entry_handler );
+            phpdir_dir_entry_handler );
 
-    // add reference count
-    zval_copy_ctor(z_list);
-    *return_value = *z_list;
 
     // closedir
-    // rsrc_id = dirp->rsrc_id;
-    dirp_close(dirp);
+    // rsrc_id = phpdir->rsrc_id;
+    phpdir_close(phpdir);
+
+    // add reference count
+    *return_value = *z_list;
+    zval_copy_ctor(return_value);
 }
 
 PHP_FUNCTION(futil_scandir)
 {
-    dirp *dirp;
+    phpdir *phpdir;
     zval *z_list;
     char *dirname;
     int dirname_len;
@@ -120,20 +121,21 @@ PHP_FUNCTION(futil_scandir)
         RETURN_FALSE;
     }
 
-    dirp = dirp_open(dirname);
-    if( dirp == NULL ) {
+    phpdir = phpdir_open(dirname);
+    if( phpdir == NULL ) {
         RETURN_FALSE;
     }
 
-    z_list = dirp_scandir_with_handler(dirp, dirname, dirname_len, dirp_entry_handler );
+    z_list = phpdir_scandir_with_handler(phpdir, dirname, dirname_len, phpdir_entry_handler );
 
-    *return_value = *z_list;
-    // add reference count
-    zval_copy_ctor(return_value);
 
     // closedir
-    // rsrc_id = dirp->rsrc_id;
-    dirp_close(dirp);
+    // rsrc_id = phpdir->rsrc_id;
+    phpdir_close(phpdir);
+
+    // add reference count
+    *return_value = *z_list;
+    zval_copy_ctor(return_value);
 }
 
 

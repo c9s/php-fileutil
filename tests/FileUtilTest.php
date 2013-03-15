@@ -1,8 +1,8 @@
 <?php
 
-
 class FileUtilTest extends PHPUnit_Framework_ExtensionTestCase
 {
+
     public function getExtensionName()
     {
         return 'fileutil';
@@ -66,6 +66,7 @@ class FileUtilTest extends PHPUnit_Framework_ExtensionTestCase
         $i = 100;
         while( $i-- ) {
             $joined = futil_join('path1','path2');
+            ok( $joined );
             $this->assertEquals( 'path1/path2' , $joined );
         }
     }
@@ -77,11 +78,11 @@ class FileUtilTest extends PHPUnit_Framework_ExtensionTestCase
             $joined = futil_join('path1/','path2');
             $this->assertEquals( 'path1/path2' , $joined );
 
-            $joined = futil_join('path1/','/path2');
-            $this->assertEquals( 'path1/path2' , $joined );
+            $joined2 = futil_join('path1/','/path2');
+            $this->assertEquals( 'path1/path2' , $joined2 );
 
-            $joined = futil_join('path1/','/path2','/path3','/path4');
-            $this->assertEquals( 'path1/path2/path3/path4' , $joined );
+            $joined3 = futil_join('path1/','/path2','/path3','/path4');
+            $this->assertEquals( 'path1/path2/path3/path4' , $joined3 );
         }
     }
 
