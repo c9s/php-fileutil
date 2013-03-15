@@ -16,53 +16,72 @@ class FileUtilTest extends PHPUnit_Framework_ExtensionTestCase
         );
     }
 
+
     public function testScanDirOnExistingDir()
     {
-        $files = futil_scandir("/etc");
-        ok($files,"Should return a file list");
-        ok(is_array($files));
-        foreach($files as $file) {
-            path_ok($file);
+        $i = 100;
+        while( $i-- ) {
+            $files = futil_scandir("/etc");
+            ok($files,"Should return a file list");
+            ok(is_array($files));
+            foreach($files as $file) {
+                path_ok($file);
+            }
         }
     }
 
     public function testScanDirOnExistingFile()
     {
-        $files = futil_scandir("tests/FileUtilTest.php");
-        is(false,$files,"Should return false on file path");
+        $i = 100;
+        while( $i-- ) {
+            $files = futil_scandir("tests/FileUtilTest.php");
+            is(false,$files,"Should return false on file path");
+        }
     }
 
     public function testScanDirOnNonExistingPath()
     {
-        $files = futil_scandir("blah/blah");
-        is(false,$files,"Should return false on file path");
+        $i = 100;
+        while( $i-- ) {
+            $files = futil_scandir("blah/blah");
+            is(false,$files,"Should return false on file path");
+        }
     }
 
 
     public function testScanDirDir()
     {
-        $paths = futil_scandir_dir("/");
-        foreach($paths as $path) {
-            ok(is_dir($path),'is_dir ok');
+        $i = 100;
+        while( $i-- ) {
+            $paths = futil_scandir_dir("/");
+            foreach($paths as $path) {
+                ok(is_dir($path),'is_dir ok');
+            }
         }
     }
 
     public function testJoin()
     {
-        $joined = futil_join('path1','path2');
-        $this->assertEquals( 'path1/path2' , $joined );
+        $i = 100;
+        while( $i-- ) {
+            $joined = futil_join('path1','path2');
+            $this->assertEquals( 'path1/path2' , $joined );
+        }
     }
 
     public function testJoinWithDuplicateSlash()
     {
-        $joined = futil_join('path1/','path2');
-        $this->assertEquals( 'path1/path2' , $joined );
+        $i = 100;
+        while( $i-- ) {
+            $joined = futil_join('path1/','path2');
+            $this->assertEquals( 'path1/path2' , $joined );
 
-        $joined = futil_join('path1/','/path2');
-        $this->assertEquals( 'path1/path2' , $joined );
+            $joined = futil_join('path1/','/path2');
+            $this->assertEquals( 'path1/path2' , $joined );
 
-        $joined = futil_join('path1/','/path2','/path3','/path4');
-        $this->assertEquals( 'path1/path2/path3/path4' , $joined );
+            $joined = futil_join('path1/','/path2','/path3','/path4');
+            $this->assertEquals( 'path1/path2/path3/path4' , $joined );
+        }
     }
 
     public function testJoinArray()
