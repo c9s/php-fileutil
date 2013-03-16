@@ -10,6 +10,48 @@
 #include <ext/standard/php_filestat.h>
 
 
+ZEND_BEGIN_ARG_INFO_EX(arginfo_futil_scandir, 0, 0, 1)
+    ZEND_ARG_INFO(0, dir)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_futil_scandir_dir, 0, 0, 1)
+    ZEND_ARG_INFO(0, dir)
+ZEND_END_ARG_INFO()
+
+
+
+
+
+static const zend_function_entry fileutil_functions[] = {
+    PHP_FE(futil_scandir, arginfo_futil_scandir)
+    PHP_FE(futil_scandir_dir, arginfo_futil_scandir_dir)
+    PHP_FE(futil_pathjoin, NULL)
+    {NULL, NULL, NULL}
+};
+
+
+zend_module_entry fileutil_module_entry = {
+#if ZEND_MODULE_API_NO >= 20010901
+    STANDARD_MODULE_HEADER,
+#endif
+    PHP_FILEUTIL_EXTNAME,
+    fileutil_functions,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+#if ZEND_MODULE_API_NO >= 20010901
+    PHP_FILEUTIL_VERSION,
+#endif
+    STANDARD_MODULE_PROPERTIES
+};
+
+#ifdef COMPILE_DL_FILEUTIL
+ZEND_GET_MODULE(fileutil)
+#endif
+
+
 char * path_concat_from_zargs( int num_varargs , zval ***varargs TSRMLS_DC)
 {
     char *dst;
@@ -92,43 +134,6 @@ void phpdir_scandir_with_handler(
 }
 
 
-
-ZEND_BEGIN_ARG_INFO_EX(arginfo_futil_scandir, 0, 0, 1)
-    ZEND_ARG_INFO(0, dir)
-ZEND_END_ARG_INFO()
-
-ZEND_BEGIN_ARG_INFO_EX(arginfo_futil_scandir_dir, 0, 0, 1)
-    ZEND_ARG_INFO(0, dir)
-ZEND_END_ARG_INFO()
-
-static const zend_function_entry fileutil_functions[] = {
-    PHP_FE(futil_scandir, arginfo_futil_scandir)
-    PHP_FE(futil_scandir_dir, arginfo_futil_scandir_dir)
-    PHP_FE(futil_join, NULL)
-    {NULL, NULL, NULL}
-};
-
-
-zend_module_entry fileutil_module_entry = {
-#if ZEND_MODULE_API_NO >= 20010901
-    STANDARD_MODULE_HEADER,
-#endif
-    PHP_FILEUTIL_EXTNAME,
-    fileutil_functions,
-    NULL,
-    NULL,
-    NULL,
-    NULL,
-    NULL,
-#if ZEND_MODULE_API_NO >= 20010901
-    PHP_FILEUTIL_VERSION,
-#endif
-    STANDARD_MODULE_PROPERTIES
-};
-
-#ifdef COMPILE_DL_FILEUTIL
-ZEND_GET_MODULE(fileutil)
-#endif
 
 
 bool futil_stream_is_dir(php_stream *stream TSRMLS_DC)
@@ -240,7 +245,7 @@ PHP_FUNCTION(futil_scandir)
 }
 
 
-PHP_FUNCTION(futil_join)
+PHP_FUNCTION(futil_pathjoin)
 {
     int num_varargs;
     zval ***varargs = NULL;

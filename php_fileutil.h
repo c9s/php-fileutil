@@ -5,7 +5,7 @@
 
 PHP_FUNCTION(futil_scandir);
 PHP_FUNCTION(futil_scandir_dir);
-PHP_FUNCTION(futil_join);
+PHP_FUNCTION(futil_pathjoin);
 
 bool futil_stream_is_dir(php_stream *stream TSRMLS_DC);
 bool futil_is_dir(char* dirname, int dirname_len TSRMLS_DC);

@@ -13,7 +13,7 @@ class FileUtilTest extends PHPUnit_Framework_ExtensionTestCase
         return array(
             'futil_scandir',
             'futil_scandir_dir',
-            'futil_join',
+            'futil_pathjoin',
         );
     }
 
@@ -66,7 +66,7 @@ class FileUtilTest extends PHPUnit_Framework_ExtensionTestCase
     {
         $i = 100;
         while( $i-- ) {
-            $joined = futil_join('path1','path2');
+            $joined = futil_pathjoin('path1','path2');
             ok( $joined );
             $this->assertEquals( 'path1/path2' , $joined );
         }
@@ -76,13 +76,13 @@ class FileUtilTest extends PHPUnit_Framework_ExtensionTestCase
     {
         $i = 100;
         while( $i-- ) {
-            $joined = futil_join('path1/','path2');
+            $joined = futil_pathjoin('path1/','path2');
             $this->assertEquals( 'path1/path2' , $joined );
 
-            $joined2 = futil_join('path1/','/path2');
+            $joined2 = futil_pathjoin('path1/','/path2');
             $this->assertEquals( 'path1/path2' , $joined2 );
 
-            $joined3 = futil_join('path1/','/path2','/path3','/path4');
+            $joined3 = futil_pathjoin('path1/','/path2','/path3','/path4');
             $this->assertEquals( 'path1/path2/path3/path4' , $joined3 );
         }
     }
@@ -90,7 +90,7 @@ class FileUtilTest extends PHPUnit_Framework_ExtensionTestCase
 
     public function testJoinArray()
     {
-        $joined = futil_join(array('path1/','path2/','path3'));
+        $joined = futil_pathjoin(array('path1/','path2/','path3'));
         $this->assertEquals( 'path1/path2/path3' , $joined );
     }
 }
