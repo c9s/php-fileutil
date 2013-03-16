@@ -69,7 +69,6 @@ bool futil_is_dir(char* dirname, int dirname_len TSRMLS_DC)
 PHP_FUNCTION(futil_scandir_dir)
 {
     phpdir *phpdir;
-    zval *z_list;
     char *dirname;
     int dirname_len;
 
@@ -86,11 +85,17 @@ PHP_FUNCTION(futil_scandir_dir)
     }
 
     phpdir = phpdir_open(dirname TSRMLS_CC);
-    if( phpdir == NULL ) {
+    if ( ! phpdir ) {
         RETURN_FALSE;
     }
 
-    z_list = phpdir_scandir_with_handler(phpdir, 
+    zval * z_list;
+    MAKE_STD_ZVAL(z_list);
+    array_init( z_list );
+
+    phpdir_scandir_with_handler(
+            z_list,
+            phpdir, 
             dirname, dirname_len, 
             phpdir_dir_entry_handler TSRMLS_CC);
 
@@ -124,7 +129,7 @@ PHP_FUNCTION(futil_scandir)
 
 
     // run is_dir
-    if( ! futil_is_dir(dirname, dirname_len TSRMLS_CC) ) {
+    if ( ! futil_is_dir(dirname, dirname_len TSRMLS_CC) ) {
         RETURN_FALSE;
     }
 
@@ -133,7 +138,15 @@ PHP_FUNCTION(futil_scandir)
         RETURN_FALSE;
     }
 
-    zval * z_list = phpdir_scandir_with_handler(phpdir, dirname, dirname_len, phpdir_entry_handler TSRMLS_CC);
+    zval * z_list;
+    MAKE_STD_ZVAL(z_list);
+    array_init( z_list );
+
+    phpdir_scandir_with_handler(
+            z_list, 
+            phpdir,
+            dirname, dirname_len, 
+            phpdir_entry_handler TSRMLS_CC);
 
     // closedir
     // rsrc_id = phpdir->rsrc_id;
