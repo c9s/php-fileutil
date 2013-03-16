@@ -8,6 +8,7 @@
 #include <Zend/zend.h>
 #include <ext/standard/php_standard.h>
 #include <ext/standard/php_filestat.h>
+#include <ext/standard/php_string.h>
 
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_futil_scanpath, 0, 0, 1)
