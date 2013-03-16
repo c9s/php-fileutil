@@ -44,3 +44,7 @@ This returns the last creation time from a filelist array.
 
 #### `futil_unlink_if_exists($path)`
 
+#### `futil_rmdir_if_exists($path)`
+
+#### `futil_mkdir_if_not_exists($path)`
+
