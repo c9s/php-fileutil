@@ -77,4 +77,11 @@ function futil_pathjoin($a = null)
     return join(DIRECTORY_SEPARATOR , $a);
 }
 
+function futil_unlink_if_exists($path)
+{
+    if ( file_exists($path) ) {
+        return unlink($path);
+    }
+    return false;
+}
 
