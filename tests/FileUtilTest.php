@@ -87,11 +87,21 @@ class FileUtilTest extends PHPUnit_Framework_ExtensionTestCase
         }
     }
 
+    public function testLastMtime()
+    {
+        $list = array("README.md","config.m4");
+        $mtime = futil_lastmtime($list);
+        ok($mtime);
+    }
+
 
     public function testJoinArray()
     {
-        $joined = futil_pathjoin(array('path1/','path2/','path3'));
-        $this->assertEquals( 'path1/path2/path3' , $joined );
+        $i = 100;
+        while( $i-- ) {
+            $joined = futil_pathjoin(array('path1/','path2/','path3'));
+            $this->assertEquals( 'path1/path2/path3' , $joined );
+        }
     }
 }
 
