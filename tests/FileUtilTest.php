@@ -114,6 +114,16 @@ class FileUtilTest extends PHPUnit_Framework_ExtensionTestCase
     }
 
 
+    public function testUnlinkIfExists()
+    {
+        touch("tests/orz");
+        ok( file_exists("tests/orz") );
+        futil_unlink_if_exists("tests/orz");
+        ok( ! file_exists("tests/orz") );
+        futil_unlink_if_exists("tests/orz");
+        ok( ! file_exists("tests/orz") );
+    }
+
     public function testJoinArray()
     {
         $i = $this->repeat;

@@ -34,6 +34,7 @@ static const zend_function_entry fileutil_functions[] = {
     PHP_FE(futil_pathsplit, NULL)
     PHP_FE(futil_lastmtime, arginfo_futil_lastmtime)
     PHP_FE(futil_lastctime, arginfo_futil_lastctime)
+    PHP_FE(futil_unlink_if_exists, NULL)
     {NULL, NULL, NULL}
 };
 
@@ -370,6 +371,46 @@ PHP_FUNCTION(futil_pathsplit)
     // PHPAPI void php_explode(zval *delim, zval *str, zval *return_value, long limit)
     php_explode(&zdelim, &zstr, return_value, LONG_MAX); // LONG_MAX means no limit
 }
+
+
+
+PHP_FUNCTION(futil_unlink_if_exists)
+{
+    char *filename;
+    int filename_len;
+    php_stream_wrapper *wrapper;
+    zval *zcontext = NULL;
+    php_stream_context *context = NULL;
+
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "p|r", &filename, &filename_len, &zcontext) == FAILURE) {
+        RETURN_FALSE;
+    }
+
+    zval tmp;
+    bool ret;
+    php_stat(filename, filename_len, FS_EXISTS, &tmp TSRMLS_CC);
+    zval_dtor( &tmp );
+    if ( Z_LVAL(tmp) == false ) {
+        RETURN_FALSE;
+    }
+
+
+    // do unlink copied from ext/standard/file.c
+    context = php_stream_context_from_zval(zcontext, 0);
+    wrapper = php_stream_locate_url_wrapper(filename, NULL, 0 TSRMLS_CC);
+
+    if (!wrapper || !wrapper->wops) {
+        php_error_docref(NULL TSRMLS_CC, E_WARNING, "Unable to locate stream wrapper");
+        RETURN_FALSE;
+    }
+
+    if (!wrapper->wops->unlink) {
+        php_error_docref(NULL TSRMLS_CC, E_WARNING, "%s does not allow unlinking", wrapper->wops->label ? wrapper->wops->label : "Wrapper");
+        RETURN_FALSE;
+    }
+    RETURN_BOOL(wrapper->wops->unlink(wrapper, filename, REPORT_ERRORS, context TSRMLS_CC));
+}
+
 
 PHP_FUNCTION(futil_pathjoin)
 {
