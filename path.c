@@ -7,7 +7,7 @@
 
 
 
-char * path_concat( char* path1, int len1, char * path2, int len2 ) 
+char * path_concat( char* path1, int len1, char * path2, int len2 TSRMLS_DC) 
 {
     char * newpath = emalloc( sizeof(char) * (len1 + len2 + 2) );
     char * src = path1;
@@ -35,13 +35,13 @@ char * path_concat( char* path1, int len1, char * path2, int len2 )
     return newpath;
 }
 
-void path_remove_tailing_slash(char *path)
+void path_remove_tailing_slash(char *path TSRMLS_DC)
 {
     int len = strlen(path);
-    path_remove_tailing_slash_n(path, len);
+    path_remove_tailing_slash_n(path, len TSRMLS_CC);
 }
 
-void path_remove_tailing_slash_n(char *path, int len)
+void path_remove_tailing_slash_n(char *path, int len TSRMLS_DC)
 {
     int end = len - 1;
     if( path[end] == DEFAULT_SLASH ) {
@@ -51,7 +51,7 @@ void path_remove_tailing_slash_n(char *path, int len)
 }
 
 
-char* path_concat_from_zarray(zval **arr)
+char* path_concat_from_zarray(zval **arr TSRMLS_DC)
 {
     int total_len = 0;
     char **paths;
@@ -96,7 +96,7 @@ char* path_concat_from_zarray(zval **arr)
             continue;
         }
 
-        dst = path_concat_fill(dst, subpath, subpath_len, i > 0);
+        dst = path_concat_fill(dst, subpath, subpath_len, i > 0 TSRMLS_CC);
         if ( *(dst-1) != DEFAULT_SLASH && i < (array_count - 1) ) {
             *dst = DEFAULT_SLASH;
             dst++;
@@ -110,7 +110,7 @@ char* path_concat_from_zarray(zval **arr)
 }
 
 
-char* path_concat_from_zargs( int num_varargs , zval ***varargs ) 
+char* path_concat_from_zargs( int num_varargs , zval ***varargs TSRMLS_DC)
 {
     char *dst;
     char *newpath;
@@ -136,7 +136,7 @@ char* path_concat_from_zargs( int num_varargs , zval ***varargs )
             continue;
         }
 
-        dst = path_concat_fill(dst, subpath, subpath_len, i > 0);
+        dst = path_concat_fill(dst, subpath, subpath_len, i > 0 TSRMLS_CC);
         // printf("%d) path %s <= %s (%d)\n" , i , newpath, subpath, subpath_len );
 
         // concat slash to the end
@@ -155,7 +155,7 @@ char* path_concat_fill(
     char * dst, 
     char * src, 
     int  subpath_len,
-    bool remove_first_slash )
+    bool remove_first_slash TSRMLS_DC)
 {
     // check if we need remove the first slash.
     if( remove_first_slash && *src == DEFAULT_SLASH ) {

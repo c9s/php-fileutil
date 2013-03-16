@@ -61,6 +61,7 @@ class FileUtilTest extends PHPUnit_Framework_ExtensionTestCase
         }
     }
 
+    /*
     public function testJoin()
     {
         $i = 100;
@@ -91,7 +92,7 @@ class FileUtilTest extends PHPUnit_Framework_ExtensionTestCase
         $joined = futil_join(array('path1/','path2/','path3'));
         $this->assertEquals( 'path1/path2/path3' , $joined );
     }
-
+    */
 }
 
 

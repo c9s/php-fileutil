@@ -8,7 +8,8 @@ set args -d 'output_handler=' -d 'open_basedir=' -d 'safe_mode=0' -d \
     'error_prepend_string=' -d 'error_append_string=' -d 'auto_prepend_file=' -d \
     'auto_append_file=' -d 'magic_quotes_runtime=0' -d 'ignore_repeated_errors=0' \
     -d 'precision=14' -d 'memory_limit=128M' -d \
-    'extension_dir=/Users/c9s/git/Work/php-fileutil-ext/modules/' -d \
+    'extension_dir=/Users/c9s/work/php/fileutil/modules/' -d \
     'session.auto_start=0' -d 'zlib.output_compression=Off' -d \
     'mbstring.func_overload=0' -n -d extension=fileutil.so \
-    /Users/c9s/.phpbrew/php/php-5.4.10/bin/phpunit --debug --repeat 2 tests/FileUtilTest.php
+    /Users/c9s/.phpbrew/php/php-5.4.12/bin/phpunit --debug --repeat 2 tests/FileUtilTest.php
+    # test.php

@@ -4,15 +4,19 @@
 // phpdir
 typedef struct { 
     php_stream_context *context;
+
     php_stream *stream;
+
+    // zcontext is a zval resource
     zval *zcontext;
 } phpdir;
 
-phpdir * phpdir_open(char * dirname);
-zval * phpdir_scandir_with_handler( phpdir * phpdir, char* dirname, int dirname_len, char* (*func)(char*, int, php_stream_dirent*) );
-void phpdir_close( phpdir * phpdir );
+PHPAPI phpdir * phpdir_open(char * dirname TSRMLS_DC);
 
-char * phpdir_entry_handler( char* dirname, int dirname_len, php_stream_dirent * entry);
-char * phpdir_dir_entry_handler( char* dirname, int dirname_len, php_stream_dirent * entry );
+PHPAPI zval * phpdir_scandir_with_handler( phpdir * phpdir, char* dirname, int dirname_len, char* (*func)(char*, int, php_stream_dirent*) TSRMLS_DC);
+PHPAPI void phpdir_close( phpdir * phpdir  TSRMLS_DC);
+
+PHPAPI char * phpdir_entry_handler( char* dirname, int dirname_len, php_stream_dirent * entry TSRMLS_DC);
+PHPAPI char * phpdir_dir_entry_handler( char* dirname, int dirname_len, php_stream_dirent * entry  TSRMLS_DC);
 
 #endif

@@ -48,16 +48,19 @@ ZEND_GET_MODULE(fileutil)
 #endif
 
 
-bool futil_stream_is_dir(php_stream *stream)
+bool futil_stream_is_dir(php_stream *stream TSRMLS_DC)
 {
     return (stream->flags & PHP_STREAM_FLAG_IS_DIR);
 }
 
-bool futil_is_dir(char* dirname, int dirname_len)
+bool futil_is_dir(char* dirname, int dirname_len TSRMLS_DC)
 {
     zval tmp;
+    bool ret;
     php_stat(dirname, dirname_len, FS_IS_DIR, &tmp TSRMLS_CC);
-    return Z_LVAL(tmp) ? true : false;
+    ret = Z_LVAL(tmp) ? true : false;
+    zval_dtor( &tmp );
+    return ret;
 }
 
 
@@ -78,23 +81,23 @@ PHP_FUNCTION(futil_scandir_dir)
     }
 
     // run is_dir
-    if( ! futil_is_dir(dirname, dirname_len) ) {
+    if ( ! futil_is_dir(dirname, dirname_len TSRMLS_CC) ) {
         RETURN_FALSE;
     }
 
-    phpdir = phpdir_open(dirname);
+    phpdir = phpdir_open(dirname TSRMLS_CC);
     if( phpdir == NULL ) {
         RETURN_FALSE;
     }
 
     z_list = phpdir_scandir_with_handler(phpdir, 
             dirname, dirname_len, 
-            phpdir_dir_entry_handler );
+            phpdir_dir_entry_handler TSRMLS_CC);
 
 
     // closedir
     // rsrc_id = phpdir->rsrc_id;
-    phpdir_close(phpdir);
+    phpdir_close(phpdir TSRMLS_CC);
 
     // add reference count
     *return_value = *z_list;
@@ -104,10 +107,8 @@ PHP_FUNCTION(futil_scandir_dir)
 PHP_FUNCTION(futil_scandir)
 {
     phpdir *phpdir;
-    zval *z_list;
     char *dirname;
     int dirname_len;
-
 
     /* parse parameters */
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s",
@@ -116,22 +117,27 @@ PHP_FUNCTION(futil_scandir)
         RETURN_FALSE;
     }
 
+    if ( dirname_len < 1 ) {
+        php_error_docref(NULL TSRMLS_CC, E_WARNING, "Directory name cannot be empty");
+        RETURN_FALSE;
+    }
+
+
     // run is_dir
-    if( ! futil_is_dir(dirname, dirname_len) ) {
+    if( ! futil_is_dir(dirname, dirname_len TSRMLS_CC) ) {
         RETURN_FALSE;
     }
 
-    phpdir = phpdir_open(dirname);
-    if( phpdir == NULL ) {
+    phpdir = phpdir_open(dirname TSRMLS_CC);
+    if ( ! phpdir ) {
         RETURN_FALSE;
     }
 
-    z_list = phpdir_scandir_with_handler(phpdir, dirname, dirname_len, phpdir_entry_handler );
-
+    zval * z_list = phpdir_scandir_with_handler(phpdir, dirname, dirname_len, phpdir_entry_handler TSRMLS_CC);
 
     // closedir
     // rsrc_id = phpdir->rsrc_id;
-    phpdir_close(phpdir);
+    phpdir_close(phpdir TSRMLS_CC);
 
     // add reference count
     *return_value = *z_list;
@@ -144,6 +150,7 @@ PHP_FUNCTION(futil_join)
     int num_varargs;
     zval ***varargs = NULL;
 
+
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "*",
                     &varargs, &num_varargs
                     ) == FAILURE) {
@@ -154,9 +161,9 @@ PHP_FUNCTION(futil_join)
     char *newpath;
 
     if ( num_varargs == 1 && Z_TYPE_PP(varargs[0]) == IS_ARRAY ) {
-        newpath = path_concat_from_zarray(varargs[0]);
+        newpath = path_concat_from_zarray(varargs[0] TSRMLS_CC);
     } else if ( num_varargs > 1  && Z_TYPE_PP(varargs[0]) == IS_STRING ) {
-        newpath = path_concat_from_zargs( num_varargs , varargs );
+        newpath = path_concat_from_zargs( num_varargs , varargs TSRMLS_CC);
     } else {
         php_error_docref(NULL TSRMLS_CC, E_WARNING, "Wrong parameters.");
     }
@@ -164,7 +171,6 @@ PHP_FUNCTION(futil_join)
     if (varargs) {
         efree(varargs);
     }
-
-    RETVAL_STRING(newpath,1);
+    RETURN_STRING(newpath,1);
 }
 
