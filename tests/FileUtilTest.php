@@ -11,8 +11,8 @@ class FileUtilTest extends PHPUnit_Framework_ExtensionTestCase
     public function getFunctions()
     {
         return array(
-            'futil_scandir',
-            'futil_scandir_dir',
+            'futil_scanpath',
+            'futil_scanpath_dir',
             'futil_pathjoin',
         );
     }
@@ -22,7 +22,7 @@ class FileUtilTest extends PHPUnit_Framework_ExtensionTestCase
     {
         $i = 100;
         while( $i-- ) {
-            $files = futil_scandir("/etc");
+            $files = futil_scanpath("/etc");
             ok($files,"Should return a file list");
             ok(is_array($files));
             foreach($files as $file) {
@@ -35,7 +35,7 @@ class FileUtilTest extends PHPUnit_Framework_ExtensionTestCase
     {
         $i = 100;
         while( $i-- ) {
-            $files = futil_scandir("tests/FileUtilTest.php");
+            $files = futil_scanpath("tests/FileUtilTest.php");
             is(false,$files,"Should return false on file path");
         }
     }
@@ -44,7 +44,7 @@ class FileUtilTest extends PHPUnit_Framework_ExtensionTestCase
     {
         $i = 100;
         while( $i-- ) {
-            $files = futil_scandir("blah/blah");
+            $files = futil_scanpath("blah/blah");
             is(false,$files,"Should return false on file path");
         }
     }
@@ -54,7 +54,7 @@ class FileUtilTest extends PHPUnit_Framework_ExtensionTestCase
     {
         $i = 100;
         while( $i-- ) {
-            $paths = futil_scandir_dir("/");
+            $paths = futil_scanpath_dir("/");
             ok( $paths );
             foreach($paths as $path) {
                 ok(is_dir($path),'is_dir ok');
