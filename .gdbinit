@@ -11,5 +11,4 @@ set args -d 'output_handler=' -d 'open_basedir=' -d 'safe_mode=0' -d \
     'extension_dir=/Users/c9s/work/php/fileutil/modules/' -d \
     'session.auto_start=0' -d 'zlib.output_compression=Off' -d \
     'mbstring.func_overload=0' -n -d extension=fileutil.so \
-    /Users/c9s/.phpbrew/php/php-5.4.12/bin/phpunit --debug --repeat 2 tests/FileUtilTest.php
-    # test.php
+    test.php
