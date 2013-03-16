@@ -7,6 +7,7 @@ PHP_FUNCTION(futil_scanpath);
 PHP_FUNCTION(futil_scanpath_dir);
 PHP_FUNCTION(futil_pathjoin);
 PHP_FUNCTION(futil_lastmtime);
+PHP_FUNCTION(futil_lastctime);
 
 PHPAPI bool futil_stream_is_dir(php_stream *stream TSRMLS_DC);
 PHPAPI bool futil_is_dir(char* dirname, int dirname_len TSRMLS_DC);

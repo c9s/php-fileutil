@@ -87,10 +87,17 @@ class FileUtilTest extends PHPUnit_Framework_ExtensionTestCase
         }
     }
 
-    public function testLastMtime()
+    public function testLastmtime()
     {
         $list = array("README.md","config.m4","tests/FileUtilTest.php");
         $mtime = futil_lastmtime($list);
+        ok($mtime);
+    }
+
+    public function testLastctime()
+    {
+        $list = array("README.md","config.m4","tests/FileUtilTest.php");
+        $mtime = futil_lastctime($list);
         ok($mtime);
     }
 

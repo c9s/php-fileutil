@@ -25,6 +25,7 @@ static const zend_function_entry fileutil_functions[] = {
     PHP_FE(futil_scanpath_dir, arginfo_futil_scanpath_dir)
     PHP_FE(futil_pathjoin, NULL)
     PHP_FE(futil_lastmtime, NULL)
+    PHP_FE(futil_lastctime, NULL)
     {NULL, NULL, NULL}
 };
 
@@ -242,6 +243,52 @@ PHP_FUNCTION(futil_scanpath)
     *return_value = *z_list;
     zval_copy_ctor(return_value);
 }
+
+
+PHP_FUNCTION(futil_lastctime)
+{
+    zval *zarr;
+
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "a",
+                    &zarr
+                    ) == FAILURE) {
+        php_error_docref(NULL TSRMLS_CC, E_WARNING, "Wrong parameters.");
+        RETURN_FALSE;
+    }
+
+    long lastctime = 0;
+
+    zval **entry_data;
+    HashTable *zarr_hash;
+    HashPosition pointer;
+    int array_count;
+
+    char *path;
+    int path_len;
+
+    zarr_hash = Z_ARRVAL_P(zarr);
+    array_count = zend_hash_num_elements(zarr_hash);
+
+    for(zend_hash_internal_pointer_reset_ex(zarr_hash, &pointer); 
+            zend_hash_get_current_data_ex(zarr_hash, (void**) &entry_data, &pointer) == SUCCESS; 
+            zend_hash_move_forward_ex(zarr_hash, &pointer)) 
+    {
+        if ( Z_TYPE_PP(entry_data) == IS_STRING ) {
+            // for string type, we try to treat it as a path
+            path = Z_STRVAL_PP(entry_data);
+            path_len  = Z_STRLEN_PP(entry_data);
+
+            zval mtime;
+            php_stat(path, path_len, FS_MTIME, &mtime TSRMLS_CC);
+            if (mtime.value.lval > lastctime ) {
+                lastctime = mtime.value.lval;
+            }
+        }
+    }
+    RETURN_LONG(lastctime);
+}
+
+
 
 
 PHP_FUNCTION(futil_lastmtime)
