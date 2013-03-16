@@ -22,3 +22,4 @@ run-tests.php
 .deps
 libtool
 ltmain.sh
+.gdbinit
