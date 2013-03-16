@@ -7,7 +7,7 @@
 #include <ext/standard/php_filestat.h>
 
 
-PHPAPI char * path_concat( char* path1, int len1, char * path2, int len2 TSRMLS_DC) 
+char * path_concat( char* path1, int len1, char * path2, int len2 TSRMLS_DC) 
 {
     char * newpath = emalloc( sizeof(char) * (len1 + len2 + 2) );
     char * src = path1;
@@ -35,13 +35,13 @@ PHPAPI char * path_concat( char* path1, int len1, char * path2, int len2 TSRMLS_
     return newpath;
 }
 
-PHPAPI void path_remove_tailing_slash(char *path TSRMLS_DC)
+void path_remove_tailing_slash(char *path TSRMLS_DC)
 {
     int len = strlen(path);
     path_remove_tailing_slash_n(path, len TSRMLS_CC);
 }
 
-PHPAPI void path_remove_tailing_slash_n(char *path, int len TSRMLS_DC)
+void path_remove_tailing_slash_n(char *path, int len TSRMLS_DC)
 {
     int end = len - 1;
     if( path[end] == DEFAULT_SLASH ) {
@@ -51,7 +51,7 @@ PHPAPI void path_remove_tailing_slash_n(char *path, int len TSRMLS_DC)
 }
 
 
-PHPAPI char* path_concat_from_zarray(zval **arr TSRMLS_DC)
+char* path_concat_from_zarray(zval **arr TSRMLS_DC)
 {
     int total_len = 0;
     char **paths;
@@ -113,7 +113,7 @@ PHPAPI char* path_concat_from_zarray(zval **arr TSRMLS_DC)
 
 // concat paths and copy them to *src.
 // returns the last copy pointer.
-PHPAPI char* path_concat_fill( 
+char* path_concat_fill( 
     char * dst, 
     char * src, 
     int  subpath_len,

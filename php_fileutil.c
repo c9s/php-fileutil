@@ -52,7 +52,7 @@ ZEND_GET_MODULE(fileutil)
 #endif
 
 
-PHPAPI char * path_concat_from_zargs( int num_varargs , zval ***varargs TSRMLS_DC)
+char * path_concat_from_zargs( int num_varargs , zval ***varargs TSRMLS_DC)
 {
     char *dst;
     char *newpath;
@@ -136,12 +136,12 @@ void phpdir_scandir_with_handler(
 
 
 
-PHPAPI bool futil_stream_is_dir(php_stream *stream TSRMLS_DC)
+bool futil_stream_is_dir(php_stream *stream TSRMLS_DC)
 {
     return (stream->flags & PHP_STREAM_FLAG_IS_DIR);
 }
 
-PHPAPI bool futil_is_dir(char* dirname, int dirname_len TSRMLS_DC)
+bool futil_is_dir(char* dirname, int dirname_len TSRMLS_DC)
 {
     zval tmp;
     bool ret;
