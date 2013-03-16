@@ -10,8 +10,8 @@
     <email>cornelius.howl@gmail.com</email>
     <active>yes</active>
   </lead>
-  <date>2013-03-16</date>
-  <time>22:26:53</time>
+  <date>2013-03-17</date>
+  <time>01:48:40</time>
   <version>
     <release>1.0.0</release>
     <api>1.0.0</api>
@@ -24,7 +24,7 @@
   <notes>-</notes>
   <contents>
     <dir name="/">
-      <file name="src/FileUtil.php" role="php" md5sum="0b1eeeedf0f0e25834f90e90d2c79580"/>
+      <file name="src/FileUtil.php" role="php" md5sum="dedfd2407095b75aecdcf999e89adee8"/>
     </dir>
   </contents>
   <dependencies>

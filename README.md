@@ -1,6 +1,32 @@
 FileUtil Extension
 ==================
 
+Installation
+------------
+
+
+Install the PHP extension:
+
+```sh
+git clone https://github.com/c9s/php-fileutil.git
+cd php-fileutil
+phpize
+./configure
+make
+make install
+phpbrew ext enable fileutil # if you use phpbrew
+```
+
+Install the pure PHP implementation:
+
+```sh
+$ pear channel-discover pear.corneltek.com
+$ pear install corneltek/FileUtil
+```
+
+Usage
+-----
+
 Provide an efficient way to operate file paths.
 
 #### `path[] futil_scanpath($dir)`
