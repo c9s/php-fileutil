@@ -68,8 +68,8 @@ PHPAPI char* path_concat_from_zarray(zval **arr TSRMLS_DC)
     arr_hash = Z_ARRVAL_PP(arr);
     array_count = zend_hash_num_elements(arr_hash);
 
-    paths = emalloc(sizeof(char*) * array_count);
-    lens = emalloc(sizeof(int) * array_count);
+    paths     = emalloc(sizeof(char*) * array_count);
+    lens      = emalloc(sizeof(int) * array_count);
     total_len = array_count;
 
     int i = 0;

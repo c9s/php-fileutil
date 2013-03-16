@@ -60,12 +60,12 @@ char * path_concat_from_zargs( int num_varargs , zval ***varargs TSRMLS_DC)
     int len;
     zval **arg;
 
+    len = num_varargs + 1;
     for (i = 0; i < num_varargs; i++) {
         arg = varargs[i];
         len += Z_STRLEN_PP(arg);
     }
 
-    len += num_varargs;
     newpath = emalloc( sizeof(char) * len );
 
     dst = newpath;
@@ -251,7 +251,6 @@ PHP_FUNCTION(futil_pathjoin)
     zval ***varargs = NULL;
     char *newpath;
 
-
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "*",
                     &varargs, &num_varargs
                     ) == FAILURE) {
@@ -267,11 +266,9 @@ PHP_FUNCTION(futil_pathjoin)
         php_error_docref(NULL TSRMLS_CC, E_WARNING, "Wrong parameters.");
     }
 
-    RETURN_FALSE;
-
     if (varargs) {
         efree(varargs);
     }
-    RETURN_STRING(newpath,1);
+    RETURN_STRING(newpath,0);
 }
 
