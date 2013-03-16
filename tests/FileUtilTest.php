@@ -114,6 +114,24 @@ class FileUtilTest extends PHPUnit_Framework_ExtensionTestCase
     }
 
 
+    public function testRmdirIfExists()
+    {
+        mkdir("tests/newdir");
+        ok( futil_rmdir_if_exists("tests/newdir") );
+        futil_rmdir_if_exists("tests/newdir");
+    }
+
+
+
+    public function testMkdirIfNotExists()
+    {
+        futil_mkdir_if_not_exists("tests/newdir");
+        futil_mkdir_if_not_exists("tests/newdir");
+        rmdir("tests/newdir");
+    }
+
+
+
     public function testUnlinkIfExists()
     {
         touch("tests/orz");

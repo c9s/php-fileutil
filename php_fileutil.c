@@ -35,6 +35,8 @@ static const zend_function_entry fileutil_functions[] = {
     PHP_FE(futil_lastmtime, arginfo_futil_lastmtime)
     PHP_FE(futil_lastctime, arginfo_futil_lastctime)
     PHP_FE(futil_unlink_if_exists, NULL)
+    PHP_FE(futil_rmdir_if_exists, NULL)
+    PHP_FE(futil_mkdir_if_not_exists, NULL)
     {NULL, NULL, NULL}
 };
 
@@ -59,6 +61,35 @@ zend_module_entry fileutil_module_entry = {
 #ifdef COMPILE_DL_FILEUTIL
 ZEND_GET_MODULE(fileutil)
 #endif
+
+
+bool futil_file_exists(char * filename, int filename_len)
+{
+    zval tmp;
+    php_stat(filename, filename_len, FS_EXISTS, &tmp TSRMLS_CC);
+    bool ret = Z_LVAL(tmp) ? true : false;
+    zval_dtor( &tmp );
+    return ret;
+}
+
+bool futil_stream_is_dir(php_stream *stream TSRMLS_DC)
+{
+    return (stream->flags & PHP_STREAM_FLAG_IS_DIR);
+}
+
+bool futil_is_dir(char* dirname, int dirname_len TSRMLS_DC)
+{
+    zval tmp;
+    bool ret;
+    php_stat(dirname, dirname_len, FS_IS_DIR, &tmp TSRMLS_CC);
+    ret = Z_LVAL(tmp) ? true : false;
+    zval_dtor( &tmp );
+    return ret;
+}
+
+
+
+
 
 
 char * path_concat_from_zargs( int num_varargs , zval ***varargs TSRMLS_DC)
@@ -144,21 +175,6 @@ void phpdir_scandir_with_handler(
 
 
 
-
-bool futil_stream_is_dir(php_stream *stream TSRMLS_DC)
-{
-    return (stream->flags & PHP_STREAM_FLAG_IS_DIR);
-}
-
-bool futil_is_dir(char* dirname, int dirname_len TSRMLS_DC)
-{
-    zval tmp;
-    bool ret;
-    php_stat(dirname, dirname_len, FS_IS_DIR, &tmp TSRMLS_CC);
-    ret = Z_LVAL(tmp) ? true : false;
-    zval_dtor( &tmp );
-    return ret;
-}
 
 
 
@@ -371,6 +387,55 @@ PHP_FUNCTION(futil_pathsplit)
     // PHPAPI void php_explode(zval *delim, zval *str, zval *return_value, long limit)
     php_explode(&zdelim, &zstr, return_value, LONG_MAX); // LONG_MAX means no limit
 }
+
+
+PHP_FUNCTION(futil_mkdir_if_not_exists)
+{
+
+    char *dir;
+    int dir_len;
+    zval *zcontext = NULL;
+    long mode = 0777;
+    zend_bool recursive = 0;
+    php_stream_context *context;
+
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "p|lbr", &dir, &dir_len, &mode, &recursive, &zcontext) == FAILURE) {
+        RETURN_FALSE;
+    }
+
+    if ( futil_file_exists(dir,dir_len) ) {
+        RETURN_FALSE;
+    }
+    context = php_stream_context_from_zval(zcontext, 0);
+    RETURN_BOOL(php_stream_mkdir(dir, mode, (recursive ? PHP_STREAM_MKDIR_RECURSIVE : 0) | REPORT_ERRORS, context));
+}
+
+
+PHP_FUNCTION(futil_rmdir_if_exists)
+{
+
+    char *dir;
+    int dir_len;
+    zval *zcontext = NULL;
+    long mode = 0777;
+    zend_bool recursive = 0;
+    php_stream_context *context;
+
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "p|lbr", &dir, &dir_len, &mode, &recursive, &zcontext) == FAILURE) {
+        RETURN_FALSE;
+    }
+
+    if ( ! futil_file_exists(dir,dir_len) ) {
+        RETURN_FALSE;
+    }
+
+    context = php_stream_context_from_zval(zcontext, 0);
+    RETURN_BOOL(php_stream_rmdir(dir, REPORT_ERRORS, context));
+}
+
+
+
+
 
 
 

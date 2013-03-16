@@ -77,6 +77,15 @@ function futil_pathjoin($a = null)
     return join(DIRECTORY_SEPARATOR , $a);
 }
 
+
+function futil_mkdir_if_not_exists($path, $mask = null , $recurse = null)
+{
+    if ( ! file_exists( $path ) ) {
+        return mkdir($path, $mask, $recurse);
+    }
+    return false;
+}
+
 function futil_unlink_if_exists($path)
 {
     if ( file_exists($path) ) {
