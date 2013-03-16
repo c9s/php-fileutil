@@ -87,6 +87,15 @@ class FileUtilTest extends PHPUnit_Framework_ExtensionTestCase
         }
     }
 
+    public function testPathSplit()
+    {
+        $i = 100;
+        while( $i-- ) {
+            $parts = futil_pathsplit("path1/path2/path3");
+            count_ok(3,$parts);
+        }
+    }
+
     public function testLastmtime()
     {
         $list = array("README.md","config.m4","tests/FileUtilTest.php");

@@ -25,6 +25,7 @@ static const zend_function_entry fileutil_functions[] = {
     PHP_FE(futil_scanpath, arginfo_futil_scanpath)
     PHP_FE(futil_scanpath_dir, arginfo_futil_scanpath_dir)
     PHP_FE(futil_pathjoin, NULL)
+    PHP_FE(futil_pathsplit, NULL)
     PHP_FE(futil_lastmtime, NULL)
     PHP_FE(futil_lastctime, NULL)
     {NULL, NULL, NULL}
@@ -333,6 +334,35 @@ PHP_FUNCTION(futil_lastmtime)
         }
     }
     RETURN_LONG(lastmtime);
+}
+
+
+PHP_FUNCTION(futil_pathsplit)
+{
+    char *path;
+    int  path_len;
+
+    zval zdelim;
+    zval zstr;
+
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s",
+                    &path, &path_len
+                    ) == FAILURE) {
+        php_error_docref(NULL TSRMLS_CC, E_WARNING, "Wrong parameters.");
+        RETURN_FALSE;
+    }
+
+    array_init(return_value);
+
+    char delim_str[2];
+    delim_str[0] = DEFAULT_SLASH;
+    delim_str[1] = '\0';
+
+    ZVAL_STRINGL(&zstr, path, path_len, 0);
+    ZVAL_STRINGL(&zdelim, delim_str, 1, 0);
+
+    // PHPAPI void php_explode(zval *delim, zval *str, zval *return_value, long limit)
+    php_explode(&zdelim, &zstr, return_value, LONG_MAX); // LONG_MAX means no limit
 }
 
 PHP_FUNCTION(futil_pathjoin)

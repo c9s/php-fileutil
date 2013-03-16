@@ -6,6 +6,7 @@
 PHP_FUNCTION(futil_scanpath);
 PHP_FUNCTION(futil_scanpath_dir);
 PHP_FUNCTION(futil_pathjoin);
+PHP_FUNCTION(futil_pathsplit);
 PHP_FUNCTION(futil_lastmtime);
 PHP_FUNCTION(futil_lastctime);
 
