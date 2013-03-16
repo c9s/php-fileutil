@@ -1,5 +1,5 @@
 <?php
-$list = futil_scandir('/etc');
+$list = futil_scanpath('/etc');
 var_dump( $list );
 
 $i = 100;

@@ -4,13 +4,13 @@ FileUtil Extension
 Provide an efficient way to operate file paths.
 
 
-`futil_scandir($dir)`:
+`futil_scanpath($dir)`:
 
 The behavior is different from the built-in function `scandir($dir)`,
-`futil_scandir` concat the items with the base path, and it filters out "." and
+`futil_scanpath` concat the items with the base path, and it filters out "." and
 ".." paths.
 
-    $list = futil_scandir('/etc');
+    $list = futil_scanpath('/etc');
 
     /*
     array( 
@@ -21,7 +21,7 @@ The behavior is different from the built-in function `scandir($dir)`,
     */
 
 
-`futil_scandir_dir($dir)`:
+`futil_scanpath_dir($dir)`:
 
-As the same as `futil_scandir($dir)`, but `futil_scandir_dir` only returns directory entries.
+As the same as `futil_scanpath($dir)`, but `futil_scanpath_dir` only returns directory entries.
 

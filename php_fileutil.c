@@ -10,11 +10,11 @@
 #include <ext/standard/php_filestat.h>
 
 
-ZEND_BEGIN_ARG_INFO_EX(arginfo_futil_scandir, 0, 0, 1)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_futil_scanpath, 0, 0, 1)
     ZEND_ARG_INFO(0, dir)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_INFO_EX(arginfo_futil_scandir_dir, 0, 0, 1)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_futil_scanpath_dir, 0, 0, 1)
     ZEND_ARG_INFO(0, dir)
 ZEND_END_ARG_INFO()
 
@@ -23,8 +23,8 @@ ZEND_END_ARG_INFO()
 
 
 static const zend_function_entry fileutil_functions[] = {
-    PHP_FE(futil_scandir, arginfo_futil_scandir)
-    PHP_FE(futil_scandir_dir, arginfo_futil_scandir_dir)
+    PHP_FE(futil_scanpath, arginfo_futil_scanpath)
+    PHP_FE(futil_scanpath_dir, arginfo_futil_scanpath_dir)
     PHP_FE(futil_pathjoin, NULL)
     {NULL, NULL, NULL}
 };
@@ -154,7 +154,7 @@ bool futil_is_dir(char* dirname, int dirname_len TSRMLS_DC)
 
 
 
-PHP_FUNCTION(futil_scandir_dir)
+PHP_FUNCTION(futil_scanpath_dir)
 {
     char *dirname;
     int dirname_len;
@@ -196,7 +196,7 @@ PHP_FUNCTION(futil_scandir_dir)
     zval_copy_ctor(return_value);
 }
 
-PHP_FUNCTION(futil_scandir)
+PHP_FUNCTION(futil_scanpath)
 {
     char *dirname;
     int dirname_len;

@@ -3,8 +3,8 @@
 #define PHP_FILEUTIL_VERSION "1.0"
 #define PHP_FILEUTIL_EXTNAME "fileutil"
 
-PHP_FUNCTION(futil_scandir);
-PHP_FUNCTION(futil_scandir_dir);
+PHP_FUNCTION(futil_scanpath);
+PHP_FUNCTION(futil_scanpath_dir);
 PHP_FUNCTION(futil_pathjoin);
 
 bool futil_stream_is_dir(php_stream *stream TSRMLS_DC);
