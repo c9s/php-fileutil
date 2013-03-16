@@ -19,15 +19,21 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_futil_scanpath_dir, 0, 0, 1)
     ZEND_ARG_INFO(0, dir)
 ZEND_END_ARG_INFO()
 
+ZEND_BEGIN_ARG_INFO_EX(arginfo_futil_lastmtime, 0, 0, 1)
+    ZEND_ARG_INFO(0, filelist)
+ZEND_END_ARG_INFO()
 
+ZEND_BEGIN_ARG_INFO_EX(arginfo_futil_lastctime, 0, 0, 1)
+    ZEND_ARG_INFO(0, filelist)
+ZEND_END_ARG_INFO()
 
 static const zend_function_entry fileutil_functions[] = {
     PHP_FE(futil_scanpath, arginfo_futil_scanpath)
     PHP_FE(futil_scanpath_dir, arginfo_futil_scanpath_dir)
     PHP_FE(futil_pathjoin, NULL)
     PHP_FE(futil_pathsplit, NULL)
-    PHP_FE(futil_lastmtime, NULL)
-    PHP_FE(futil_lastctime, NULL)
+    PHP_FE(futil_lastmtime, arginfo_futil_lastmtime)
+    PHP_FE(futil_lastctime, arginfo_futil_lastctime)
     {NULL, NULL, NULL}
 };
 
