@@ -3,12 +3,95 @@
 #endif
 #include "php.h"
 #include "php_fileutil.h"
-#include "phpdir.h"
 #include "path.h"
 
 #include <Zend/zend.h>
 #include <ext/standard/php_standard.h>
 #include <ext/standard/php_filestat.h>
+
+
+char * path_concat_from_zargs( int num_varargs , zval ***varargs TSRMLS_DC)
+{
+    char *dst;
+    char *newpath;
+    int i;
+    int len;
+    zval **arg;
+
+    for (i = 0; i < num_varargs; i++) {
+        arg = varargs[i];
+        len += Z_STRLEN_PP(arg);
+    }
+
+    len += num_varargs;
+    newpath = emalloc( sizeof(char) * len );
+
+    dst = newpath;
+    for (i = 0; i < num_varargs; i++ ) {
+        arg = varargs[i];
+        char *subpath = Z_STRVAL_PP(arg);
+        int  subpath_len = Z_STRLEN_PP(arg);
+
+        if( subpath_len == 0 ) {
+            continue;
+        }
+
+        dst = path_concat_fill(dst, subpath, subpath_len, i > 0 TSRMLS_CC);
+
+        // concat slash to the end
+        if ( *(dst-1) != DEFAULT_SLASH && i < (num_varargs - 1) ) {
+            *dst = DEFAULT_SLASH;
+            dst++;
+        }
+    }
+    *dst = '\0';
+    return newpath;
+}
+
+
+char * dir_dir_entry_handler(
+        char* dirname, 
+        int dirname_len,
+        php_stream_dirent * entry TSRMLS_DC)
+{
+    char * path = path_concat(dirname, dirname_len, entry->d_name, strlen(entry->d_name) TSRMLS_CC);
+    int    path_len = dirname_len + strlen(entry->d_name) + 1;
+    if ( ! futil_is_dir(path, path_len TSRMLS_CC) ) {
+        efree(path);
+        return NULL;
+    }
+    return path;
+}
+
+char* dir_entry_handler(
+        char* dirname, 
+        int dirname_len, 
+        php_stream_dirent * entry TSRMLS_DC)
+{
+    return path_concat(dirname, dirname_len, entry->d_name, strlen(entry->d_name) TSRMLS_CC);
+}
+
+
+void phpdir_scandir_with_handler(
+        zval * z_list,
+        php_stream * stream, 
+        char* dirname, 
+        int dirname_len,
+        char* (*handler)(char*, int, php_stream_dirent*) TSRMLS_DC) 
+{
+    php_stream_dirent entry;
+    while (php_stream_readdir(stream, &entry)) {
+        if (strcmp(entry.d_name, "..") == 0 || strcmp(entry.d_name, ".") == 0) {
+            continue;
+        }
+        char * newpath = (*handler)(dirname, dirname_len, &entry TSRMLS_CC);
+        if ( newpath != NULL) {
+            add_next_index_string(z_list, newpath, strlen(newpath) );
+        }
+    }
+}
+
+
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_futil_scandir, 0, 0, 1)
     ZEND_ARG_INFO(0, dir)
@@ -68,11 +151,12 @@ bool futil_is_dir(char* dirname, int dirname_len TSRMLS_DC)
 
 PHP_FUNCTION(futil_scandir_dir)
 {
-    phpdir *phpdir;
     char *dirname;
     int dirname_len;
+    zval * z_list;
+    php_stream *stream;
 
-    /* parse parameters */
+    // parse parameters
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s",
                     &dirname, &dirname_len ) == FAILURE) {
         php_error_docref(NULL TSRMLS_CC, E_WARNING, "Path argument is required.");
@@ -84,25 +168,23 @@ PHP_FUNCTION(futil_scandir_dir)
         RETURN_FALSE;
     }
 
-    phpdir = phpdir_open(dirname TSRMLS_CC);
-    if ( ! phpdir ) {
+    stream = php_stream_opendir(dirname, REPORT_ERRORS, NULL );
+    if ( ! stream ) {
         RETURN_FALSE;
     }
+    // it's not fclose-able
+    stream->flags |= PHP_STREAM_FLAG_NO_FCLOSE;
 
-    zval * z_list;
     MAKE_STD_ZVAL(z_list);
-    array_init( z_list );
+    array_init(z_list);
 
     phpdir_scandir_with_handler(
             z_list,
-            phpdir, 
+            stream, 
             dirname, dirname_len, 
-            phpdir_dir_entry_handler TSRMLS_CC);
+            dir_dir_entry_handler TSRMLS_CC);
 
-
-    // closedir
-    // rsrc_id = phpdir->rsrc_id;
-    phpdir_close(phpdir TSRMLS_CC);
+    php_stream_close(stream);
 
     // add reference count
     *return_value = *z_list;
@@ -111,9 +193,10 @@ PHP_FUNCTION(futil_scandir_dir)
 
 PHP_FUNCTION(futil_scandir)
 {
-    phpdir *phpdir;
     char *dirname;
     int dirname_len;
+    zval * z_list;
+    php_stream * stream;
 
     /* parse parameters */
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s",
@@ -127,30 +210,29 @@ PHP_FUNCTION(futil_scandir)
         RETURN_FALSE;
     }
 
-
     // run is_dir
     if ( ! futil_is_dir(dirname, dirname_len TSRMLS_CC) ) {
         RETURN_FALSE;
     }
 
-    phpdir = phpdir_open(dirname TSRMLS_CC);
-    if ( ! phpdir ) {
+
+    stream = php_stream_opendir(dirname, REPORT_ERRORS, NULL );
+    if ( ! stream ) {
         RETURN_FALSE;
     }
+    // it's not fclose-able
+    stream->flags |= PHP_STREAM_FLAG_NO_FCLOSE;
 
-    zval * z_list;
     MAKE_STD_ZVAL(z_list);
-    array_init( z_list );
+    array_init(z_list);
 
     phpdir_scandir_with_handler(
             z_list, 
-            phpdir,
+            stream,
             dirname, dirname_len, 
-            phpdir_entry_handler TSRMLS_CC);
+            dir_entry_handler TSRMLS_CC);
 
-    // closedir
-    // rsrc_id = phpdir->rsrc_id;
-    phpdir_close(phpdir TSRMLS_CC);
+    php_stream_close(stream);
 
     // add reference count
     *return_value = *z_list;
@@ -162,6 +244,7 @@ PHP_FUNCTION(futil_join)
 {
     int num_varargs;
     zval ***varargs = NULL;
+    char *newpath;
 
 
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "*",
@@ -171,8 +254,6 @@ PHP_FUNCTION(futil_join)
         RETURN_FALSE;
     }
 
-    char *newpath;
-
     if ( num_varargs == 1 && Z_TYPE_PP(varargs[0]) == IS_ARRAY ) {
         newpath = path_concat_from_zarray(varargs[0] TSRMLS_CC);
     } else if ( num_varargs > 1  && Z_TYPE_PP(varargs[0]) == IS_STRING ) {
@@ -180,6 +261,8 @@ PHP_FUNCTION(futil_join)
     } else {
         php_error_docref(NULL TSRMLS_CC, E_WARNING, "Wrong parameters.");
     }
+
+    RETURN_FALSE;
 
     if (varargs) {
         efree(varargs);

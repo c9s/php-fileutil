@@ -20,6 +20,7 @@ void phpdir_scandir_with_handler(
         int dirname_len, 
         char* (*func)(char*, int, php_stream_dirent* TSRMLS_DC) 
         TSRMLS_DC);
+
 PHPAPI void phpdir_close( phpdir * phpdir  TSRMLS_DC);
 
 PHPAPI char * phpdir_entry_handler( char* dirname, int dirname_len, php_stream_dirent * entry TSRMLS_DC);

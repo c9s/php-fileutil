@@ -12,7 +12,7 @@ PHPAPI char* path_concat_fill(
         int  subpath_len,
         bool remove_first_slash TSRMLS_DC);
 
-PHPAPI char* path_concat_from_zargs( int num_varargs , zval ***varargs TSRMLS_DC);
+// PHPAPI char* path_concat_from_zargs( int num_varargs , zval ***varargs TSRMLS_DC);
 
 PHPAPI char* path_concat_from_zarray(zval **arr  TSRMLS_DC);
 
