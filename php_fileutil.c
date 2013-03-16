@@ -6,9 +6,38 @@
 #include "path.h"
 
 #include <Zend/zend.h>
+
+#include <Zend/zend_constants.h>
+#include <Zend/zend_execute.h>
+#include <Zend/zend_exceptions.h>
+#include <Zend/zend_hash.h>
+#include <Zend/zend_interfaces.h>
+#include <Zend/zend_operators.h>
+#include <Zend/zend_qsort.h>
+#include <Zend/zend_vm.h>
+
 #include <ext/standard/php_standard.h>
 #include <ext/standard/php_filestat.h>
 #include <ext/standard/php_string.h>
+
+
+#if HAVE_SPL
+#include <ext/spl/spl_array.h>
+#include <ext/spl/spl_directory.h>
+#include <ext/spl/spl_engine.h>
+#include <ext/spl/spl_exceptions.h>
+#include <ext/spl/spl_iterators.h>
+#endif
+
+
+// these flags are inside the ext/spl/spl_iterators.c, 
+// we can not reuse it by including the header file.
+typedef enum {
+    RIT_LEAVES_ONLY = 0,
+    RIT_SELF_FIRST  = 1,
+    RIT_CHILD_FIRST = 2
+} RecursiveIteratorMode;
+
 
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_futil_scanpath, 0, 0, 1)
@@ -37,6 +66,7 @@ static const zend_function_entry fileutil_functions[] = {
     PHP_FE(futil_unlink_if_exists, NULL)
     PHP_FE(futil_rmdir_if_exists, NULL)
     PHP_FE(futil_mkdir_if_not_exists, NULL)
+    PHP_FE(futil_rmtree, NULL)
     {NULL, NULL, NULL}
 };
 
@@ -61,6 +91,10 @@ zend_module_entry fileutil_module_entry = {
 #ifdef COMPILE_DL_FILEUTIL
 ZEND_GET_MODULE(fileutil)
 #endif
+
+
+static bool _unlink_file(char *filename, int filename_len, zval *zcontext);
+
 
 
 bool futil_file_exists(char * filename, int filename_len)
@@ -435,16 +469,33 @@ PHP_FUNCTION(futil_rmdir_if_exists)
 
 
 
+static bool _unlink_file(char *filename, int filename_len, zval *zcontext)
+{
+    php_stream_wrapper *wrapper;
+    php_stream_context *context = NULL;
 
+    context = php_stream_context_from_zval(zcontext, 0);
+    wrapper = php_stream_locate_url_wrapper(filename, NULL, 0 TSRMLS_CC);
 
+    if (!wrapper || !wrapper->wops) {
+        php_error_docref(NULL TSRMLS_CC, E_WARNING, "Unable to locate stream wrapper");
+        return false;
+    }
+
+    if (!wrapper->wops->unlink) {
+        php_error_docref(NULL TSRMLS_CC, E_WARNING, "%s does not allow unlinking", wrapper->wops->label ? wrapper->wops->label : "Wrapper");
+        return false;
+    }
+    return wrapper->wops->unlink(wrapper, filename, REPORT_ERRORS, context TSRMLS_CC);
+}
 
 
 PHP_FUNCTION(futil_unlink_if_exists)
 {
     char *filename;
     int filename_len;
-    php_stream_wrapper *wrapper;
     zval *zcontext = NULL;
+    php_stream_wrapper *wrapper;
     php_stream_context *context = NULL;
 
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "p|r", &filename, &filename_len, &zcontext) == FAILURE) {
@@ -458,23 +509,203 @@ PHP_FUNCTION(futil_unlink_if_exists)
     if ( Z_LVAL(tmp) == false ) {
         RETURN_FALSE;
     }
-
-
-    // do unlink copied from ext/standard/file.c
-    context = php_stream_context_from_zval(zcontext, 0);
-    wrapper = php_stream_locate_url_wrapper(filename, NULL, 0 TSRMLS_CC);
-
-    if (!wrapper || !wrapper->wops) {
-        php_error_docref(NULL TSRMLS_CC, E_WARNING, "Unable to locate stream wrapper");
-        RETURN_FALSE;
-    }
-
-    if (!wrapper->wops->unlink) {
-        php_error_docref(NULL TSRMLS_CC, E_WARNING, "%s does not allow unlinking", wrapper->wops->label ? wrapper->wops->label : "Wrapper");
-        RETURN_FALSE;
-    }
-    RETURN_BOOL(wrapper->wops->unlink(wrapper, filename, REPORT_ERRORS, context TSRMLS_CC));
+    RETURN_BOOL( _unlink_file(filename, filename_len, zcontext) );
 }
+
+
+
+static int rmtree_iterator(zend_object_iterator *iter, void *puser TSRMLS_DC)
+{
+    zval **value;
+
+    char *fname;
+    int  fname_len;
+
+    iter->funcs->get_current_data(iter, &value TSRMLS_CC);
+    if (EG(exception)) {
+        return ZEND_HASH_APPLY_STOP;
+    }
+    if (!value) {
+        /* failure in get_current_data */
+        // zend_throw_exception_ex(spl_ce_UnexpectedValueException, 0 TSRMLS_CC, "Iterator %v returned no value", ce->name);
+        zend_throw_exception_ex(spl_ce_UnexpectedValueException, 0 TSRMLS_CC, "Iterator returned no value");
+        return ZEND_HASH_APPLY_STOP;
+    }
+
+    switch (Z_TYPE_PP(value)) {
+//          case IS_UNICODE:
+//              zval_unicode_to_string(*(value) TSRMLS_CC);
+        case IS_STRING:
+            break;
+        case IS_OBJECT:
+            if (instanceof_function(Z_OBJCE_PP(value), spl_ce_SplFileInfo TSRMLS_CC)) {
+
+                char *test = NULL;
+                zval dummy;
+                bool is_dir = false;
+                spl_filesystem_object *intern = (spl_filesystem_object*)zend_object_store_get_object(*value TSRMLS_CC);
+
+                switch (intern->type) {
+                    case SPL_FS_DIR:
+                    case SPL_FS_FILE:
+                    case SPL_FS_INFO:
+
+                        php_stat(intern->file_name, intern->file_name_len, FS_IS_DIR, &dummy TSRMLS_CC);
+                        is_dir = Z_BVAL(dummy);
+
+#if PHP_VERSION_ID >= 60000
+                        if (intern->file_name_type == IS_UNICODE) {
+                            zval zv;
+
+                            INIT_ZVAL(zv);
+                            Z_UNIVAL(zv) = intern->file_name;
+                            Z_UNILEN(zv) = intern->file_name_len;
+                            Z_TYPE(zv) = IS_UNICODE;
+
+                            zval_copy_ctor(&zv);
+                            zval_unicode_to_string(&zv TSRMLS_CC);
+                            fname = expand_filepath(Z_STRVAL(zv), NULL TSRMLS_CC);
+                            ezfree(Z_UNIVAL(zv));
+                        } else {
+                            fname = expand_filepath(intern->file_name.s, NULL TSRMLS_CC);
+                        }
+#else
+                        fname = expand_filepath(intern->file_name, NULL TSRMLS_CC);
+#endif
+                        if (!fname) {
+                            zend_throw_exception_ex(spl_ce_UnexpectedValueException, 0 TSRMLS_CC, "Could not resolve file path");
+                            return ZEND_HASH_APPLY_STOP;
+                        }
+
+                        fname_len = strlen(fname);
+
+                        // do unlink or rmdir
+                        // printf("path: %s\n", fname);
+
+                        if ( is_dir ) {
+                            php_stream_rmdir(fname, REPORT_ERRORS, NULL);
+                        } else {
+                            _unlink_file(fname, fname_len, NULL);
+                        }
+
+                        // goto phar_spl_fileinfo;
+                        return ZEND_HASH_APPLY_KEEP;
+                }
+            }
+            /* fall-through */
+        default:
+            // zend_throw_exception_ex(spl_ce_UnexpectedValueException, 0 TSRMLS_CC, "Iterator %v returned an invalid value (must return a string)", ce->name);
+            zend_throw_exception_ex(spl_ce_UnexpectedValueException, 0 TSRMLS_CC, "Iterator returned an invalid value (must return a string)");
+            return ZEND_HASH_APPLY_STOP;
+    }
+    
+
+    // printf("got value: %s\n", Z_STRVAL_PP(value) );
+    return ZEND_HASH_APPLY_KEEP;
+}
+
+
+
+PHP_FUNCTION(futil_rmtree)
+{
+    char *dir;
+    int  dir_len;
+
+
+    
+    char *error, *regex = NULL;
+    int regex_len = 0;
+    zend_bool apply_reg = 0;
+    zval arg, arg2, *iter, *iteriter, *regexiter = NULL;
+
+    zval iteriter_arg2;
+
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "p",
+                    &dir, &dir_len
+                    ) == FAILURE) {
+        RETURN_FALSE;
+    }
+
+
+    MAKE_STD_ZVAL(iter);
+
+    if (SUCCESS != object_init_ex(iter, spl_ce_RecursiveDirectoryIterator)) {
+        zval_ptr_dtor(&iter);
+        zend_throw_exception_ex(spl_ce_BadMethodCallException, 0 TSRMLS_CC, "Unable to instantiate directory iterator for %s", dir);
+        RETURN_FALSE;
+    }
+
+    INIT_PZVAL(&arg);
+    ZVAL_STRINGL(&arg, dir, dir_len, 0);
+    INIT_PZVAL(&arg2);
+#if PHP_VERSION_ID < 50300
+    ZVAL_LONG(&arg2, 0);
+#else
+
+    // Possible values
+    //   SPL_FILE_DIR_CURRENT_AS_PATHNAME
+    //   SPL_FILE_DIR_CURRENT_AS_FILEINFO
+    //   SPL_FILE_DIR_FOLLOW_SYMLINKS
+
+
+    // Iterator constants
+    //   typedef enum {
+    //       RIT_LEAVES_ONLY = 0,
+    //       RIT_SELF_FIRST  = 1,
+    //       RIT_CHILD_FIRST = 2
+    //   } RecursiveIteratorMode;
+    //    
+
+
+    // ZVAL_LONG(&arg2, SPL_FILE_DIR_SKIPDOTS|SPL_FILE_DIR_UNIXPATHS);
+    ZVAL_LONG(&arg2, SPL_FILE_DIR_SKIPDOTS|SPL_FILE_DIR_UNIXPATHS);
+#endif
+
+    zend_call_method_with_2_params(&iter, spl_ce_RecursiveDirectoryIterator, 
+            &spl_ce_RecursiveDirectoryIterator->constructor, "__construct", NULL, &arg, &arg2);
+
+    if (EG(exception)) {
+        zval_ptr_dtor(&iter);
+        RETURN_FALSE;
+    }
+
+    MAKE_STD_ZVAL(iteriter);
+
+    if (SUCCESS != object_init_ex(iteriter, spl_ce_RecursiveIteratorIterator)) {
+        zval_ptr_dtor(&iter);
+        zval_ptr_dtor(&iteriter);
+        zend_throw_exception_ex(spl_ce_BadMethodCallException, 0 TSRMLS_CC, "Unable to instantiate directory iterator for %s", dir);
+        RETURN_FALSE;
+    }
+
+    INIT_PZVAL(&iteriter_arg2);
+#if PHP_VERSION_ID < 50300
+    ZVAL_LONG(&iteriter_arg2, 0);
+#else
+    ZVAL_LONG(&iteriter_arg2, RIT_CHILD_FIRST);
+#endif
+
+    zend_call_method_with_2_params(&iteriter, spl_ce_RecursiveIteratorIterator, 
+            &spl_ce_RecursiveIteratorIterator->constructor, "__construct", NULL, iter, &iteriter_arg2);
+
+    if (EG(exception)) {
+        zval_ptr_dtor(&iter);
+        zval_ptr_dtor(&iteriter);
+        RETURN_FALSE;
+    }
+
+    zval_ptr_dtor(&iter);
+
+
+    int pass = 0;
+
+    if (SUCCESS == spl_iterator_apply(iteriter, (spl_iterator_apply_func_t) rmtree_iterator, (void *) &pass TSRMLS_CC)) {
+
+    }
+
+    RETURN_FALSE;
+}
+
 
 
 PHP_FUNCTION(futil_pathjoin)

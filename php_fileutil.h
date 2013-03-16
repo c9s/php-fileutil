@@ -12,6 +12,7 @@ PHP_FUNCTION(futil_lastctime);
 PHP_FUNCTION(futil_unlink_if_exists);
 PHP_FUNCTION(futil_rmdir_if_exists);
 PHP_FUNCTION(futil_mkdir_if_not_exists);
+PHP_FUNCTION(futil_rmtree);
 
 bool futil_stream_is_dir(php_stream *stream TSRMLS_DC);
 bool futil_is_dir(char* dirname, int dirname_len TSRMLS_DC);

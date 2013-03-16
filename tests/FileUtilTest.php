@@ -150,6 +150,29 @@ class FileUtilTest extends PHPUnit_Framework_ExtensionTestCase
             $this->assertEquals( 'path1/path2/path3' , $joined );
         }
     }
+
+
+    public function testRmtree()
+    {
+        futil_mkdir_if_not_exists("tests/root/path1/path2",0755,true);
+
+        $files = array();
+        $files[] = "tests/root/file1";
+        $files[] = "tests/root/file2";
+        $files[] = "tests/root/file3";
+        $files[] = "tests/root/path1/path2/file4";
+        $files[] = "tests/root/path1/path2/file5";
+        foreach( $files as $file ) {
+            touch( $file );
+        }
+        futil_rmtree("tests/root");
+
+        foreach( $files as $file ) {
+            ok( ! file_exists($file) );
+        }
+        ok( ! file_exists("tests/root/path1/path2") );
+    }
+
 }
 
 
