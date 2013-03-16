@@ -48,3 +48,7 @@ This returns the last creation time from a filelist array.
 
 #### `futil_mkdir_if_not_exists($path)`
 
+#### `futil_rmtree($path)`
+
+Recursively delete files and directories through RecursiveDirectoryIterator.
+

@@ -94,3 +94,28 @@ function futil_unlink_if_exists($path)
     return false;
 }
 
+function futil_rmdir_if_exists($path)
+{
+    if ( file_exists($path) ) {
+        return rmdir($path);
+    }
+    return false;
+}
+
+
+function futil_rmtree($path)
+{
+    $iter = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($path), RecursiveIteratorIterator::CHILD_FIRST);
+    foreach($iter as $fileinfo){
+        if( $fileinfo->isDir() ) {
+            if (  $fileinfo->getFilename() === "." 
+                || $fileinfo->getFilename() === ".." )
+                continue;
+            rmdir( $fileinfo->getPathname() );
+        } elseif ($fileinfo->isFile()) {
+            unlink( $fileinfo->getPathname() );
+        }
+    }
+    return true;
+}
+
