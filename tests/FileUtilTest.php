@@ -3,6 +3,9 @@
 class FileUtilTest extends PHPUnit_Framework_ExtensionTestCase
 {
 
+    public $repeat = 5;
+
+
     public function getExtensionName()
     {
         return 'fileutil';
@@ -20,7 +23,7 @@ class FileUtilTest extends PHPUnit_Framework_ExtensionTestCase
 
     public function testScanDirOnExistingDir()
     {
-        $i = 100;
+        $i = $this->repeat;
         while( $i-- ) {
             $files = futil_scanpath("/etc");
             ok($files,"Should return a file list");
@@ -33,7 +36,7 @@ class FileUtilTest extends PHPUnit_Framework_ExtensionTestCase
 
     public function testScanDirOnExistingFile()
     {
-        $i = 100;
+        $i = $this->repeat;
         while( $i-- ) {
             $files = futil_scanpath("tests/FileUtilTest.php");
             is(false,$files,"Should return false on file path");
@@ -42,7 +45,7 @@ class FileUtilTest extends PHPUnit_Framework_ExtensionTestCase
 
     public function testScanDirOnNonExistingPath()
     {
-        $i = 100;
+        $i = $this->repeat;
         while( $i-- ) {
             $files = futil_scanpath("blah/blah");
             is(false,$files,"Should return false on file path");
@@ -52,7 +55,7 @@ class FileUtilTest extends PHPUnit_Framework_ExtensionTestCase
 
     public function testScanDirDir()
     {
-        $i = 100;
+        $i = $this->repeat;
         while( $i-- ) {
             $paths = futil_scanpath_dir("/");
             ok( $paths );
@@ -64,7 +67,7 @@ class FileUtilTest extends PHPUnit_Framework_ExtensionTestCase
 
     public function testJoin()
     {
-        $i = 100;
+        $i = $this->repeat;
         while( $i-- ) {
             $joined = futil_pathjoin('path1','path2');
             ok( $joined );
@@ -74,7 +77,7 @@ class FileUtilTest extends PHPUnit_Framework_ExtensionTestCase
 
     public function testJoinWithDuplicateSlash()
     {
-        $i = 100;
+        $i = $this->repeat;
         while( $i-- ) {
             $joined = futil_pathjoin('path1/','path2');
             $this->assertEquals( 'path1/path2' , $joined );
@@ -89,7 +92,7 @@ class FileUtilTest extends PHPUnit_Framework_ExtensionTestCase
 
     public function testPathSplit()
     {
-        $i = 100;
+        $i = $this->repeat;
         while( $i-- ) {
             $parts = futil_pathsplit("path1/path2/path3");
             count_ok(3,$parts);
@@ -113,7 +116,7 @@ class FileUtilTest extends PHPUnit_Framework_ExtensionTestCase
 
     public function testJoinArray()
     {
-        $i = 100;
+        $i = $this->repeat;
         while( $i-- ) {
             $joined = futil_pathjoin(array('path1/','path2/','path3'));
             $this->assertEquals( 'path1/path2/path3' , $joined );

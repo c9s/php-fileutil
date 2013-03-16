@@ -1,8 +1,13 @@
 <?php
 require 'PHPUnit/TestMore.php';
-// require 'PHPUnit/Framework/ExtensionTestCase.php';
-require '../PHPUnit_Framework_ExtensionTestCase/src/PHPUnit/Framework/ExtensionTestCase.php';
+require 'PHPUnit/Framework/ExtensionTestCase.php';
+// require '../PHPUnit_Framework_ExtensionTestCase/src/PHPUnit/Framework/ExtensionTestCase.php';
 require 'Universal/ClassLoader/BasePathClassLoader.php';
+
+
+if ( ! extension_loaded('fileutil') ) {
+    require "src/FileUtil.php";
+}
 
 if ( !defined('BASEDIR') ) {
     define('BASEDIR',dirname(dirname(__FILE__)));
