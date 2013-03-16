@@ -42,3 +42,5 @@ This returns the last creation time from a filelist array.
 
 #### `array futil_pathsplit($path)`
 
+#### `futil_unlink_if_exists($path)`
+
