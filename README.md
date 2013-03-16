@@ -40,5 +40,5 @@ This returns the last creation time from a filelist array.
 
 #### `long futil_pathjoin($path1, $path2, $path3)`
 
-- `long futil_pathsplit($path)`
+#### `long futil_pathsplit($path)`
 
