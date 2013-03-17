@@ -5,8 +5,8 @@ php:
 
 before_script:
   - phpenv rehash
-  - "pear channel-discover pear.corneltek.com"
-  - "pear channel-update -f corneltek"
+  - pear channel-discover pear.corneltek.com
+  - pear channel-update -f pear.corneltek.com
   - pear install -a corneltek/Universal
   - pear install -a corneltek/PHPUnit_TestMore
   - pear install -a -f corneltek/PHPUnit_Framework_ExtensionTestCase
