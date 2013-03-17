@@ -1,6 +1,10 @@
 FileUtil Extension
 ==================
 
+Fast File Utility Extension (with Pure PHP Implementation Support)
+
+Master: [![Build Status](https://travis-ci.org/c9s/php-fileutil.png?branch=master)](https://travis-ci.org/c9s/php-fileutil)
+
 Installation
 ------------
 
