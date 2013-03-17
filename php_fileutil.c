@@ -81,28 +81,28 @@ ZEND_GET_MODULE(fileutil)
 #endif
 
 
-static bool _unlink_file(char *filename, int filename_len, zval *zcontext);
+static zend_bool _unlink_file(char *filename, int filename_len, zval *zcontext);
 
 
 
-bool futil_file_exists(char * filename, int filename_len)
+zend_bool futil_file_exists(char * filename, int filename_len)
 {
     zval tmp;
     php_stat(filename, filename_len, FS_EXISTS, &tmp TSRMLS_CC);
-    bool ret = Z_LVAL(tmp) ? true : false;
+    zend_bool ret = Z_LVAL(tmp) ? true : false;
     zval_dtor( &tmp );
     return ret;
 }
 
-bool futil_stream_is_dir(php_stream *stream TSRMLS_DC)
+zend_bool futil_stream_is_dir(php_stream *stream TSRMLS_DC)
 {
     return (stream->flags & PHP_STREAM_FLAG_IS_DIR);
 }
 
-bool futil_is_dir(char* dirname, int dirname_len TSRMLS_DC)
+zend_bool futil_is_dir(char* dirname, int dirname_len TSRMLS_DC)
 {
     zval tmp;
-    bool ret;
+    zend_bool ret;
     php_stat(dirname, dirname_len, FS_IS_DIR, &tmp TSRMLS_CC);
     ret = Z_LVAL(tmp) ? true : false;
     zval_dtor( &tmp );
@@ -457,7 +457,7 @@ PHP_FUNCTION(futil_rmdir_if_exists)
 
 
 
-static bool _unlink_file(char *filename, int filename_len, zval *zcontext)
+static zend_bool _unlink_file(char *filename, int filename_len, zval *zcontext)
 {
     php_stream_wrapper *wrapper;
     php_stream_context *context = NULL;
@@ -491,7 +491,7 @@ PHP_FUNCTION(futil_unlink_if_exists)
     }
 
     zval tmp;
-    bool ret;
+    zend_bool ret;
     php_stat(filename, filename_len, FS_EXISTS, &tmp TSRMLS_CC);
     zval_dtor( &tmp );
     if ( Z_LVAL(tmp) == false ) {
