@@ -48,7 +48,7 @@ PHP_FUNCTION(futil_replace_extension);
 #endif
 
 #ifndef tsrm_ls
-#define tsrm_ls
+#define tsrm_ls NULL
 #endif
 
 bool futil_stream_is_dir(php_stream *stream TSRMLS_DC);
