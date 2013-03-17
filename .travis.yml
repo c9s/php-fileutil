@@ -14,4 +14,6 @@ before_script:
   - curl -O https://raw.github.com/c9s/Onion/master/onion
   - php onion -q install
 
-script: phpunit
+script:
+  - phpunit
+  - extunit --phpunit
