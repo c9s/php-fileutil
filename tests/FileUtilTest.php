@@ -210,6 +210,12 @@ class FileUtilTest extends PHPUnit_Framework_ExtensionTestCase
         is( "manifest.json", $file );
     }
 
+    public function testReplaceExtensionWithNonExtensionFile()
+    {
+        $file = futil_replace_extension("manifest","json");
+        is( "manifest.json", $file );
+    }
+
 }
 
 

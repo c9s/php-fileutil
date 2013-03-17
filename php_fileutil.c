@@ -792,18 +792,36 @@ PHP_FUNCTION(futil_replace_extension)
         RETURN_FALSE;
     }
 
-    char * dot = strrchr(filename, (int) '.');
+    char *newfilename;
+    int newfilename_len;
 
-    if ( (dot - filename) == filename_len ) {
-        RETURN_STRINGL(filename, filename_len, 1);
+    char *dot;
+    char *basename;
+    int basename_len;
+
+    dot = strrchr(filename, (int) '.');
+    if ( dot ) {
+        basename_len = dot - filename + 1;
+        if ( basename_len == filename_len ) {
+            RETURN_STRINGL(filename, filename_len, 0);
+        }
+    } else {
+        basename_len = filename_len;
+        char *new_extension = emalloc( sizeof(char) * (extension_len + 1) );
+        *new_extension = '.';
+        strncpy(new_extension + 1, extension, extension_len);
+        efree(extension);
+        extension = new_extension;
+        extension_len++;
     }
 
-    // PHPAPI void php_basename(const char *s, size_t len, char *suffix, size_t sufflen, char **p_ret, size_t *p_len TSRMLS_DC)
-//      for ( int i = dot_pos + 1 ; i < filename_len ; i++ ) {
-//  
-//      }
+    // basename with dot
+    basename = estrndup(filename, basename_len); // create basename
 
-    // RETURN_STRING( );
+    // create newfilename string
+    newfilename = strncat(basename, extension, extension_len);
+    newfilename_len = basename_len + extension_len;
+    RETURN_STRINGL(newfilename, newfilename_len, 0);
 }
 
 PHP_FUNCTION(futil_pathjoin)

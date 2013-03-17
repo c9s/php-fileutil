@@ -134,4 +134,14 @@ function futil_paths_prepend(& $paths,$path2)
     }
 }
 
+function futil_replace_extension($filename, $newext)
+{
+    $parts = explode('.',$filename);
+    if (count($parts) > 1) {
+        array_pop($parts);
+    }
+    $parts[] = $newext;
+    return join('.',$parts);
+}
+
 
