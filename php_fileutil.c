@@ -181,7 +181,7 @@ void phpdir_scandir_with_handler(
         php_stream * stream, 
         char* dirname, 
         int dirname_len,
-        char* (*handler)(char*, int, php_stream_dirent*) TSRMLS_DC) 
+        char* (*handler)(char*, int, php_stream_dirent* TSRMLS_DC) TSRMLS_DC) 
 {
     php_stream_dirent entry;
     while (php_stream_readdir(stream, &entry)) {
