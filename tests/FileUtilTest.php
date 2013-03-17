@@ -151,6 +151,19 @@ class FileUtilTest extends PHPUnit_Framework_ExtensionTestCase
         }
     }
 
+    public function testPathPrepend()
+    {
+        $list = array( 
+            "/file1",
+            "/file2",
+            "/file3",
+        );
+        futil_pathprepend($list, "/root");
+        ok( $list );
+
+        is( "/root/file1", $list[0] );
+        is( "/root/file2", $list[1] );
+    }
 
     public function testRmtree()
     {

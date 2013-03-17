@@ -61,6 +61,8 @@ static const zend_function_entry fileutil_functions[] = {
     PHP_FE(futil_scanpath_dir, arginfo_futil_scanpath_dir)
     PHP_FE(futil_pathjoin, NULL)
     PHP_FE(futil_pathsplit, NULL)
+    PHP_FE(futil_pathappend, NULL)
+    PHP_FE(futil_pathprepend, NULL)
     PHP_FE(futil_lastmtime, arginfo_futil_lastmtime)
     PHP_FE(futil_lastctime, arginfo_futil_lastctime)
     PHP_FE(futil_unlink_if_exists, NULL)
@@ -702,6 +704,72 @@ PHP_FUNCTION(futil_rmtree)
     RETURN_FALSE;
 }
 
+
+
+
+PHP_FUNCTION(futil_pathappend)
+{
+    zval *zarray;
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "a", &zarray) == FAILURE) {
+        RETURN_FALSE;
+    }
+
+
+    RETURN_FALSE;
+}
+
+
+PHP_FUNCTION(futil_pathprepend)
+{
+    zval *zarr;
+
+    zval **entry_data;
+    HashTable *zarr_hash;
+    HashPosition pointer;
+    int zarr_count;
+
+    char *str_prepend;
+    int   str_prepend_len;
+
+    char *str;
+    int   str_len;
+
+    char *newpath;
+    int   newpath_len;
+
+    char what[2];
+    int  what_len = 1;
+
+    what[0] = DEFAULT_SLASH;
+    what[1] = '\0';
+
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "as", &zarr, &str_prepend, &str_prepend_len) == FAILURE) {
+        RETURN_FALSE;
+    }
+
+    zarr_hash = Z_ARRVAL_P(zarr);
+    zarr_count = zend_hash_num_elements(zarr_hash);
+
+    for(zend_hash_internal_pointer_reset_ex(zarr_hash, &pointer); 
+            zend_hash_get_current_data_ex(zarr_hash, (void**) &entry_data, &pointer) == SUCCESS; 
+            zend_hash_move_forward_ex(zarr_hash, &pointer)) 
+    {
+        if ( Z_TYPE_PP(entry_data) == IS_STRING ) {
+            // php_trim(str, str_len, what, what_len, return_value, mode TSRMLS_CC);
+            str = Z_STRVAL_PP(entry_data);
+            str_len = Z_STRLEN_PP(entry_data);
+
+            newpath = path_concat(str_prepend, str_prepend_len, str, str_len);
+            newpath_len = strlen(newpath);
+
+            // free up the previous string
+            efree(Z_STRVAL_PP(entry_data));
+
+            Z_STRVAL_PP(entry_data) = newpath;
+            Z_STRLEN_PP(entry_data) = newpath_len;
+        }
+    }
+}
 
 
 PHP_FUNCTION(futil_pathjoin)

@@ -18,14 +18,23 @@ char * path_concat( char* path1, int len1, char * path2, int len2 TSRMLS_DC)
         src++;
     }
 
-    if(p2 > path1 && *(p2-1) == DEFAULT_SLASH ) {
+    // do nothing if the last char is a path slash
+    if ( p2 > path1 && *(p2-1) == DEFAULT_SLASH ) {
 
     } else {
+        // if there is no path slash at the end of string, 
+        // append one.
         *p2 = DEFAULT_SLASH;
         p2++;
     }
 
+    // concat the path2 string
     src = path2;
+
+    if ( *src == DEFAULT_SLASH ) {
+        src++;
+    }
+
     while( len2-- ) {
         *p2 = *src;
         src++;
