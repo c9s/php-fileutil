@@ -150,3 +150,8 @@ function futil_replace_extension($filename, $newext)
 }
 
 
+function futil_get_extension($filename)
+{
+    return pathinfo($filename, PATHINFO_EXTENSION);
+}
+

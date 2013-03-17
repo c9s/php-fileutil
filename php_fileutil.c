@@ -55,6 +55,7 @@ static const zend_function_entry fileutil_functions[] = {
     PHP_FE(futil_mkdir_if_not_exists, NULL)
     PHP_FE(futil_rmtree, NULL)
     PHP_FE(futil_replace_extension, NULL)
+    PHP_FE(futil_get_extension, NULL)
     {NULL, NULL, NULL}
 };
 
@@ -798,6 +799,33 @@ PHP_FUNCTION(futil_paths_prepend)
             Z_STRLEN_PP(entry_data) = newpath_len;
         }
     }
+}
+
+PHP_FUNCTION(futil_get_extension)
+{
+    char *filename;
+    int   filename_len;
+    char *dot;
+
+    char *extension;
+    int   extension_len;
+
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s",
+                    &filename, &filename_len ) == FAILURE) {
+        RETURN_FALSE;
+    }
+
+    dot = strrchr(filename, (int) '.');
+    if ( dot != NULL ) {
+        extension_len = filename_len - (dot - filename) - 1;
+
+        if ( extension_len == 0 )
+            RETURN_FALSE;
+
+        extension = dot + 1;
+        RETURN_STRINGL(extension, extension_len , 1);
+    }
+    RETURN_FALSE;
 }
 
 

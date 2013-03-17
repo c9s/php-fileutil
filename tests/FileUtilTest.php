@@ -16,11 +16,12 @@ class FileUtilTest extends PHPUnit_Framework_ExtensionTestCase
         return array(
             'futil_scanpath',
             'futil_scanpath_dir',
-            'futil_pathjoin',
             'futil_rmtree',
+            'futil_pathjoin',
             'futil_pathsplit',
             'futil_lastmtime',
             'futil_lastctime',
+            'futil_replace_extension',
         );
     }
 
@@ -202,6 +203,18 @@ class FileUtilTest extends PHPUnit_Framework_ExtensionTestCase
             ok( ! file_exists($file) );
         }
         ok( ! file_exists("tests/root/path1/path2") );
+    }
+
+    public function testGetExtension()
+    {
+        $extension = futil_get_extension("manifest.yml");
+        is('yml', $extension);
+
+        $extension = futil_get_extension("manifest.php");
+        is('php', $extension);
+
+        $extension = futil_get_extension("manifest");
+        is(false, $extension);
     }
 
     public function testReplaceExtension()
