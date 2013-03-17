@@ -7,9 +7,9 @@ FileUtil Extension
 Fast File Utility Extension (with Pure PHP Implementation Support)
 
 
+
 Installation
 ------------
-
 
 Install the PHP extension:
 
