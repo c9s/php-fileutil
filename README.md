@@ -88,4 +88,8 @@ Recursively delete files and directories through RecursiveDirectoryIterator.
 
 #### `futil_paths_append($paths, $append)`
 
+#### `futil_replace_extension($path, $newExtension)`
+
+#### `futil_get_extension($path)`
+
 
