@@ -34,6 +34,7 @@ static const zend_function_entry fileutil_functions[] = {
     PHP_FE(futil_get_extension, NULL)
     PHP_FE(futil_prettysize, NULL)
     PHP_FE(futil_filename_append_suffix, NULL)
+    PHP_FE(futil_read_files, NULL);
     {NULL, NULL, NULL}
 };
 
@@ -523,6 +524,10 @@ PHP_FUNCTION(futil_paths_append)
     }
 }
 
+PHP_FUNCTION(futil_read_files)
+{
+
+}
 
 PHP_FUNCTION(futil_paths_prepend)
 {
