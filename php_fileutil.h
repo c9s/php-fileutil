@@ -6,11 +6,22 @@
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
-#include "php.h"
 
-#ifndef bool
-typedef enum {false = 0, true = 1} bool;
-#endif
+#include "php.h"
+#include "zend.h"
+#include "zend_API.h"
+#include "zend_compile.h"
+#include "zend_hash.h"
+#include "zend_extensions.h"
+
+#include "zend_constants.h"
+#include "zend_execute.h"
+#include "zend_exceptions.h"
+#include "zend_hash.h"
+#include "zend_interfaces.h"
+#include "zend_operators.h"
+#include "zend_qsort.h"
+#include "zend_vm.h"
 
 PHP_FUNCTION(futil_scanpath);
 PHP_FUNCTION(futil_scanpath_dir);
