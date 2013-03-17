@@ -666,7 +666,6 @@ PHP_FUNCTION(futil_prettysize)
     }
 
     str = emalloc(sizeof(char) * 16);
-
     if ( bytes < SIZE_KB ) {
         sprintf(str, "%ld B", bytes);
     } else if ( bytes < SIZE_MB ) {
@@ -676,7 +675,7 @@ PHP_FUNCTION(futil_prettysize)
     } else if ( bytes < SIZE_TB ) {
         sprintf(str, "%.1f GB", (double) (bytes / SIZE_GB));
     } else {
-        sprintf( str, "%.1f TB", (double) (bytes / SIZE_TB));
+        sprintf(str, "%.1f GB", (double) (bytes / SIZE_GB));
     }
     RETURN_STRING( str, 0);
 }

@@ -178,7 +178,7 @@ function futil_prettysize($bytes)
         return sprintf("%.1f GB", $bytes / SIZE_GB );
     }
 
-    return sprintf("%.1f TB", $bytes / 1024 / 1024 / 1024 / 1024);
+    return sprintf("%.1f GB", $bytes / SIZE_GB);
 }
 
 
