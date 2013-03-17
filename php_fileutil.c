@@ -160,6 +160,11 @@ PHP_FUNCTION(futil_scanpath_dir)
         RETURN_FALSE;
     }
 
+    if ( dirname_len < 1 ) {
+        php_error_docref(NULL TSRMLS_CC, E_WARNING, "Directory name cannot be empty");
+        RETURN_FALSE;
+    }
+
     // run is_dir
     if ( ! futil_is_dir(dirname, dirname_len TSRMLS_CC) ) {
         RETURN_FALSE;
@@ -240,6 +245,13 @@ PHP_FUNCTION(futil_scanpath)
 PHP_FUNCTION(futil_lastctime)
 {
     zval *zarr;
+    zval **entry_data;
+    HashTable *zarr_hash;
+    HashPosition pointer;
+    int array_count;
+    long lastctime = 0;
+    char *path;
+    int path_len;
 
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "a",
                     &zarr
@@ -248,18 +260,11 @@ PHP_FUNCTION(futil_lastctime)
         RETURN_FALSE;
     }
 
-    long lastctime = 0;
-
-    zval **entry_data;
-    HashTable *zarr_hash;
-    HashPosition pointer;
-    int array_count;
-
-    char *path;
-    int path_len;
-
     zarr_hash = Z_ARRVAL_P(zarr);
     array_count = zend_hash_num_elements(zarr_hash);
+
+    if ( array_count == 0 )
+        RETURN_FALSE;
 
     for(zend_hash_internal_pointer_reset_ex(zarr_hash, &pointer); 
             zend_hash_get_current_data_ex(zarr_hash, (void**) &entry_data, &pointer) == SUCCESS; 
@@ -307,6 +312,11 @@ PHP_FUNCTION(futil_lastmtime)
     zarr_hash = Z_ARRVAL_P(zarr);
     array_count = zend_hash_num_elements(zarr_hash);
 
+
+    if ( array_count == 0 )
+        RETURN_FALSE;
+
+
     for(zend_hash_internal_pointer_reset_ex(zarr_hash, &pointer); 
             zend_hash_get_current_data_ex(zarr_hash, (void**) &entry_data, &pointer) == SUCCESS; 
             zend_hash_move_forward_ex(zarr_hash, &pointer)) 
@@ -342,6 +352,9 @@ PHP_FUNCTION(futil_pathsplit)
         RETURN_FALSE;
     }
 
+    if ( path_len == 0 )
+        RETURN_FALSE;
+
     array_init(return_value);
 
     char delim_str[2];
@@ -370,6 +383,9 @@ PHP_FUNCTION(futil_mkdir_if_not_exists)
         RETURN_FALSE;
     }
 
+    if ( dir_len == 0 )
+        RETURN_FALSE;
+
     if ( futil_file_exists(dir,dir_len TSRMLS_CC) ) {
         RETURN_FALSE;
     }
@@ -391,6 +407,9 @@ PHP_FUNCTION(futil_rmdir_if_exists)
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "p|lbr", &dir, &dir_len, &mode, &recursive, &zcontext) == FAILURE) {
         RETURN_FALSE;
     }
+
+    if ( dir_len == 0 )
+        RETURN_FALSE;
 
     if ( ! futil_file_exists(dir,dir_len TSRMLS_CC) ) {
         RETURN_FALSE;
@@ -435,6 +454,9 @@ PHP_FUNCTION(futil_unlink_if_exists)
         RETURN_FALSE;
     }
 
+    if ( filename_len == 0 )
+        RETURN_FALSE;
+
     zval tmp;
     zend_bool ret;
     php_stat(filename, filename_len, FS_EXISTS, &tmp TSRMLS_CC);
@@ -471,6 +493,9 @@ PHP_FUNCTION(futil_paths_append)
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "as", &zarr, &str_append, &str_append_len) == FAILURE) {
         RETURN_FALSE;
     }
+
+    if ( str_append_len == 0 )
+        RETURN_FALSE;
 
     zarr_hash = Z_ARRVAL_P(zarr);
     zarr_count = zend_hash_num_elements(zarr_hash);
@@ -518,6 +543,9 @@ PHP_FUNCTION(futil_paths_prepend)
         RETURN_FALSE;
     }
 
+    if ( str_prepend_len == 0 )
+        RETURN_FALSE;
+
     zarr_hash = Z_ARRVAL_P(zarr);
     zarr_count = zend_hash_num_elements(zarr_hash);
 
@@ -555,6 +583,9 @@ PHP_FUNCTION(futil_get_extension)
         RETURN_FALSE;
     }
 
+    if ( filename_len == 0 )
+        RETURN_FALSE;
+
     dot = strrchr(filename, (int) '.');
     if ( dot != NULL ) {
         extension_len = filename_len - (dot - filename) - 1;
@@ -577,6 +608,13 @@ PHP_FUNCTION(futil_replace_extension)
     char *extension;
     int   extension_len;
 
+    char *newfilename;
+    int newfilename_len;
+
+    char *dot;
+    char *basename;
+    int basename_len;
+
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "ss",
                     &filename, &filename_len, &extension, &extension_len
                     ) == FAILURE) {
@@ -584,12 +622,9 @@ PHP_FUNCTION(futil_replace_extension)
         RETURN_FALSE;
     }
 
-    char *newfilename;
-    int newfilename_len;
+    if ( filename_len == 0 )
+        RETURN_FALSE;
 
-    char *dot;
-    char *basename;
-    int basename_len;
 
     dot = strrchr(filename, (int) '.');
     if ( dot != NULL ) {
