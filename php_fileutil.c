@@ -81,7 +81,11 @@ ZEND_GET_MODULE(fileutil)
 #endif
 
 
-static zend_bool _unlink_file(char *filename, int filename_len, zval *zcontext);
+static zend_bool _unlink_file(char *filename, int filename_len, zval *zcontext TSRMLS_DC);
+zend_bool futil_file_exists(char * filename, int filename_len TSRMLS_DC);
+zend_bool futil_stream_is_dir(php_stream *stream TSRMLS_DC);
+zend_bool futil_is_dir(char* dirname, int dirname_len TSRMLS_DC);
+
 
 
 
