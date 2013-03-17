@@ -137,3 +137,28 @@ Recursively delete files and directories through RecursiveDirectoryIterator.
 #### `futil_filename_append_suffix($path, $suffix)`
 
 
+## Hacking
+
+- Fork this project.
+- Clone the git repository.
+- Run commands under the repository:
+
+    pear channel-discover pear.corneltek.com
+    pear channel-update -f corneltek
+    pear install -f corneltek/Universal
+    pear install -f corneltek/PHPUnit_TestMore
+    pear install -f corneltek/PHPUnit_Framework_ExtensionTestCase
+    pear install -f corneltek/ExtUnit
+    phpize
+    ./configure
+    make
+
+- Run extunit to test extension functions:
+
+    extunit --phpunit
+
+- Run phpunit to test pure php functions:
+
+    phpunit
+
+
