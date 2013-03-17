@@ -730,7 +730,7 @@ PHP_FUNCTION(futil_paths_append)
             str = Z_STRVAL_PP(entry_data);
             str_len = Z_STRLEN_PP(entry_data);
 
-            newpath = path_concat(str, str_len, str_append, str_append_len);
+            newpath = path_concat(str, str_len, str_append, str_append_len TSRMLS_CC);
             newpath_len = strlen(newpath);
 
             // free up the previous string
@@ -776,7 +776,7 @@ PHP_FUNCTION(futil_paths_prepend)
             str = Z_STRVAL_PP(entry_data);
             str_len = Z_STRLEN_PP(entry_data);
 
-            newpath = path_concat(str_prepend, str_prepend_len, str, str_len);
+            newpath = path_concat(str_prepend, str_prepend_len, str, str_len TSRMLS_CC);
             newpath_len = strlen(newpath);
 
             // free up the previous string
