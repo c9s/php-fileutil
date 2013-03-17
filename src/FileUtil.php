@@ -120,17 +120,19 @@ function futil_rmtree($path)
 }
 
 
-function futil_paths_append($paths,$path2)
+function futil_paths_append(& $paths,$path2)
 {
-    foreach( $paths as & $path ) {
-        $path = futil_pathjoin($path ,$path2);
+    $count = count($paths);
+    for($i = 0 ; $i < $count ; $i++ ) {
+        $paths[$i] = futil_pathjoin($paths[$i] ,$path2);
     }
 }
 
-function futil_paths_prepend($paths,$path2)
+function futil_paths_prepend(& $paths,$path2)
 {
-    foreach( $paths as & $path ) {
-        $path = futil_pathjoin($path2 ,$path);
+    $count = count($paths);
+    for($i = 0 ; $i < $count ; $i++ ) {
+        $paths[$i] = futil_pathjoin($path2, $paths[$i]);
     }
 }
 
