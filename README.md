@@ -6,6 +6,7 @@ FileUtil Extension
 
 Fast File Utility Extension (with Pure PHP Implementation Support)
 
+FileUtil Extension provides an efficient way to operate file related operations.
 
 
 Installation
@@ -39,7 +40,7 @@ $filelist = futil_scanpath("/etc");
 
 $dirlist = futil_scanpath_dir("/etc");
 
-$path = futil_pathjoin("etc","folder","file1"); // Returns "etc/folder/file1"
+$path = futil_pathjoin("etc","folder","file1"); // Returns "etc/folder/file1", as the same as "etc" . DIRECTORY_SEPARATOR . "folder" . DIRECTORY_SEPARATOR . "file1"
 
 $newFilename = futil_replace_extension("manifest.yml","json"); // Returns manifest.json
 
@@ -53,9 +54,7 @@ $filelist = array(
     "path4/file5",
 );
 futil_paths_prepend($filelist, "/root");
-
-/* Returns
-array(
+/* $filelist = array(
     "/root/file1",
     "/root/file2",
     "/root/path2/file3",
@@ -64,6 +63,8 @@ array(
 );
 */
 
+
+// clean up whole directory
 if ( false === futil_rmtree("/path/to/delete") ) {
 
 }
@@ -73,13 +74,8 @@ $newfilename = futil_filename_append_suffix("Picture", "_suffix");  // Returns "
 ```
 
 
-
-
 Usage
 -----
-
-Provide an efficient way to operate file paths.
-
 #### `path[] futil_scanpath($dir)`
 
 The behavior is different from the built-in function `scandir($dir)`,
