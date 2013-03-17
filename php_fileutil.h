@@ -47,10 +47,6 @@ PHP_FUNCTION(futil_replace_extension);
 #define true 1
 #endif
 
-#ifndef tsrm_ls
-#define tsrm_ls NULL
-#endif
-
 bool futil_stream_is_dir(php_stream *stream TSRMLS_DC);
 bool futil_is_dir(char* dirname, int dirname_len TSRMLS_DC);
 char * path_concat_from_zargs( int num_varargs , zval ***varargs TSRMLS_DC);
