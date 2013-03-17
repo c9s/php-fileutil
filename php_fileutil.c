@@ -709,13 +709,47 @@ PHP_FUNCTION(futil_rmtree)
 
 PHP_FUNCTION(futil_pathappend)
 {
-    zval *zarray;
-    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "a", &zarray) == FAILURE) {
+    zval *zarr;
+
+    zval **entry_data;
+    HashTable *zarr_hash;
+    HashPosition pointer;
+    int zarr_count;
+
+    char *str_append;
+    int   str_append_len;
+
+    char *str;
+    int   str_len;
+
+    char *newpath;
+    int   newpath_len;
+
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "as", &zarr, &str_append, &str_append_len) == FAILURE) {
         RETURN_FALSE;
     }
 
+    zarr_hash = Z_ARRVAL_P(zarr);
+    zarr_count = zend_hash_num_elements(zarr_hash);
 
-    RETURN_FALSE;
+    for(zend_hash_internal_pointer_reset_ex(zarr_hash, &pointer); 
+            zend_hash_get_current_data_ex(zarr_hash, (void**) &entry_data, &pointer) == SUCCESS; 
+            zend_hash_move_forward_ex(zarr_hash, &pointer)) 
+    {
+        if ( Z_TYPE_PP(entry_data) == IS_STRING ) {
+            str = Z_STRVAL_PP(entry_data);
+            str_len = Z_STRLEN_PP(entry_data);
+
+            newpath = path_concat(str, str_len, str_append, str_append_len);
+            newpath_len = strlen(newpath);
+
+            // free up the previous string
+            efree(Z_STRVAL_PP(entry_data));
+
+            Z_STRVAL_PP(entry_data) = newpath;
+            Z_STRLEN_PP(entry_data) = newpath_len;
+        }
+    }
 }
 
 
