@@ -23,6 +23,27 @@
 #include "zend_qsort.h"
 #include "zend_vm.h"
 
+
+#include <ext/standard/php_standard.h>
+#include <ext/standard/php_filestat.h>
+#include <ext/standard/php_string.h>
+
+// these flags are inside the ext/spl/spl_iterators.c, 
+// we can not reuse it by including the header file.
+typedef enum {
+    RIT_LEAVES_ONLY = 0,
+    RIT_SELF_FIRST  = 1,
+    RIT_CHILD_FIRST = 2
+} RecursiveIteratorMode;
+
+#if HAVE_SPL
+#include <ext/spl/spl_array.h>
+#include <ext/spl/spl_directory.h>
+#include <ext/spl/spl_engine.h>
+#include <ext/spl/spl_exceptions.h>
+#include <ext/spl/spl_iterators.h>
+#endif
+
 PHP_FUNCTION(futil_scanpath);
 PHP_FUNCTION(futil_scanpath_dir);
 PHP_FUNCTION(futil_pathjoin);
@@ -45,6 +66,8 @@ zend_bool futil_file_exists(char * filename, int filename_len TSRMLS_DC);
 zend_bool futil_stream_is_dir(php_stream *stream TSRMLS_DC);
 zend_bool futil_is_dir(char* dirname, int dirname_len TSRMLS_DC);
 zend_bool futil_is_file(char* dirname, int dirname_len TSRMLS_DC);
+
+zend_bool futil_unlink_file(char *filename, int filename_len, zval *zcontext TSRMLS_DC);
 
 extern zend_module_entry fileutil_module_entry;
 #define phpext_fileutil_ptr &fileutil_module_entry

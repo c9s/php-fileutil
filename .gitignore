@@ -1,4 +1,3 @@
-config.h
 *.lo
 missing
 mkinstalldirs
@@ -11,7 +10,6 @@ config.sub
 config.nice
 config.log
 config.guess
-config.h
 config.h.*
 acinclude.m4
 aclocal.m4
