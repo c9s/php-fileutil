@@ -737,12 +737,6 @@ PHP_FUNCTION(futil_pathprepend)
     char *newpath;
     int   newpath_len;
 
-    char what[2];
-    int  what_len = 1;
-
-    what[0] = DEFAULT_SLASH;
-    what[1] = '\0';
-
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "as", &zarr, &str_prepend, &str_prepend_len) == FAILURE) {
         RETURN_FALSE;
     }
@@ -755,7 +749,6 @@ PHP_FUNCTION(futil_pathprepend)
             zend_hash_move_forward_ex(zarr_hash, &pointer)) 
     {
         if ( Z_TYPE_PP(entry_data) == IS_STRING ) {
-            // php_trim(str, str_len, what, what_len, return_value, mode TSRMLS_CC);
             str = Z_STRVAL_PP(entry_data);
             str_len = Z_STRLEN_PP(entry_data);
 
