@@ -23,3 +23,5 @@ run-tests.php
 libtool
 ltmain.sh
 .gdbinit
+
+/vendor/

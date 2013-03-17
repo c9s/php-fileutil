@@ -1,0 +1,13 @@
+{
+    "name": "c9s/fileutil",
+    "description": "Fast File Utility Extension",
+    "authors": [
+        {
+            "name": "c9s",
+            "email": "cornelius.howl@gmail.com"
+        }
+    ],
+    "require": {
+
+    }
+}
