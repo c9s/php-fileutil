@@ -84,8 +84,8 @@ This returns the last creation time from a filelist array.
 
 Recursively delete files and directories through RecursiveDirectoryIterator.
 
-#### `futil_paths_prepend($paths)`
+#### `futil_paths_prepend($paths, $prepend)`
 
-#### `futil_paths_append($paths)`
+#### `futil_paths_append($paths, $append)`
 
 
