@@ -102,6 +102,9 @@ class FileUtilTest extends PHPUnit_Framework_ExtensionTestCase
             $parts = futil_pathsplit("path1/path2/path3");
             count_ok(3,$parts);
         }
+
+        $parts = futil_pathsplit("/etc/path2/path3");
+        var_dump( $parts ); 
     }
 
     public function testLastmtime()
