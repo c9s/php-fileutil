@@ -530,7 +530,7 @@ static int rmtree_iterator(zend_object_iterator *iter, void *puser TSRMLS_DC)
 
                 char *test = NULL;
                 zval dummy;
-                bool is_dir = false;
+                zend_bool is_dir = false;
                 spl_filesystem_object *intern = (spl_filesystem_object*)zend_object_store_get_object(*value TSRMLS_CC);
 
                 switch (intern->type) {
