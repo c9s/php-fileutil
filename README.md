@@ -30,6 +30,48 @@ $ pear channel-discover pear.corneltek.com
 $ pear install corneltek/FileUtil
 ```
 
+
+Synopsis
+--------
+
+```php
+$filelist = futil_scanpath("/etc");
+
+$dirlist = futil_scanpath_dir("/etc");
+
+$path = futil_pathjoin("etc","folder","file1"); // Returns "etc/folder/file1"
+
+$newFilename = futil_replace_extension("manifest.yml","json"); // Returns manifest.json
+
+$extension = futil_get_extension("manifest.yml");   // Returns "yml"
+
+$filelist = array(
+    "file1",
+    "file2",
+    "path2/file3",
+    "path3/file4",
+    "path4/file5",
+);
+futil_paths_prepend($filelist, "/root");
+
+/* Returns
+array(
+    "/root/file1",
+    "/root/file2",
+    "/root/path2/file3",
+    "/root/path3/file4",
+    "/root/path4/file5",
+);
+*/
+
+if ( false === futil_rmtree("/path/to/delete") ) {
+
+}
+```
+
+
+
+
 Usage
 -----
 
