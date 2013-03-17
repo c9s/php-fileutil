@@ -158,7 +158,7 @@ class FileUtilTest extends PHPUnit_Framework_ExtensionTestCase
             "/dir2",
             "/dir3",
         );
-        futil_pathappend($list, "/file");
+        futil_paths_append($list, "/file");
         ok( $list );
 
         is( "/dir1/file", $list[0] );
@@ -172,7 +172,7 @@ class FileUtilTest extends PHPUnit_Framework_ExtensionTestCase
             "/file2",
             "/file3",
         );
-        futil_pathprepend($list, "/root");
+        futil_paths_prepend($list, "/root");
         ok( $list );
 
         is( "/root/file1", $list[0] );

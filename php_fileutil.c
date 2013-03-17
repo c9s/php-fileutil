@@ -61,8 +61,8 @@ static const zend_function_entry fileutil_functions[] = {
     PHP_FE(futil_scanpath_dir, arginfo_futil_scanpath_dir)
     PHP_FE(futil_pathjoin, NULL)
     PHP_FE(futil_pathsplit, NULL)
-    PHP_FE(futil_pathappend, NULL)
-    PHP_FE(futil_pathprepend, NULL)
+    PHP_FE(futil_paths_append, NULL)
+    PHP_FE(futil_paths_prepend, NULL)
     PHP_FE(futil_lastmtime, arginfo_futil_lastmtime)
     PHP_FE(futil_lastctime, arginfo_futil_lastctime)
     PHP_FE(futil_unlink_if_exists, NULL)
@@ -707,7 +707,7 @@ PHP_FUNCTION(futil_rmtree)
 
 
 
-PHP_FUNCTION(futil_pathappend)
+PHP_FUNCTION(futil_paths_append)
 {
     zval *zarr;
 
@@ -753,7 +753,7 @@ PHP_FUNCTION(futil_pathappend)
 }
 
 
-PHP_FUNCTION(futil_pathprepend)
+PHP_FUNCTION(futil_paths_prepend)
 {
     zval *zarr;
 
