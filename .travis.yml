@@ -6,7 +6,7 @@ php:
 before_script:
   - phpenv rehash
   - pear channel-discover pear.corneltek.com
-  - pear channel-update -f pear.corneltek.com
+  - pear channel-update -f corneltek
   - pear install corneltek/Universal
   - pear install corneltek/PHPUnit_TestMore
   - pear install -f corneltek/PHPUnit_Framework_ExtensionTestCase
