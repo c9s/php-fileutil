@@ -5,6 +5,27 @@
 #include "php_fileutil.h"
 #include "path.h"
 
+#include <Zend/zend.h>
+#include <Zend/zend_constants.h>
+#include <Zend/zend_execute.h>
+#include <Zend/zend_exceptions.h>
+#include <Zend/zend_hash.h>
+#include <Zend/zend_interfaces.h>
+#include <Zend/zend_operators.h>
+#include <Zend/zend_qsort.h>
+#include <Zend/zend_vm.h>
+
+#include <ext/standard/php_standard.h>
+#include <ext/standard/php_filestat.h>
+#include <ext/standard/php_string.h>
+
+#if HAVE_SPL
+#include <ext/spl/spl_array.h>
+#include <ext/spl/spl_directory.h>
+#include <ext/spl/spl_engine.h>
+#include <ext/spl/spl_exceptions.h>
+#include <ext/spl/spl_iterators.h>
+#endif
 
 
 // these flags are inside the ext/spl/spl_iterators.c, 
