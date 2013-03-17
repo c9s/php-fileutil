@@ -85,7 +85,7 @@ static zend_bool _unlink_file(char *filename, int filename_len, zval *zcontext);
 
 
 
-zend_bool futil_file_exists(char * filename, int filename_len)
+zend_bool futil_file_exists(char * filename, int filename_len TSRMLS_DC)
 {
     zval tmp;
     php_stat(filename, filename_len, FS_EXISTS, &tmp TSRMLS_CC);
@@ -425,7 +425,7 @@ PHP_FUNCTION(futil_mkdir_if_not_exists)
         RETURN_FALSE;
     }
 
-    if ( futil_file_exists(dir,dir_len) ) {
+    if ( futil_file_exists(dir,dir_len TSRMLS_CC) ) {
         RETURN_FALSE;
     }
     context = php_stream_context_from_zval(zcontext, 0);
@@ -447,7 +447,7 @@ PHP_FUNCTION(futil_rmdir_if_exists)
         RETURN_FALSE;
     }
 
-    if ( ! futil_file_exists(dir,dir_len) ) {
+    if ( ! futil_file_exists(dir,dir_len TSRMLS_CC) ) {
         RETURN_FALSE;
     }
 
