@@ -10,6 +10,7 @@ before_script:
   - pear install -a -f corneltek/Universal
   - pear install -a -f corneltek/PHPUnit_TestMore
   - pear install -a -f corneltek/PHPUnit_Framework_ExtensionTestCase
+  - pear install -a -f corneltek/ExtUnit
   - curl -O https://raw.github.com/c9s/Onion/master/onion
   - php onion -q install
 
