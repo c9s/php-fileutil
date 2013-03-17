@@ -25,7 +25,7 @@ class FileUtilTest extends PHPUnit_Framework_ExtensionTestCase
     {
         $i = $this->repeat;
         while( $i-- ) {
-            $files = futil_scanpath("/etc");
+            $files = futil_scanpath("tests");
             ok($files,"Should return a file list");
             ok(is_array($files));
             foreach($files as $file) {
