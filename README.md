@@ -41,6 +41,7 @@ $filelist = futil_scanpath("/etc");
 $dirlist = futil_scanpath_dir("/etc");
 
 $path = futil_pathjoin("etc","folder","file1"); // Returns "etc/folder/file1", as the same as "etc" . DIRECTORY_SEPARATOR . "folder" . DIRECTORY_SEPARATOR . "file1"
+$subpaths  = futil_pathsplit("etc/folder/file1");
 
 $newFilename = futil_replace_extension("manifest.yml","json"); // Returns manifest.json
 
