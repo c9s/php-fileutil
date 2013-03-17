@@ -615,6 +615,9 @@ PHP_FUNCTION(futil_filename_append_suffix)
     int   suffix_len;
     int   newfilename_len;
 
+    int   len;
+    char *src;
+    char *dst;
 
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "ss", &filename, &filename_len, &suffix, &suffix_len ) == FAILURE) {
         php_error_docref(NULL TSRMLS_CC, E_WARNING, "Wrong parameters.");
@@ -627,9 +630,10 @@ PHP_FUNCTION(futil_filename_append_suffix)
     dot = strrchr(filename, (int) '.');
     if ( dot != NULL ) {
         newfilename = emalloc( sizeof(char) * (filename_len + suffix_len) );
-        int len = (dot - filename);
-        char * src = filename;
-        char * dst = newfilename;
+
+        len = (dot - filename);
+        src = filename;
+        dst = newfilename;
 
         strncpy(dst, src, len);
         dst += len;
