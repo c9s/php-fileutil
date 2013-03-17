@@ -182,3 +182,15 @@ function futil_prettysize($bytes)
 }
 
 
+function futil_filename_append_suffix( $filename , $suffix )
+{
+    $pos = strrpos( $filename , '.' );
+    if ($pos !== false) {
+        return substr( $filename , 0 , $pos )
+            . $suffix
+            . substr( $filename , $pos );
+    }
+    return $filename . $suffix;
+}
+
+

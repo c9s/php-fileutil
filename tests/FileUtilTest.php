@@ -248,6 +248,18 @@ class FileUtilTest extends PHPUnit_Framework_ExtensionTestCase
         is( '1.0 GB', futil_prettysize(1024 * 1024 * 1024) );
     }
 
+
+    public function testFilenameSuffix()
+    {
+        $i = $this->repeat;
+        while( $i-- ) {
+            $filename = "Hack.png";
+            is( "Hack_suffix.png" , futil_filename_append_suffix($filename, "_suffix") );
+        }
+        // is( "Hack2.png" , futil_filename_append_suffix($filename, "2") );
+
+        // is( "Hack2" , futil_filename_append_suffix("Hack", "2") );
+    }
 }
 
 

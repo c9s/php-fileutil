@@ -59,6 +59,7 @@ PHP_FUNCTION(futil_rmtree);
 PHP_FUNCTION(futil_replace_extension);
 PHP_FUNCTION(futil_get_extension);
 PHP_FUNCTION(futil_prettysize);
+PHP_FUNCTION(futil_filename_append_suffix);
 
 #define false 0
 #define true 1

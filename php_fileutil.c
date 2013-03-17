@@ -33,6 +33,7 @@ static const zend_function_entry fileutil_functions[] = {
     PHP_FE(futil_replace_extension, NULL)
     PHP_FE(futil_get_extension, NULL)
     PHP_FE(futil_prettysize, NULL)
+    PHP_FE(futil_filename_append_suffix, NULL)
     {NULL, NULL, NULL}
 };
 
@@ -602,6 +603,63 @@ PHP_FUNCTION(futil_get_extension)
 }
 
 
+/* futil_filename_append_suffix( filename, suffix) */
+PHP_FUNCTION(futil_filename_append_suffix)
+{
+    char *filename;
+    char *newfilename;
+    char *suffix;
+    char *dot;
+
+    int   filename_len;
+    int   suffix_len;
+    int   newfilename_len;
+
+
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "ss", &filename, &filename_len, &suffix, &suffix_len ) == FAILURE) {
+        php_error_docref(NULL TSRMLS_CC, E_WARNING, "Wrong parameters.");
+        RETURN_FALSE;
+    }
+
+    if ( filename_len == 0 )
+        RETURN_FALSE;
+
+    dot = strrchr(filename, (int) '.');
+    if ( dot != NULL ) {
+        newfilename = emalloc( sizeof(char) * (filename_len + suffix_len) );
+        int len = (dot - filename);
+        char * src = filename;
+        char * dst = newfilename;
+        while( len-- ) {
+            *dst = *src;
+            dst++;
+            src++;
+        }
+        len = suffix_len;
+        src = suffix;
+        while( len-- ) {
+            *dst = *src;
+            dst++;
+            src++;
+        }
+        len = filename_len - (filename - dot);
+        src = dot;
+        while( len-- ) {
+            *dst = *src;
+            dst++;
+            src++;
+        }
+        newfilename_len = filename_len + suffix_len;
+    } else {
+        // simply append the suffix
+        printf("herhe");
+        newfilename = strncat(filename, suffix, suffix_len);
+        newfilename_len = filename_len + suffix_len;
+    }
+    // newfilename_len--;
+    RETURN_STRINGL(newfilename, newfilename_len, 0);
+}
+
 PHP_FUNCTION(futil_replace_extension)
 {
     char *filename;
@@ -679,6 +737,7 @@ PHP_FUNCTION(futil_prettysize)
     }
     RETURN_STRING( str, 0);
 }
+
 
 PHP_FUNCTION(futil_pathjoin)
 {
