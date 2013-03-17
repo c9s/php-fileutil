@@ -126,7 +126,7 @@ char* path_concat_fill(
     char * dst, 
     char * src, 
     int  subpath_len,
-    bool remove_first_slash TSRMLS_DC)
+    zend_bool remove_first_slash TSRMLS_DC)
 {
     // check if we need remove the first slash.
     if( remove_first_slash && *src == DEFAULT_SLASH ) {

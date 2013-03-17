@@ -10,7 +10,7 @@ char* path_concat_fill(
         char * dst, 
         char * src, 
         int  subpath_len,
-        bool remove_first_slash TSRMLS_DC);
+        zend_bool remove_first_slash TSRMLS_DC);
 
 //  char* path_concat_from_zargs( int num_varargs , zval ***varargs TSRMLS_DC);
 
