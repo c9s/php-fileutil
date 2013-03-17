@@ -652,6 +652,7 @@ PHP_FUNCTION(futil_replace_extension)
 PHP_FUNCTION(futil_prettysize)
 {
     long bytes = 0;
+    char *str;
 
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "l",
                     &bytes
@@ -660,11 +661,24 @@ PHP_FUNCTION(futil_prettysize)
         RETURN_FALSE;
     }
 
+    if ( bytes < 0 ) {
+        RETURN_FALSE;
+    }
 
+    str = emalloc(sizeof(char) * 16);
 
-
-
-
+    if ( bytes < SIZE_KB ) {
+        sprintf(str, "%ld B", bytes);
+    } else if ( bytes < SIZE_MB ) {
+        sprintf(str, "%ld KB", (long) (bytes / SIZE_KB) );
+    } else if ( bytes < SIZE_GB ) {
+        sprintf(str, "%.1f MB", (double) (bytes / SIZE_MB) );
+    } else if ( bytes < SIZE_TB ) {
+        sprintf(str, "%.1f GB", (double) (bytes / SIZE_GB));
+    } else {
+        sprintf( str, "%.1f TB", (double) (bytes / SIZE_TB));
+    }
+    RETURN_STRING( str, 0);
 }
 
 PHP_FUNCTION(futil_pathjoin)

@@ -1,5 +1,9 @@
 <?php
 
+define('SIZE_KB', 1024);
+define('SIZE_MB', 1048576);
+define('SIZE_GB', 1073741824);
+
 function futil_pathsplit($path)
 {
     return explode(DIRECTORY_SEPARATOR, $path);
@@ -162,19 +166,19 @@ function futil_prettysize($bytes)
         return $bytes . ' B';
     }
 
-    if ( $bytes < 1024 * 1024 ) {
-        return ((int) $bytes / 1024) . ' KB';
+    if ( $bytes < SIZE_MB) {
+        return sprintf("%d KB", $bytes / SIZE_KB);
     }
 
-    if ( $bytes < 1024 * 1024 * 1024 ) {
-        return ((int) $bytes / 1024 / 1024) . ' MB';
+    if ( $bytes < SIZE_GB ) {
+        return sprintf("%.1f MB", $bytes / SIZE_MB);
     }
 
-    if ( $bytes < 1024 * 1024 * 1024 * 1024 ) {
-        return ((int) $bytes / 1024 / 1024 / 1024) . ' GB';
+    if ( $bytes < SIZE_GB * 1024 ) {
+        return sprintf("%.1f GB", $bytes / SIZE_GB );
     }
 
-    return ((int) $bytes / 1024 / 1024) . ' MB';
+    return sprintf("%.1f TB", $bytes / 1024 / 1024 / 1024 / 1024);
 }
 
 

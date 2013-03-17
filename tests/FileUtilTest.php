@@ -244,7 +244,7 @@ class FileUtilTest extends PHPUnit_Framework_ExtensionTestCase
     public function testPrettySize()
     {
         is( '1 KB', futil_prettysize(1024) );
-        is( '1 MB', futil_prettysize(1024 * 1024) );
+        is( '1.0 MB', futil_prettysize(1024 * 1024) );
     }
 
 }

@@ -73,4 +73,9 @@ zend_bool futil_unlink_file(char *filename, int filename_len, zval *zcontext TSR
 extern zend_module_entry fileutil_module_entry;
 #define phpext_fileutil_ptr &fileutil_module_entry
 
+#define SIZE_KB 1024
+#define SIZE_MB (1024 * 1024)
+#define SIZE_GB (1024 * 1024 * 1024)
+#define SIZE_TB (1024 * 1024 * 1024 * 1024)
+
 #endif
