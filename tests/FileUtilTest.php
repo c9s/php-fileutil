@@ -241,6 +241,12 @@ class FileUtilTest extends PHPUnit_Framework_ExtensionTestCase
         is( "manifest.json", $file );
     }
 
+    public function testPrettySize()
+    {
+        is( '1 KB', futil_prettysize(1024) );
+        is( '1 MB', futil_prettysize(1024 * 1024) );
+    }
+
 }
 
 

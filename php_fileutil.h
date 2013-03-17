@@ -58,6 +58,7 @@ PHP_FUNCTION(futil_mkdir_if_not_exists);
 PHP_FUNCTION(futil_rmtree);
 PHP_FUNCTION(futil_replace_extension);
 PHP_FUNCTION(futil_get_extension);
+PHP_FUNCTION(futil_prettysize);
 
 #define false 0
 #define true 1

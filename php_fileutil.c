@@ -32,6 +32,7 @@ static const zend_function_entry fileutil_functions[] = {
     PHP_FE(futil_rmtree, NULL)
     PHP_FE(futil_replace_extension, NULL)
     PHP_FE(futil_get_extension, NULL)
+    PHP_FE(futil_prettysize, NULL)
     {NULL, NULL, NULL}
 };
 
@@ -646,6 +647,24 @@ PHP_FUNCTION(futil_replace_extension)
     newfilename = strncat(basename, extension, extension_len);
     newfilename_len = basename_len + extension_len;
     RETURN_STRINGL(newfilename, newfilename_len, 0);
+}
+
+PHP_FUNCTION(futil_prettysize)
+{
+    long bytes = 0;
+
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "l",
+                    &bytes
+                    ) == FAILURE) {
+        php_error_docref(NULL TSRMLS_CC, E_WARNING, "Wrong parameters.");
+        RETURN_FALSE;
+    }
+
+
+
+
+
+
 }
 
 PHP_FUNCTION(futil_pathjoin)
