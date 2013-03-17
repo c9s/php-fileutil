@@ -12,7 +12,7 @@ char* path_concat_fill(
         int  subpath_len,
         zend_bool remove_first_slash TSRMLS_DC);
 
-//  char* path_concat_from_zargs( int num_varargs , zval ***varargs TSRMLS_DC);
+char * path_concat_from_zargs( int num_varargs , zval ***varargs TSRMLS_DC);
 
 char* path_concat_from_zarray(zval **arr  TSRMLS_DC);
 

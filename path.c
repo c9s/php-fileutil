@@ -143,4 +143,42 @@ char* path_concat_fill(
 }
 
 
+char * path_concat_from_zargs( int num_varargs , zval ***varargs TSRMLS_DC)
+{
+    char *dst;
+    char *newpath;
+    int i;
+    int len;
+    zval **arg;
+
+    len = num_varargs + 1;
+    for (i = 0; i < num_varargs; i++) {
+        arg = varargs[i];
+        len += Z_STRLEN_PP(arg);
+    }
+
+    newpath = emalloc( sizeof(char) * len );
+
+    dst = newpath;
+    for (i = 0; i < num_varargs; i++ ) {
+        arg = varargs[i];
+        char *subpath = Z_STRVAL_PP(arg);
+        int  subpath_len = Z_STRLEN_PP(arg);
+
+        if( subpath_len == 0 ) {
+            continue;
+        }
+
+        dst = path_concat_fill(dst, subpath, subpath_len, i > 0 TSRMLS_CC);
+
+        // concat slash to the end
+        if ( *(dst-1) != DEFAULT_SLASH && i < (num_varargs - 1) ) {
+            *dst = DEFAULT_SLASH;
+            dst++;
+        }
+    }
+    *dst = '\0';
+    return newpath;
+}
+
 
