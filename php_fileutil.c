@@ -577,14 +577,10 @@ static int rmtree_iterator(zend_object_iterator *iter, void *puser TSRMLS_DC)
                             return ZEND_HASH_APPLY_STOP;
                         }
 
-                        fname_len = strlen(fname);
-
-                        // do unlink or rmdir
-                        // printf("path: %s\n", fname);
-
                         if ( is_dir ) {
                             php_stream_rmdir(fname, REPORT_ERRORS, NULL);
                         } else {
+                            fname_len = strlen(fname);
                             _unlink_file(fname, fname_len, NULL);
                         }
 
