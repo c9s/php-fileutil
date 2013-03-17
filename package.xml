@@ -11,10 +11,10 @@
     <active>yes</active>
   </lead>
   <date>2013-03-17</date>
-  <time>19:10:19</time>
+  <time>21:02:15</time>
   <version>
-    <release>1.2.0</release>
-    <api>1.2.0</api>
+    <release>1.3.0</release>
+    <api>1.3.0</api>
   </version>
   <stability>
     <release>alpha</release>
@@ -24,7 +24,7 @@
   <notes>-</notes>
   <contents>
     <dir name="/">
-      <file name="src/FileUtil.php" role="php" md5sum="72bef69005f46bdaad5a33ec3f96c400"/>
+      <file name="src/FileUtil.php" role="php" md5sum="f4e3463e25c845e55eed3d3e6249eba6"/>
     </dir>
   </contents>
   <dependencies>
