@@ -3,6 +3,11 @@
 #define PHP_FILEUTIL_VERSION "1.0"
 #define PHP_FILEUTIL_EXTNAME "fileutil"
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+#include "php.h"
+
 #ifdef HAVE_STDBOOL_H
 # include <stdbool.h>
 #else
