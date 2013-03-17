@@ -2,8 +2,8 @@
 <package xmlns="http://pear.php.net/dtd/package-2.0" xmlns:tasks="http://pear.php.net/dtd/tasks-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" packagerversion="1.4.10" version="2.0" xsi:schemaLocation="http://pear.php.net/dtd/tasks-1.0               http://pear.php.net/dtd/tasks-1.0.xsd               http://pear.php.net/dtd/package-2.0               http://pear.php.net/dtd/package-2.0.xsd">
   <name>FileUtil</name>
   <channel>pear.corneltek.com</channel>
-  <summary>file related helper functions for PHP</summary>
-  <description>file related helper functions for PHP</description>
+  <summary>Fast File Utility Functions for PHP</summary>
+  <description>Fast File Utility Functions for PHP</description>
   <lead>
     <name>Yo-An Lin</name>
     <user/>
@@ -11,7 +11,7 @@
     <active>yes</active>
   </lead>
   <date>2013-03-17</date>
-  <time>01:48:40</time>
+  <time>15:07:49</time>
   <version>
     <release>1.0.0</release>
     <api>1.0.0</api>
@@ -24,7 +24,7 @@
   <notes>-</notes>
   <contents>
     <dir name="/">
-      <file name="src/FileUtil.php" role="php" md5sum="dedfd2407095b75aecdcf999e89adee8"/>
+      <file name="src/FileUtil.php" role="php" md5sum="b736847637617b7949868390b962dd30"/>
     </dir>
   </contents>
   <dependencies>
