@@ -67,6 +67,9 @@ array(
 if ( false === futil_rmtree("/path/to/delete") ) {
 
 }
+
+$newfilename = futil_filename_append_suffix("Picture.png", "_suffix");  // Returns "Picture_suffix.png"
+$newfilename = futil_filename_append_suffix("Picture", "_suffix");  // Returns "Picture_suffix"
 ```
 
 
@@ -133,5 +136,7 @@ Recursively delete files and directories through RecursiveDirectoryIterator.
 #### `futil_replace_extension($path, $newExtension)`
 
 #### `futil_get_extension($path)`
+
+#### `futil_filename_append_suffix($path, $suffix)`
 
 
