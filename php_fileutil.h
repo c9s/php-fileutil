@@ -41,9 +41,12 @@ PHP_FUNCTION(futil_get_extension);
 #define false 0
 #define true 1
 
+char * path_concat_from_zargs( int num_varargs , zval ***varargs TSRMLS_DC);
+
+zend_bool futil_file_exists(char * filename, int filename_len TSRMLS_DC);
 zend_bool futil_stream_is_dir(php_stream *stream TSRMLS_DC);
 zend_bool futil_is_dir(char* dirname, int dirname_len TSRMLS_DC);
-char * path_concat_from_zargs( int num_varargs , zval ***varargs TSRMLS_DC);
+zend_bool futil_is_file(char* dirname, int dirname_len TSRMLS_DC);
 
 extern zend_module_entry fileutil_module_entry;
 #define phpext_fileutil_ptr &fileutil_module_entry

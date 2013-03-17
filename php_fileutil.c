@@ -23,8 +23,6 @@ typedef enum {
     RIT_CHILD_FIRST = 2
 } RecursiveIteratorMode;
 
-
-
 ZEND_BEGIN_ARG_INFO_EX(arginfo_futil_scanpath, 0, 0, 1)
     ZEND_ARG_INFO(0, dir)
 ZEND_END_ARG_INFO()
@@ -83,10 +81,6 @@ ZEND_GET_MODULE(fileutil)
 
 
 static zend_bool _unlink_file(char *filename, int filename_len, zval *zcontext TSRMLS_DC);
-zend_bool futil_file_exists(char * filename, int filename_len TSRMLS_DC);
-zend_bool futil_stream_is_dir(php_stream *stream TSRMLS_DC);
-zend_bool futil_is_dir(char* dirname, int dirname_len TSRMLS_DC);
-zend_bool futil_is_file(char* dirname, int dirname_len TSRMLS_DC);
 
 
 
