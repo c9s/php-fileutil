@@ -630,32 +630,28 @@ PHP_FUNCTION(futil_filename_append_suffix)
         int len = (dot - filename);
         char * src = filename;
         char * dst = newfilename;
-        while( len-- ) {
-            *dst = *src;
-            dst++;
-            src++;
-        }
+
+        memcpy(dst, src, len * sizeof(char) );
+        dst += len;
+
         len = suffix_len;
         src = suffix;
-        while( len-- ) {
-            *dst = *src;
-            dst++;
-            src++;
-        }
+        memcpy(dst, src, len * sizeof(char) );
+        dst += suffix_len;
+
+
+
         len = filename_len - (filename - dot);
         src = dot;
-        while( len-- ) {
-            *dst = *src;
-            dst++;
-            src++;
-        }
+        memcpy(dst, src, len * sizeof(char) );
+        dst += len;
+
         newfilename_len = filename_len + suffix_len;
     } else {
         // simply append the suffix
         newfilename = strncat(filename, suffix, suffix_len);
         newfilename_len = filename_len + suffix_len;
     }
-    // newfilename_len--;
     RETURN_STRINGL(newfilename, newfilename_len, 0);
 }
 
