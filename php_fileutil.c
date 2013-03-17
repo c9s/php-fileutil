@@ -85,6 +85,7 @@ static zend_bool _unlink_file(char *filename, int filename_len, zval *zcontext T
 zend_bool futil_file_exists(char * filename, int filename_len TSRMLS_DC);
 zend_bool futil_stream_is_dir(php_stream *stream TSRMLS_DC);
 zend_bool futil_is_dir(char* dirname, int dirname_len TSRMLS_DC);
+zend_bool futil_is_file(char* dirname, int dirname_len TSRMLS_DC);
 
 
 
@@ -113,7 +114,15 @@ zend_bool futil_is_dir(char* dirname, int dirname_len TSRMLS_DC)
     return ret;
 }
 
-
+zend_bool futil_is_file(char* dirname, int dirname_len TSRMLS_DC)
+{
+    zval tmp;
+    zend_bool ret;
+    php_stat(dirname, dirname_len, FS_IS_FILE, &tmp TSRMLS_CC);
+    ret = Z_LVAL(tmp) ? true : false;
+    zval_dtor( &tmp );
+    return ret;
+}
 
 
 
@@ -615,6 +624,11 @@ PHP_FUNCTION(futil_rmtree)
     }
 
 
+    if ( futil_is_file(dir,dir_len TSRMLS_CC) ) {
+        _unlink_file( dir, dir_len, NULL TSRMLS_CC );
+        RETURN_TRUE;
+    }
+
     MAKE_STD_ZVAL(iter);
 
     if (SUCCESS != object_init_ex(iter, spl_ce_RecursiveDirectoryIterator)) {
@@ -688,7 +702,7 @@ PHP_FUNCTION(futil_rmtree)
     int pass = 0;
 
     if (SUCCESS == spl_iterator_apply(iteriter, (spl_iterator_apply_func_t) rmtree_iterator, (void *) &pass TSRMLS_CC)) {
-
+        RETURN_TRUE;
     }
 
     RETURN_FALSE;
