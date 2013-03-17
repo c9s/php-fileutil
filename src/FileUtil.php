@@ -116,6 +116,11 @@ function futil_rmtree($path)
             unlink( $fileinfo->getPathname() );
         }
     }
+    if ( is_dir($path) ) {
+        rmdir($path);
+    } elseif ( is_file($path) ) {
+        unlink($path);
+    }
     return true;
 }
 

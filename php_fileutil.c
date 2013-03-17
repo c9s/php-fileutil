@@ -698,13 +698,11 @@ PHP_FUNCTION(futil_rmtree)
 
     zval_ptr_dtor(&iter);
 
-
     int pass = 0;
 
     if (SUCCESS == spl_iterator_apply(iteriter, (spl_iterator_apply_func_t) rmtree_iterator, (void *) &pass TSRMLS_CC)) {
         RETURN_TRUE;
     }
-
     RETURN_FALSE;
 }
 
