@@ -3,7 +3,11 @@
 #define PHP_FILEUTIL_VERSION "1.0"
 #define PHP_FILEUTIL_EXTNAME "fileutil"
 
-
+#ifdef HAVE_STDBOOL_H
+# include <stdbool.h>
+#else
+  typedef enum {false = 0, true = 1} bool;
+#endif
 
 PHP_FUNCTION(futil_scanpath);
 PHP_FUNCTION(futil_scanpath_dir);
