@@ -812,17 +812,13 @@ PHP_FUNCTION(futil_replace_extension)
     int basename_len;
 
     dot = strrchr(filename, (int) '.');
-    if ( dot ) {
+    if ( dot != NULL ) {
         basename_len = dot - filename + 1;
-        if ( basename_len == filename_len ) {
-            RETURN_STRINGL(filename, filename_len, 0);
-        }
     } else {
         basename_len = filename_len;
         char *new_extension = emalloc( sizeof(char) * (extension_len + 1) );
         *new_extension = '.';
         strncpy(new_extension + 1, extension, extension_len);
-        efree(extension);
         extension = new_extension;
         extension_len++;
     }
