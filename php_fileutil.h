@@ -8,10 +8,8 @@
 #endif
 #include "php.h"
 
-#ifdef HAVE_STDBOOL_H
-# include <stdbool.h>
-#else
-  typedef enum {false = 0, true = 1} bool;
+#ifndef bool
+typedef enum {false = 0, true = 1} bool;
 #endif
 
 PHP_FUNCTION(futil_scanpath);
