@@ -7,10 +7,10 @@ before_script:
   - phpenv rehash
   - pear channel-discover pear.corneltek.com
   - pear channel-update corneltek
-  - pear install -a -f corneltek/Universal
-  - pear install -a -f corneltek/PHPUnit_TestMore
-  - pear install -a -f corneltek/PHPUnit_Framework_ExtensionTestCase
-  - pear install -a -f corneltek/ExtUnit
+  - pear install -a corneltek/Universal
+  - pear install -a corneltek/PHPUnit_TestMore
+  - pear install -a corneltek/PHPUnit_Framework_ExtensionTestCase
+  - pear install -a corneltek/ExtUnit
   - curl -O https://raw.github.com/c9s/Onion/master/onion
   - php onion -q install
 
