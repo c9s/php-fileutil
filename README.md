@@ -162,3 +162,11 @@ Recursively delete files and directories through RecursiveDirectoryIterator.
     phpunit
 
 
+## Author
+
+Pedro <cornelius.howl@gmail.com>
+
+## License
+
+See LICENSE file.
+
