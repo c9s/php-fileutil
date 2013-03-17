@@ -631,19 +631,18 @@ PHP_FUNCTION(futil_filename_append_suffix)
         char * src = filename;
         char * dst = newfilename;
 
-        memcpy(dst, src, len * sizeof(char) );
+        strncpy(dst, src, len);
         dst += len;
 
         len = suffix_len;
         src = suffix;
-        memcpy(dst, src, len * sizeof(char) );
+        strncpy(dst, src, len);
         dst += suffix_len;
-
 
 
         len = filename_len - (filename - dot);
         src = dot;
-        memcpy(dst, src, len * sizeof(char) );
+        strncpy(dst, src, len);
         dst += len;
 
         newfilename_len = filename_len + suffix_len;
