@@ -10,11 +10,11 @@
     <email>cornelius.howl@gmail.com</email>
     <active>yes</active>
   </lead>
-  <date>2013-03-17</date>
-  <time>23:52:19</time>
+  <date>2013-03-18</date>
+  <time>00:35:20</time>
   <version>
-    <release>1.4.0</release>
-    <api>1.4.0</api>
+    <release>1.5.0</release>
+    <api>1.5.0</api>
   </version>
   <stability>
     <release>alpha</release>
