@@ -30,6 +30,7 @@ PHP_FUNCTION(futil_unlink_if_exists);
 PHP_FUNCTION(futil_rmdir_if_exists);
 PHP_FUNCTION(futil_mkdir_if_not_exists);
 PHP_FUNCTION(futil_rmtree);
+PHP_FUNCTION(futil_replace_extension);
 
 
 #if HAVE_SPL

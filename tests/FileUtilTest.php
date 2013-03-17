@@ -17,6 +17,10 @@ class FileUtilTest extends PHPUnit_Framework_ExtensionTestCase
             'futil_scanpath',
             'futil_scanpath_dir',
             'futil_pathjoin',
+            'futil_rmtree',
+            'futil_pathsplit',
+            'futil_lastmtime',
+            'futil_lastctime',
         );
     }
 
@@ -198,6 +202,12 @@ class FileUtilTest extends PHPUnit_Framework_ExtensionTestCase
             ok( ! file_exists($file) );
         }
         ok( ! file_exists("tests/root/path1/path2") );
+    }
+
+    public function testReplaceExtension()
+    {
+        $file = futil_replace_extension("manifest.yml","json");
+        is( "manifest.json", $file );
     }
 
 }
