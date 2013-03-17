@@ -457,7 +457,7 @@ PHP_FUNCTION(futil_rmdir_if_exists)
 
 
 
-static zend_bool _unlink_file(char *filename, int filename_len, zval *zcontext)
+static zend_bool _unlink_file(char *filename, int filename_len, zval *zcontext TSRMLS_DC)
 {
     php_stream_wrapper *wrapper;
     php_stream_context *context = NULL;
@@ -497,7 +497,7 @@ PHP_FUNCTION(futil_unlink_if_exists)
     if ( Z_LVAL(tmp) == false ) {
         RETURN_FALSE;
     }
-    RETURN_BOOL( _unlink_file(filename, filename_len, zcontext) );
+    RETURN_BOOL( _unlink_file(filename, filename_len, zcontext TSRMLS_CC) );
 }
 
 
@@ -569,7 +569,7 @@ static int rmtree_iterator(zend_object_iterator *iter, void *puser TSRMLS_DC)
                             php_stream_rmdir(fname, REPORT_ERRORS, NULL);
                         } else {
                             fname_len = strlen(fname);
-                            _unlink_file(fname, fname_len, NULL);
+                            _unlink_file(fname, fname_len, NULL TSRMLS_CC);
                         }
 
                         // goto phar_spl_fileinfo;
