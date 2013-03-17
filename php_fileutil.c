@@ -252,6 +252,7 @@ PHP_FUNCTION(futil_lastctime)
     long lastctime = 0;
     char *path;
     int path_len;
+    zval mtime;
 
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "a",
                     &zarr
@@ -275,7 +276,6 @@ PHP_FUNCTION(futil_lastctime)
             path = Z_STRVAL_PP(entry_data);
             path_len  = Z_STRLEN_PP(entry_data);
 
-            zval mtime;
             php_stat(path, path_len, FS_MTIME, &mtime TSRMLS_CC);
             if (mtime.value.lval > lastctime ) {
                 lastctime = mtime.value.lval;
@@ -309,6 +309,8 @@ PHP_FUNCTION(futil_lastmtime)
     char *path;
     int path_len;
 
+    zval mtime;
+
     zarr_hash = Z_ARRVAL_P(zarr);
     array_count = zend_hash_num_elements(zarr_hash);
 
@@ -326,7 +328,6 @@ PHP_FUNCTION(futil_lastmtime)
             path = Z_STRVAL_PP(entry_data);
             path_len  = Z_STRLEN_PP(entry_data);
 
-            zval mtime;
             php_stat(path, path_len, FS_MTIME, &mtime TSRMLS_CC);
             if (mtime.value.lval > lastmtime ) {
                 lastmtime = mtime.value.lval;
