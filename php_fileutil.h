@@ -37,7 +37,8 @@ PHP_FUNCTION(futil_mkdir_if_not_exists);
 PHP_FUNCTION(futil_rmtree);
 PHP_FUNCTION(futil_replace_extension);
 
-
+#define false 0
+#define true 1
 
 zend_bool futil_stream_is_dir(php_stream *stream TSRMLS_DC);
 zend_bool futil_is_dir(char* dirname, int dirname_len TSRMLS_DC);
