@@ -15,6 +15,6 @@ before_script:
   - php onion -q install
   - phpenv rehash
   - phpize
-  - ./configure
-  - make
+  - ./configure > /dev/null
+  - make > /dev/null
 script: scripts/test_all.sh
