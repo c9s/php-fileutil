@@ -2,7 +2,9 @@
 #include "php_fileutil.h"
 #include "path.h"
 
-static int rmtree_iterator(zend_object_iterator *iter, void *puser TSRMLS_DC)
+
+
+int rmtree_iterator(zend_object_iterator *iter, void *puser TSRMLS_DC)
 {
     zval **value;
 
@@ -87,6 +89,32 @@ static int rmtree_iterator(zend_object_iterator *iter, void *puser TSRMLS_DC)
     // printf("got value: %s\n", Z_STRVAL_PP(value) );
     return ZEND_HASH_APPLY_KEEP;
 }
+
+
+
+
+zval *recursive_directory_iterator_create(char * dir, zval * arg, zval * arg2)
+{
+    zval *iter;
+    MAKE_STD_ZVAL(iter);
+
+    if (SUCCESS != object_init_ex(iter, spl_ce_RecursiveDirectoryIterator)) {
+        zval_ptr_dtor(&iter);
+        zend_throw_exception_ex(spl_ce_BadMethodCallException, 0 TSRMLS_CC, "Unable to instantiate directory iterator for %s", dir);
+        return NULL;
+    }
+
+    zend_call_method_with_2_params(&iter, spl_ce_RecursiveDirectoryIterator, 
+            &spl_ce_RecursiveDirectoryIterator->constructor, "__construct", NULL, arg, arg2);
+
+    if (EG(exception)) {
+        zval_ptr_dtor(&iter);
+        return NULL;
+    }
+    return iter;
+}
+
+
 
 
 
