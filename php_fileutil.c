@@ -180,15 +180,15 @@ void phpdir_scandir_with_handler(
         int dirname_len,
         char* (*handler)(char*, int, php_stream_dirent* TSRMLS_DC) TSRMLS_DC) 
 {
-    char * newpath;
     php_stream_dirent entry;
     while (php_stream_readdir(stream, &entry)) {
         if (strcmp(entry.d_name, "..") == 0 || strcmp(entry.d_name, ".") == 0) {
             continue;
         }
 
+        char * newpath;
         if ( (newpath = (*handler)(dirname, dirname_len, &entry TSRMLS_CC)) != NULL ) {
-            add_next_index_string(z_list, newpath, strlen(newpath) );
+            add_next_index_string(z_list, newpath , 0 );
         }
     }
 }

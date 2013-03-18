@@ -59,7 +59,7 @@ class FileUtilTest extends PHPUnit_Framework_ExtensionTestCase
         ok( $paths, "Got paths" );
         foreach($paths as $path) {
             path_ok($path);
-            ok(is_dir($path),'is_dir ok');
+            ok(is_dir($path),"Should only returns dir.");
         }
     }
 
