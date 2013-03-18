@@ -537,7 +537,9 @@ PHP_FUNCTION(futil_paths_append)
     char *newpath;
     int   newpath_len;
 
-    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "as", &zarr, &str_append, &str_append_len) == FAILURE) {
+    zend_bool modify = false;
+
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "as|b", &zarr, &str_append, &str_append_len, &modify) == FAILURE) {
         RETURN_FALSE;
     }
 
@@ -550,6 +552,11 @@ PHP_FUNCTION(futil_paths_append)
     if (zarr_count == 0)
         RETURN_FALSE;
 
+    if (! modify) {
+        array_init(return_value);
+        zval_copy_ctor(return_value);
+    }
+
     for(zend_hash_internal_pointer_reset_ex(zarr_hash, &pointer); 
             zend_hash_get_current_data_ex(zarr_hash, (void**) &entry_data, &pointer) == SUCCESS; 
             zend_hash_move_forward_ex(zarr_hash, &pointer)) 
@@ -561,11 +568,14 @@ PHP_FUNCTION(futil_paths_append)
             newpath = path_concat(str, str_len, str_append, str_append_len TSRMLS_CC);
             newpath_len = strlen(newpath);
 
-            // free up the previous string
-            efree(Z_STRVAL_PP(entry_data));
-
-            Z_STRVAL_PP(entry_data) = newpath;
-            Z_STRLEN_PP(entry_data) = newpath_len;
+            if ( modify ) {
+                // free up the previous string
+                efree(Z_STRVAL_PP(entry_data));
+                Z_STRVAL_PP(entry_data) = newpath;
+                Z_STRLEN_PP(entry_data) = newpath_len;
+            } else {
+                add_next_index_stringl(return_value, newpath, newpath_len, 0);
+            }
         }
     }
 }
@@ -589,7 +599,10 @@ PHP_FUNCTION(futil_paths_prepend)
     char *newpath;
     int   newpath_len;
 
-    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "as", &zarr, &str_prepend, &str_prepend_len) == FAILURE) {
+    zend_bool modify = false;
+
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "as|b", 
+                &zarr, &str_prepend, &str_prepend_len, &modify) == FAILURE) {
         RETURN_FALSE;
     }
 
@@ -602,6 +615,11 @@ PHP_FUNCTION(futil_paths_prepend)
     if (zarr_count == 0)
         RETURN_FALSE;
 
+    if ( ! modify ) {
+        array_init(return_value);
+        zval_copy_ctor(return_value);
+    }
+
     for(zend_hash_internal_pointer_reset_ex(zarr_hash, &pointer); 
             zend_hash_get_current_data_ex(zarr_hash, (void**) &entry_data, &pointer) == SUCCESS; 
             zend_hash_move_forward_ex(zarr_hash, &pointer)) 
@@ -613,11 +631,14 @@ PHP_FUNCTION(futil_paths_prepend)
             newpath = path_concat(str_prepend, str_prepend_len, str, str_len TSRMLS_CC);
             newpath_len = strlen(newpath);
 
-            // free up the previous string
-            efree(Z_STRVAL_PP(entry_data));
-
-            Z_STRVAL_PP(entry_data) = newpath;
-            Z_STRLEN_PP(entry_data) = newpath_len;
+            if ( modify ) {
+                // free up the previous string
+                efree(Z_STRVAL_PP(entry_data));
+                Z_STRVAL_PP(entry_data) = newpath;
+                Z_STRLEN_PP(entry_data) = newpath_len;
+            } else {
+                add_next_index_stringl(return_value, newpath, newpath_len, 0);
+            }
         }
     }
 }

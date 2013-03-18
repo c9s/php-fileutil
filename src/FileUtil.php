@@ -129,17 +129,33 @@ function futil_rmtree($path)
 }
 
 
-function futil_paths_append(& $paths,$path2)
+function futil_paths_append(& $paths,$path2, $modify = false)
 {
-    foreach( $paths as & $path ) {
-        $path = futil_pathjoin($path ,$path2);
+    if ( $modify ) {
+        foreach( $paths as & $path ) {
+            $path = futil_pathjoin($path ,$path2);
+        }
+    } else {
+        $newpaths = array();
+        foreach( $paths as $path ) {
+            $newpaths[] = futil_pathjoin($path ,$path2);
+        }
+        return $newpaths;
     }
 }
 
-function futil_paths_prepend(& $paths,$path2)
+function futil_paths_prepend(& $paths,$path2, $modify = false)
 {
-    foreach( $paths as & $path ) {
-        $path = futil_pathjoin($path2 ,$path);
+    if ( $modify ) {
+        foreach( $paths as & $path ) {
+            $path = futil_pathjoin($path2 ,$path);
+        }
+    } else {
+        $newpaths = array();
+        foreach( $paths as $path ) {
+            $newpaths[] = futil_pathjoin($path2 ,$path);
+        }
+        return $newpaths;
     }
 }
 

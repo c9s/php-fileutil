@@ -167,11 +167,11 @@ class FileUtilTest extends PHPUnit_Framework_ExtensionTestCase
             "/dir2",
             "/dir3",
         );
-        futil_paths_append($list, "/file");
-        ok( $list );
+        $newlist = futil_paths_append($list, "/file");
+        ok( $newlist );
 
-        is( "/dir1/file", $list[0] );
-        is( "/dir2/file", $list[1] );
+        is( "/dir1/file", $newlist[0] );
+        is( "/dir2/file", $newlist[1] );
     }
 
     public function testPathPrepend()
@@ -181,11 +181,11 @@ class FileUtilTest extends PHPUnit_Framework_ExtensionTestCase
             "/file2",
             "/file3",
         );
-        futil_paths_prepend($list, "/root");
-        ok( $list );
+        $newlist = futil_paths_prepend($list, "/root");
+        ok( $newlist );
 
-        is( "/root/file1", $list[0] );
-        is( "/root/file2", $list[1] );
+        is( "/root/file1", $newlist[0] );
+        is( "/root/file2", $newlist[1] );
     }
 
     public function testRmtree()
