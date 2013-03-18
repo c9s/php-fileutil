@@ -92,7 +92,11 @@ int rmtree_iterator(zend_object_iterator *iter, void *puser TSRMLS_DC)
 
 
 
-
+// Possible values
+//   SPL_FILE_DIR_CURRENT_AS_PATHNAME
+//   SPL_FILE_DIR_CURRENT_AS_FILEINFO
+//   SPL_FILE_DIR_FOLLOW_SYMLINKS
+// ZVAL_LONG(&iter_options, SPL_FILE_DIR_SKIPDOTS|SPL_FILE_DIR_UNIXPATHS);
 zval *recursive_directory_iterator_create(char * dir, int dir_len, long options TSRMLS_DC)
 {
     zval *iter;
@@ -128,6 +132,12 @@ zval *recursive_directory_iterator_create(char * dir, int dir_len, long options 
 }
 
 
+// Iterator constants
+//   typedef enum {
+//       RIT_LEAVES_ONLY = 0,
+//       RIT_SELF_FIRST  = 1,
+//       RIT_CHILD_FIRST = 2
+//   } RecursiveIteratorMode;
 zval *recursive_iterator_iterator_create(zval * iter, long options TSRMLS_DC)
 {
     zval * iteriter;
@@ -181,27 +191,14 @@ PHP_FUNCTION(futil_rmtree)
         RETURN_FALSE;
     }
 
-
     if ( futil_is_file(dir,dir_len TSRMLS_CC) ) {
         futil_unlink_file( dir, dir_len, NULL TSRMLS_CC );
         RETURN_TRUE;
     }
 
-
-    // Possible values
-    //   SPL_FILE_DIR_CURRENT_AS_PATHNAME
-    //   SPL_FILE_DIR_CURRENT_AS_FILEINFO
-    //   SPL_FILE_DIR_FOLLOW_SYMLINKS
-    // Iterator constants
-    //   typedef enum {
-    //       RIT_LEAVES_ONLY = 0,
-    //       RIT_SELF_FIRST  = 1,
-    //       RIT_CHILD_FIRST = 2
-    //   } RecursiveIteratorMode;
-    // ZVAL_LONG(&iter_options, SPL_FILE_DIR_SKIPDOTS|SPL_FILE_DIR_UNIXPATHS);
-
-    zval * iter;
+    zval *iter;
     zval *iteriter;
+
     if ( (iter = recursive_directory_iterator_create(dir, dir_len, SPL_FILE_DIR_SKIPDOTS|SPL_FILE_DIR_UNIXPATHS   TSRMLS_CC) ) == NULL )
         RETURN_FALSE;
 
