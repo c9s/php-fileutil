@@ -193,7 +193,7 @@ function futil_filename_append_suffix( $filename , $suffix )
     return $filename . $suffix;
 }
 
-function futil_read_files($files)
+function futil_get_contents_from_files($files)
 {
     $content = '';
     foreach( $files as $file ) {
