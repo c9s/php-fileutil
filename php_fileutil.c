@@ -873,9 +873,9 @@ PHP_FUNCTION(futil_filename_append_suffix)
     char *suffix;
     char *dot;
 
-    int   filename_len;
-    int   suffix_len;
-    int   newfilename_len;
+    int   filename_len = 0;
+    int   suffix_len = 0;
+    int   newfilename_len = 0;
 
     int   len;
     char *src;
@@ -885,6 +885,9 @@ PHP_FUNCTION(futil_filename_append_suffix)
         php_error_docref(NULL TSRMLS_CC, E_WARNING, "Wrong parameters.");
         RETURN_FALSE;
     }
+
+    if ( suffix_len  == 0 )
+        RETURN_FALSE;
 
     if ( filename_len == 0 )
         RETURN_FALSE;
