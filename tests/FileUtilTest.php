@@ -306,6 +306,7 @@ class FileUtilTest extends PHPUnit_Framework_ExtensionTestCase
             array("Hack_suffix.png",  "Hack.png" , "_suffix"),
             array("Hack_1234567890123.png",  "Hack.png" , "_1234567890123"),
             array("Hack_.png",  "Hack.png" , "_"),
+            array("Hack_123.png",  "Hack.png" , "_123"),
         );
     }
 

@@ -898,7 +898,7 @@ PHP_FUNCTION(futil_filename_append_suffix)
     dot = strrchr(filename, (int) '.');
     if ( dot != NULL ) {
         newfilename_len = filename_len + suffix_len;
-        newfilename = emalloc( sizeof(char) * (newfilename_len) );
+        newfilename = emalloc( sizeof(char) * newfilename_len );
 
         dst = newfilename;
         len = (dot - filename);
@@ -908,10 +908,10 @@ PHP_FUNCTION(futil_filename_append_suffix)
         memcpy(dst, suffix, suffix_len);
         dst += suffix_len;
 
-        len = filename_len - (filename - dot);
+        len = filename_len - (dot - filename);
         memcpy(dst, dot, len);
         dst += len;
-        // *dst = '\0';
+        *dst = '\0';
     } else {
         // simply append the suffix
         newfilename_len = filename_len + suffix_len;
