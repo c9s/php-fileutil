@@ -181,7 +181,7 @@ void phpdir_scandir_with_handler(
             continue;
         }
         char * newpath = (*handler)(dirname, dirname_len, &entry TSRMLS_CC);
-        if ( newpath != NULL) {
+        if ( newpath ) {
             add_next_index_string(z_list, newpath, strlen(newpath) );
         }
     }
@@ -197,7 +197,6 @@ PHP_FUNCTION(futil_scanpath_dir)
 {
     char *dirname;
     int dirname_len;
-    zval * z_list;
     php_stream *stream;
 
     // parse parameters
@@ -224,19 +223,14 @@ PHP_FUNCTION(futil_scanpath_dir)
     // it's not fclose-able
     stream->flags |= PHP_STREAM_FLAG_NO_FCLOSE;
 
-    MAKE_STD_ZVAL(z_list);
-    array_init(z_list);
+    array_init(return_value);
 
     phpdir_scandir_with_handler(
-            z_list,
+            return_value,
             stream, 
             dirname, dirname_len, 
             dir_dir_entry_handler TSRMLS_CC);
-
     php_stream_close(stream);
-
-    // add reference count
-    *return_value = *z_list;
     zval_copy_ctor(return_value);
 }
 
@@ -244,7 +238,6 @@ PHP_FUNCTION(futil_scanpath)
 {
     char *dirname;
     int dirname_len;
-    zval * z_list;
     php_stream * stream;
 
     /* parse parameters */
@@ -272,19 +265,15 @@ PHP_FUNCTION(futil_scanpath)
     // it's not fclose-able
     stream->flags |= PHP_STREAM_FLAG_NO_FCLOSE;
 
-    MAKE_STD_ZVAL(z_list);
-    array_init(z_list);
+    array_init(return_value);
 
     phpdir_scandir_with_handler(
-            z_list, 
+            return_value, 
             stream,
             dirname, dirname_len, 
             dir_entry_handler TSRMLS_CC);
 
     php_stream_close(stream);
-
-    // add reference count
-    *return_value = *z_list;
     zval_copy_ctor(return_value);
 }
 
