@@ -55,10 +55,10 @@ class FileUtilTest extends PHPUnit_Framework_ExtensionTestCase
 
     public function testScanDirDir()
     {
-        $paths = futil_scanpath_dir("/");
+        $paths = futil_scanpath_dir("src");
         ok( $paths );
         foreach($paths as $path) {
-            file_exists($path);
+            path_ok($path);
             ok(is_dir($path),'is_dir ok');
         }
     }
