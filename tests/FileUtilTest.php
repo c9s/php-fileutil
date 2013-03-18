@@ -87,16 +87,16 @@ class FileUtilTest extends PHPUnit_Framework_ExtensionTestCase
         $this->assertEquals( 'path1/path2/path3/path4' , $joined3 );
     }
 
-    public function testPathSplit()
+    public function testPathSplitWithRoot()
     {
-        $i = $this->repeat;
-        while( $i-- ) {
-            $parts = futil_pathsplit("path1/path2/path3");
-            count_ok(3,$parts);
+        $parts = futil_pathsplit("/etc/path2/path3");
+        count_ok(4, $parts);
+    }
 
-            $parts = futil_pathsplit("/etc/path2/path3");
-            count_ok(4, $parts);
-        }
+    public function testPathSplitRelative()
+    {
+        $parts = futil_pathsplit("path1/path2/path3");
+        count_ok(3,$parts);
     }
 
     public function testLastmtime()
@@ -104,6 +104,7 @@ class FileUtilTest extends PHPUnit_Framework_ExtensionTestCase
         $list = array("README.md","config.m4","tests/FileUtilTest.php");
         $mtime = futil_lastmtime($list);
         ok($mtime);
+        ok(is_integer($mtime));
     }
 
     public function testLastctime()
