@@ -262,6 +262,7 @@ class FileUtilTest extends PHPUnit_Framework_ExtensionTestCase
         }
         is( "Hack2.png" , futil_filename_append_suffix($filename, "2") );
         is( "Hack2" , futil_filename_append_suffix("Hack", "2") );
+        is( "Hack_blah_suffix" , futil_filename_append_suffix("Hack", "_blah_suffix") );
     }
 
     public function testReadFilesAsArray()
