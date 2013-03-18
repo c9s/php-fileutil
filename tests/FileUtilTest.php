@@ -174,6 +174,20 @@ class FileUtilTest extends PHPUnit_Framework_ExtensionTestCase
         is( "/dir2/file", $newlist[1] );
     }
 
+    public function testPathsRemoveBasepath()
+    {
+        $list = array( 
+            "/root/file1",
+            "/root/file2",
+            "/root/file3",
+        );
+        $newlist = futil_paths_remove_basepath($list, "/root");
+        ok( $newlist );
+        is("/file1", $newlist[0]);
+        is("/file2", $newlist[1]);
+        is("/file3", $newlist[2]);
+    }
+
     public function testPathPrepend()
     {
         $list = array( 

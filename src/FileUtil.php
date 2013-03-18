@@ -129,6 +129,14 @@ function futil_rmtree($path)
 }
 
 
+function futil_paths_remove_basepath($paths,$basepath)
+{
+    return array_map(function($item) use ($basepath) {
+        return substr($item,strlen($basepath));
+    }, $paths );
+}
+
+
 function futil_paths_append(& $paths,$path2, $modify = false)
 {
     if ( $modify ) {

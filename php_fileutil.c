@@ -25,6 +25,7 @@ static const zend_function_entry fileutil_functions[] = {
     PHP_FE(futil_pathsplit, NULL)
     PHP_FE(futil_paths_append, NULL)
     PHP_FE(futil_paths_prepend, NULL)
+    PHP_FE(futil_paths_remove_basepath, NULL)
     PHP_FE(futil_lastmtime, arginfo_futil_lastmtime)
     PHP_FE(futil_lastctime, arginfo_futil_lastctime)
     PHP_FE(futil_unlink_if_exists, NULL)
@@ -579,6 +580,85 @@ PHP_FUNCTION(futil_paths_append)
         }
     }
 }
+
+
+PHP_FUNCTION(futil_paths_remove_basepath)
+{
+    zval *zarr;
+
+    zval **entry_data;
+    HashTable *zarr_hash;
+    HashPosition pointer;
+    int zarr_count;
+
+    char *basepath;
+    int   basepath_len;
+
+    char *path;
+    int   path_len;
+
+    char *newpath;
+    int   newpath_len;
+
+    zend_bool modify = false;
+
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "as|b", 
+                &zarr, &basepath, &basepath_len, &modify) == FAILURE) {
+        RETURN_FALSE;
+    }
+
+    if ( basepath_len == 0 )
+        RETURN_FALSE;
+
+    zarr_hash = Z_ARRVAL_P(zarr);
+    zarr_count = zend_hash_num_elements(zarr_hash);
+
+    if (zarr_count == 0)
+        RETURN_FALSE;
+
+    if ( ! modify ) {
+        array_init(return_value);
+        zval_copy_ctor(return_value);
+    }
+
+    // append DEFAULT_SLASH to basepath
+    /*
+    char slash[2];
+    slash[0] = DEFAULT_SLASH;
+    slash[1] = '\0';
+    basepath_len++;
+    char * tmp = basepath;
+    basepath = emalloc( sizeof(char) * basepath_len );
+    memcpy(basepath, tmp , basepath_len - 1 );
+    memcpy(basepath + basepath_len, slash, 1);
+    */
+
+    for(zend_hash_internal_pointer_reset_ex(zarr_hash, &pointer); 
+            zend_hash_get_current_data_ex(zarr_hash, (void**) &entry_data, &pointer) == SUCCESS; 
+            zend_hash_move_forward_ex(zarr_hash, &pointer)) 
+    {
+        if ( Z_TYPE_PP(entry_data) == IS_STRING ) {
+            path = Z_STRVAL_PP(entry_data);
+            path_len = Z_STRLEN_PP(entry_data);
+
+            // found basepath
+            if ( strnstr(path, basepath, basepath_len) == path ) {
+                newpath_len =  path_len - basepath_len;
+                newpath = estrndup(path + basepath_len, newpath_len );
+                if ( modify ) {
+                    // free up the previous string
+                    efree(Z_STRVAL_PP(entry_data));
+                    Z_STRVAL_PP(entry_data) = newpath;
+                    Z_STRLEN_PP(entry_data) = newpath_len;
+                } else {
+                    add_next_index_stringl(return_value, newpath, newpath_len, 0);
+                }
+            }
+        }
+    }
+}
+
+
 
 
 PHP_FUNCTION(futil_paths_prepend)

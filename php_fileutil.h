@@ -50,6 +50,7 @@ PHP_FUNCTION(futil_pathjoin);
 PHP_FUNCTION(futil_pathsplit);
 PHP_FUNCTION(futil_paths_prepend);
 PHP_FUNCTION(futil_paths_append);
+PHP_FUNCTION(futil_paths_remove_basepath);
 PHP_FUNCTION(futil_lastmtime);
 PHP_FUNCTION(futil_lastctime);
 PHP_FUNCTION(futil_unlink_if_exists);
