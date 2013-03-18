@@ -153,67 +153,54 @@ class FileUtilTest extends PHPUnit_Framework_ExtensionTestCase
 
     public function testJoinArray()
     {
-        $i = $this->repeat;
-        while( $i-- ) {
-            $joined = futil_pathjoin(array('path1/','path2/','path3'));
-            $this->assertEquals( 'path1/path2/path3' , $joined );
-        }
+        $joined = futil_pathjoin(array('path1/','path2/','path3'));
+        $this->assertEquals( 'path1/path2/path3' , $joined );
     }
 
     public function testPathAppend()
     {
-        $i = $this->repeat;
-        while($i--) {
-            $list = array( 
-                "/dir1",
-                "/dir2",
-                "/dir3",
-            );
-            $newlist = futil_paths_append($list, "/file");
-            ok( $newlist );
+        $list = array( 
+            "/dir1",
+            "/dir2",
+            "/dir3",
+        );
+        $newlist = futil_paths_append($list, "/file");
+        ok( $newlist );
 
-            is( "/dir1/file", $newlist[0] );
-            is( "/dir2/file", $newlist[1] );
-        }
+        is( "/dir1/file", $newlist[0] );
+        is( "/dir2/file", $newlist[1] );
     }
 
     public function testPathsRemoveBasepath()
     {
-        $i = $this->repeat;
-        while( $i-- ) {
-            $list = array( 
-                "/root/file1",
-                "/root/file2",
-                "/root/file3",
-            );
-            $newlist = futil_paths_remove_basepath($list, "/root");
-            ok( $newlist );
-            is("/file1", $newlist[0]);
-            is("/file2", $newlist[1]);
-            is("/file3", $newlist[2]);
-        }
+        $list = array( 
+            "/root/file1",
+            "/root/file2",
+            "/root/file3",
+        );
+        $newlist = futil_paths_remove_basepath($list, "/root");
+        ok( $newlist );
+        is("/file1", $newlist[0]);
+        is("/file2", $newlist[1]);
+        is("/file3", $newlist[2]);
     }
 
     public function testPathPrepend()
     {
-        $i = $this->repeat;
-        while( $i-- ) {
-            $list = array( 
-                "/file1",
-                "/file2",
-                "/file3",
-            );
-            $newlist = futil_paths_prepend($list, "/root");
-            ok( $newlist );
-            is( "/root/file1", $newlist[0] );
-            is( "/root/file2", $newlist[1] );
-        }
+        $list = array( 
+            "/file1",
+            "/file2",
+            "/file3",
+        );
+        $newlist = futil_paths_prepend($list, "/root");
+        ok( $newlist );
+        is( "/root/file1", $newlist[0] );
+        is( "/root/file2", $newlist[1] );
     }
 
     public function testRmtree()
     {
         futil_mkdir_if_not_exists("tests/root/path1/path2",0755,true);
-
         $files = array();
         $files[] = "tests/root/file1";
         $files[] = "tests/root/file2";
@@ -245,21 +232,18 @@ class FileUtilTest extends PHPUnit_Framework_ExtensionTestCase
 
     public function testReplaceExtension()
     {
-        $i = $this->repeat;
-        while( $i-- ) {
-            touch("manifest.php");
-            touch("manifest.json");
+        touch("manifest.php");
+        touch("manifest.json");
 
-            $file = futil_replace_extension("manifest.yml","json");
-            is( "manifest.json", $file );
-            file_exists($file);
-            unlink($file);
+        $file = futil_replace_extension("manifest.yml","json");
+        is( "manifest.json", $file );
+        file_exists($file);
+        unlink($file);
 
-            $file = futil_replace_extension("manifest.yml","php");
-            is( "manifest.php", $file );
-            file_exists($file);
-            unlink($file);
-        }
+        $file = futil_replace_extension("manifest.yml","php");
+        is( "manifest.php", $file );
+        file_exists($file);
+        unlink($file);
     }
 
     public function testReplaceExtensionWithNonExtensionFile()
