@@ -128,7 +128,7 @@ PHP_FUNCTION(futil_rmtree)
     char *error, *regex = NULL;
     int regex_len = 0;
     zend_bool apply_reg = 0;
-    zval arg, arg2, *iter, *iteriter, *regexiter = NULL;
+    zval arg, arg2, *iteriter, *regexiter = NULL;
 
     zval iteriter_arg2;
 
@@ -144,13 +144,7 @@ PHP_FUNCTION(futil_rmtree)
         RETURN_TRUE;
     }
 
-    MAKE_STD_ZVAL(iter);
 
-    if (SUCCESS != object_init_ex(iter, spl_ce_RecursiveDirectoryIterator)) {
-        zval_ptr_dtor(&iter);
-        zend_throw_exception_ex(spl_ce_BadMethodCallException, 0 TSRMLS_CC, "Unable to instantiate directory iterator for %s", dir);
-        RETURN_FALSE;
-    }
 
     INIT_PZVAL(&arg);
     ZVAL_STRINGL(&arg, dir, dir_len, 0);
@@ -172,22 +166,14 @@ PHP_FUNCTION(futil_rmtree)
     //       RIT_CHILD_FIRST = 2
     //   } RecursiveIteratorMode;
     //    
-
-
     // ZVAL_LONG(&arg2, SPL_FILE_DIR_SKIPDOTS|SPL_FILE_DIR_UNIXPATHS);
     ZVAL_LONG(&arg2, SPL_FILE_DIR_SKIPDOTS|SPL_FILE_DIR_UNIXPATHS);
 #endif
 
-    zend_call_method_with_2_params(&iter, spl_ce_RecursiveDirectoryIterator, 
-            &spl_ce_RecursiveDirectoryIterator->constructor, "__construct", NULL, &arg, &arg2);
+    zval * iter = recursive_directory_iterator_create(dir, &arg, &arg2 );
 
-    if (EG(exception)) {
-        zval_ptr_dtor(&iter);
-        RETURN_FALSE;
-    }
 
     MAKE_STD_ZVAL(iteriter);
-
     if (SUCCESS != object_init_ex(iteriter, spl_ce_RecursiveIteratorIterator)) {
         zval_ptr_dtor(&iter);
         zval_ptr_dtor(&iteriter);
