@@ -292,11 +292,23 @@ class FileUtilTest extends PHPUnit_Framework_ExtensionTestCase
         }
     }
 
-    public function testPrettySize()
+
+    public function prettySizeDataProvider()
     {
-        is( '1 KB', futil_prettysize(1024) );
-        is( '1.0 MB', futil_prettysize(1024 * 1024) );
-        is( '1.0 GB', futil_prettysize(1024 * 1024 * 1024) );
+        return array( 
+            array('1 KB', 1024),
+            array('1.0 MB', 1024 * 1024),
+            array('2.0 MB', 1024 * 1024 * 2),
+            array('1.0 GB', 1024 * 1024 * 1024),
+        );
+    }
+
+    /**
+     * @dataProvider prettySizeDataProvider
+     */
+    public function testPrettySize($expected, $data)
+    {
+        is( $expected, futil_prettysize($data) );
     }
 
 
