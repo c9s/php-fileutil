@@ -255,41 +255,52 @@ class FileUtilTest extends PHPUnit_Framework_ExtensionTestCase
         ok( ! file_exists("tests/root/path1/path2") );
     }
 
-    public function testGetExtension()
+    public function extensionNameProvider()
     {
-        $extension = futil_get_extension("manifest.yml");
-        is('yml', $extension);
-
-        $extension = futil_get_extension("manifest.php");
-        is('php', $extension);
-
-        $extension = futil_get_extension("manifest");
-        is(false, $extension);
+        return array(
+            array("manifest.yml","yml"),
+            array("manifest.json","json"),
+            array("manifest.xml","xml"),
+            array("manifest",false),
+        );
     }
 
-    public function testReplaceExtension()
+
+    /**
+     * @dataProvider extensionNameProvider
+     */
+    public function testGetExtension($filename, $extension)
     {
-        touch("manifest.php");
-        touch("manifest.json");
+        is( $extension , futil_get_extension($filename) );
+    }
 
-        $file = futil_replace_extension("manifest.yml","json");
-        is( "manifest.json", $file );
-        file_exists($file); // ensure it is a valid path
-        unlink($file);
 
-        $file = futil_replace_extension("manifest.yml","php");
-        is( "manifest.php", $file );
-        file_exists($file); // ensure it is a valid path
+    public function replaceExtensionDataProvider()
+    {
+        return array(
+            array('manifest.yml','json','manifest.json'),
+            array('manifest.json','yml','manifest.yml'),
+        );
+    }
+
+    /**
+     * @dataProvider replaceExtensionDataProvider
+     */
+    public function testReplaceExtension($fromFile, $extension, $newFilename)
+    {
+        touch($fromFile);
+        touch($newFilename);
+
+        $file = futil_replace_extension($fromFile,$extension);
+        is( $newFilename, $file );
+        path_ok($file); // ensure it is a valid path
         unlink($file);
     }
 
     public function testReplaceExtensionWithNonExtensionFile()
     {
-        $i = $this->repeat;
-        while( $i-- ) {
-            $file = futil_replace_extension("manifest","json");
-            is( "manifest.json", $file );
-        }
+        $file = futil_replace_extension("manifest","json");
+        is( "manifest.json", $file );
     }
 
 
