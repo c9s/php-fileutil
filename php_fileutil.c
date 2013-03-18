@@ -655,10 +655,7 @@ PHP_FUNCTION(futil_get_contents_from_files)
     // int   output_cap = 20480 * 2;
     int   output_cap = 8192;
     int   output_len = 0;
-    char *output_end;
     char *output = emalloc(output_cap);
-    output_end = output;
-
 
     for(zend_hash_internal_pointer_reset_ex(zarr_hash, &pointer); 
             zend_hash_get_current_data_ex(zarr_hash, (void**) &entry_data, &pointer) == SUCCESS; 
@@ -679,7 +676,6 @@ PHP_FUNCTION(futil_get_contents_from_files)
                     }
                     memcpy(output + output_len, contents, contents_len );
                     output_len += contents_len;
-                    output_end += contents_len;
                     efree(contents);
                 }
             }
