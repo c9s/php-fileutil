@@ -633,7 +633,7 @@ PHP_FUNCTION(futil_paths_remove_basepath)
             path_len = Z_STRLEN_PP(entry_data);
 
             // found basepath
-            if ( strnstr(path, basepath, basepath_len) == path ) {
+            if ( strstr(path, basepath) == path ) {
                 newpath_len =  path_len - basepath_len;
                 newpath = estrndup(path + basepath_len, newpath_len );
                 if ( modify ) {
