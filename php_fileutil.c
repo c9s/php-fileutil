@@ -869,11 +869,10 @@ PHP_FUNCTION(futil_replace_extension)
         extension_len++;
     }
 
-    // basename with dot
-    basename = estrndup(filename, basename_len); // create basename
 
-    // create newfilename string
-    newfilename = strncat(basename, extension, extension_len);
+    newfilename = emalloc((basename_len + extension_len) * sizeof(char));
+    memcpy(newfilename, filename, basename_len);
+    memcpy(newfilename + basename_len, extension, extension_len );
     newfilename_len = basename_len + extension_len;
     RETURN_STRINGL(newfilename, newfilename_len, 0);
 }
