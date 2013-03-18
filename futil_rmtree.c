@@ -93,10 +93,15 @@ int rmtree_iterator(zend_object_iterator *iter, void *puser TSRMLS_DC)
 
 
 
-zval *recursive_directory_iterator_create(char * dir, zval * arg, zval * arg2 TSRMLS_DC)
+zval *recursive_directory_iterator_create(char * dir, int dir_len, zval * arg2 TSRMLS_DC)
 {
+    zval arg;
     zval *iter;
     MAKE_STD_ZVAL(iter);
+
+
+    INIT_PZVAL(&arg);
+    ZVAL_STRINGL(&arg, dir, dir_len, 0);
 
     if (SUCCESS != object_init_ex(iter, spl_ce_RecursiveDirectoryIterator)) {
         zval_ptr_dtor(&iter);
@@ -105,7 +110,7 @@ zval *recursive_directory_iterator_create(char * dir, zval * arg, zval * arg2 TS
     }
 
     zend_call_method_with_2_params(&iter, spl_ce_RecursiveDirectoryIterator, 
-            &spl_ce_RecursiveDirectoryIterator->constructor, "__construct", NULL, arg, arg2);
+            &spl_ce_RecursiveDirectoryIterator->constructor, "__construct", NULL, &arg, arg2);
 
     if (EG(exception)) {
         // decrease reference count for releasing memory
@@ -116,9 +121,14 @@ zval *recursive_directory_iterator_create(char * dir, zval * arg, zval * arg2 TS
 }
 
 
-zval *recursive_iterator_iterator_create(zval * iter, zval *arg TSRMLS_DC)
+zval *recursive_iterator_iterator_create(zval * iter, long options TSRMLS_DC)
 {
     zval * iteriter;
+    zval arg;
+
+
+
+
 
     MAKE_STD_ZVAL(iteriter);
     if (SUCCESS != object_init_ex(iteriter, spl_ce_RecursiveIteratorIterator)) {
@@ -129,8 +139,15 @@ zval *recursive_iterator_iterator_create(zval * iter, zval *arg TSRMLS_DC)
         return NULL;
     }
 
+    INIT_PZVAL(&arg);
+#if PHP_VERSION_ID < 50300
+    ZVAL_LONG(&arg, 0);
+#else
+    ZVAL_LONG(&arg, options);
+#endif
+
     zend_call_method_with_2_params(&iteriter, spl_ce_RecursiveIteratorIterator, 
-            &spl_ce_RecursiveIteratorIterator->constructor, "__construct", NULL, iter, arg);
+            &spl_ce_RecursiveIteratorIterator->constructor, "__construct", NULL, iter, &arg);
 
     if (EG(exception)) {
         // decrease reference count for releasing memory
@@ -152,8 +169,7 @@ PHP_FUNCTION(futil_rmtree)
     
     char *error = NULL;
     zend_bool apply_reg = 0;
-    zval arg, arg2;
-
+    zval iter_options;
 
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "p",
                     &dir, &dir_len
@@ -168,20 +184,10 @@ PHP_FUNCTION(futil_rmtree)
     }
 
 
-
-    INIT_PZVAL(&arg);
-    ZVAL_STRINGL(&arg, dir, dir_len, 0);
-    INIT_PZVAL(&arg2);
-#if PHP_VERSION_ID < 50300
-    ZVAL_LONG(&arg2, 0);
-#else
-
     // Possible values
     //   SPL_FILE_DIR_CURRENT_AS_PATHNAME
     //   SPL_FILE_DIR_CURRENT_AS_FILEINFO
     //   SPL_FILE_DIR_FOLLOW_SYMLINKS
-
-
     // Iterator constants
     //   typedef enum {
     //       RIT_LEAVES_ONLY = 0,
@@ -189,24 +195,20 @@ PHP_FUNCTION(futil_rmtree)
     //       RIT_CHILD_FIRST = 2
     //   } RecursiveIteratorMode;
     //    
-    // ZVAL_LONG(&arg2, SPL_FILE_DIR_SKIPDOTS|SPL_FILE_DIR_UNIXPATHS);
-    ZVAL_LONG(&arg2, SPL_FILE_DIR_SKIPDOTS|SPL_FILE_DIR_UNIXPATHS);
+    // ZVAL_LONG(&iter_options, SPL_FILE_DIR_SKIPDOTS|SPL_FILE_DIR_UNIXPATHS);
+    INIT_PZVAL(&iter_options);
+#if PHP_VERSION_ID < 50300
+    ZVAL_LONG(&iter_options, 0);
+#else
+    ZVAL_LONG(&iter_options, SPL_FILE_DIR_SKIPDOTS|SPL_FILE_DIR_UNIXPATHS);
 #endif
 
     zval * iter;
-    if ( (iter = recursive_directory_iterator_create(dir, &arg, &arg2  TSRMLS_CC) ) == NULL )
+    zval *iteriter;
+    if ( (iter = recursive_directory_iterator_create(dir, dir_len, &iter_options TSRMLS_CC) ) == NULL )
         RETURN_FALSE;
 
-    zval *iteriter;
-    zval iteriter_arg;
-    INIT_PZVAL(&iteriter_arg);
-#if PHP_VERSION_ID < 50300
-    ZVAL_LONG(&iteriter_arg, 0);
-#else
-    ZVAL_LONG(&iteriter_arg, RIT_CHILD_FIRST);
-#endif
-
-    if ( (iteriter = recursive_iterator_iterator_create(iter, &iteriter_arg TSRMLS_CC)) == NULL )
+    if ( (iteriter = recursive_iterator_iterator_create(iter, RIT_CHILD_FIRST TSRMLS_CC)) == NULL )
         RETURN_FALSE;
 
     zval_ptr_dtor(&iter);
