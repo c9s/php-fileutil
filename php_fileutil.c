@@ -779,8 +779,8 @@ PHP_FUNCTION(futil_get_contents_array_from_files)
                 char *contents = NULL;
                 int   contents_len = 0;
                 if ( file_get_contents(filename, filename_len, &contents, &contents_len TSRMLS_CC) ) {
-                    add_assoc_stringl(z_newitem, "content", contents, contents_len, 0);
-                    add_assoc_stringl(z_newitem, "path", filename, filename_len, 0);
+                    add_assoc_stringl(z_newitem, "content", contents, contents_len, 1);
+                    add_assoc_stringl(z_newitem, "path", filename, filename_len, 1);
                 }
                 add_next_index_zval(return_value, z_newitem);
             }
