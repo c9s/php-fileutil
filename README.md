@@ -166,11 +166,11 @@ Recursively delete files and directories through RecursiveDirectoryIterator.
 
 - Run extunit to test extension functions:
 
-    extunit --phpunit
+        extunit --phpunit
 
 - Run phpunit to test pure php functions:
 
-    phpunit
+        phpunit
 
 
 ## Author
