@@ -915,9 +915,10 @@ PHP_FUNCTION(futil_filename_append_suffix)
     } else {
         // simply append the suffix
         newfilename_len = filename_len + suffix_len;
-        newfilename = emalloc(sizeof(char) * newfilename_len);
+        newfilename = emalloc(sizeof(char) * (newfilename_len + 1));
         memcpy( newfilename , filename , filename_len );
         memcpy( newfilename + filename_len , suffix , suffix_len );
+        *(newfilename + newfilename_len) = '\0';
     }
     RETURN_STRINGL(newfilename, newfilename_len, 0);
 }
