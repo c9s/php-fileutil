@@ -188,6 +188,9 @@ PHP_FUNCTION(futil_rmtree)
     int pass = 0;
 
     if (SUCCESS == spl_iterator_apply(iteriter, (spl_iterator_apply_func_t) rmtree_iterator, (void *) &pass TSRMLS_CC)) {
+        if ( futil_is_dir(dir,dir_len TSRMLS_CC) ) {
+            RETURN_BOOL(php_stream_rmdir(dir, REPORT_ERRORS, NULL));
+        }
         RETURN_TRUE;
     }
     RETURN_FALSE;
