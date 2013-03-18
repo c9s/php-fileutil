@@ -1,5 +1,6 @@
 #include "php_fileutil.h"
 #include "path.h"
+#include "zend_alloc.h"
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_futil_scanpath, 0, 0, 1)
     ZEND_ARG_INFO(0, dir)
@@ -34,7 +35,7 @@ static const zend_function_entry fileutil_functions[] = {
     PHP_FE(futil_get_extension, NULL)
     PHP_FE(futil_prettysize, NULL)
     PHP_FE(futil_filename_append_suffix, NULL)
-    PHP_FE(futil_read_files, NULL);
+    PHP_FE(futil_get_contents_from_files, NULL)
     {NULL, NULL, NULL}
 };
 
@@ -59,6 +60,8 @@ zend_module_entry fileutil_module_entry = {
 #ifdef COMPILE_DL_FILEUTIL
 ZEND_GET_MODULE(fileutil)
 #endif
+
+
 
 
 
@@ -98,6 +101,45 @@ zend_bool futil_is_file(char* dirname, int dirname_len TSRMLS_DC)
 }
 
 
+zend_bool file_get_contents(char * filename, int filename_len, char **contents, int *contents_len TSRMLS_DC);
+
+zend_bool file_get_contents(char * filename, int filename_len, char **contents, int *contents_len TSRMLS_DC)
+{
+    zend_bool use_include_path = 0;
+    php_stream *stream;
+
+    int len;
+    long offset = -1;
+    long maxlen = PHP_STREAM_COPY_ALL;
+    zval *zcontext = NULL;
+    php_stream_context *context = NULL;
+
+    context = php_stream_context_from_zval(zcontext, 0);
+    stream = php_stream_open_wrapper_ex(filename, "rb",
+                (use_include_path ? USE_PATH : 0) | REPORT_ERRORS,
+                NULL, context);
+    if (!stream) {
+        return false;
+    }
+
+    if (offset > 0 && php_stream_seek(stream, offset, SEEK_SET) < 0) {
+        php_error_docref(NULL TSRMLS_CC, E_WARNING, "Failed to seek to position %ld in the stream", offset);
+        php_stream_close(stream);
+        return false;
+    }
+
+    zend_bool ret;
+
+    if ((*contents_len = php_stream_copy_to_mem(stream, contents, maxlen, 0)) > 0) {
+        ret = true;
+    } else if (len == 0) {
+        ret = true;
+    } else {
+        ret = false;
+    }
+    php_stream_close(stream);
+    return ret;
+}
 
 
 
@@ -504,6 +546,9 @@ PHP_FUNCTION(futil_paths_append)
     zarr_hash = Z_ARRVAL_P(zarr);
     zarr_count = zend_hash_num_elements(zarr_hash);
 
+    if (zarr_count == 0)
+        RETURN_FALSE;
+
     for(zend_hash_internal_pointer_reset_ex(zarr_hash, &pointer); 
             zend_hash_get_current_data_ex(zarr_hash, (void**) &entry_data, &pointer) == SUCCESS; 
             zend_hash_move_forward_ex(zarr_hash, &pointer)) 
@@ -524,10 +569,6 @@ PHP_FUNCTION(futil_paths_append)
     }
 }
 
-PHP_FUNCTION(futil_read_files)
-{
-
-}
 
 PHP_FUNCTION(futil_paths_prepend)
 {
@@ -557,6 +598,9 @@ PHP_FUNCTION(futil_paths_prepend)
     zarr_hash = Z_ARRVAL_P(zarr);
     zarr_count = zend_hash_num_elements(zarr_hash);
 
+    if (zarr_count == 0)
+        RETURN_FALSE;
+
     for(zend_hash_internal_pointer_reset_ex(zarr_hash, &pointer); 
             zend_hash_get_current_data_ex(zarr_hash, (void**) &entry_data, &pointer) == SUCCESS; 
             zend_hash_move_forward_ex(zarr_hash, &pointer)) 
@@ -576,6 +620,78 @@ PHP_FUNCTION(futil_paths_prepend)
         }
     }
 }
+
+
+
+
+
+
+
+
+
+
+PHP_FUNCTION(futil_get_contents_from_files)
+{
+    zval *zarr;
+
+    zval **entry_data;
+    HashTable *zarr_hash;
+    HashPosition pointer;
+    int zarr_count;
+
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "a", &zarr) == FAILURE) {
+        RETURN_FALSE;
+    }
+
+    zarr_hash = Z_ARRVAL_P(zarr);
+    zarr_count = zend_hash_num_elements(zarr_hash);
+
+    if (zarr_count == 0)
+        RETURN_FALSE;
+
+    char *filename = NULL;
+    int filename_len = 0;
+
+    // int   output_cap = 20480 * 2;
+    int   output_cap = 8192;
+    int   output_len = 0;
+    char *output_end;
+    char *output = emalloc(output_cap);
+    output_end = output;
+
+
+    for(zend_hash_internal_pointer_reset_ex(zarr_hash, &pointer); 
+            zend_hash_get_current_data_ex(zarr_hash, (void**) &entry_data, &pointer) == SUCCESS; 
+            zend_hash_move_forward_ex(zarr_hash, &pointer)) 
+    {
+        if ( Z_TYPE_PP(entry_data) == IS_STRING ) {
+            filename = Z_STRVAL_PP(entry_data);
+            filename_len = Z_STRLEN_PP(entry_data);
+
+
+            if ( futil_is_file(filename, filename_len TSRMLS_CC) ) {
+                char *contents = NULL;
+                int   contents_len = 0;
+                if ( file_get_contents(filename, filename_len, &contents, &contents_len TSRMLS_CC) ) {
+                    if (output_len + contents_len > output_cap) {
+                        output_cap = output_len + contents_len + 8192;
+                        output = erealloc(output, output_cap);
+                    }
+                    memcpy(output + output_len, contents, contents_len );
+                    output_len += contents_len;
+                    output_end += contents_len;
+                    efree(contents);
+                }
+            }
+        }
+    }
+    if ( output_len >= output_cap ) {
+        output = erealloc(output, output_cap + 1);
+    }
+    *(output + output_len) = '\0';
+    RETURN_STRINGL(output, output_len, 0);
+}
+
 
 PHP_FUNCTION(futil_get_extension)
 {
