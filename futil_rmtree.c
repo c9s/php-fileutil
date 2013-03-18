@@ -93,12 +93,12 @@ int rmtree_iterator(zend_object_iterator *iter, void *puser TSRMLS_DC)
 
 
 
-zval *recursive_directory_iterator_create(char * dir, int dir_len, zval * arg2 TSRMLS_DC)
+zval *recursive_directory_iterator_create(char * dir, int dir_len, long options TSRMLS_DC)
 {
-    zval arg;
     zval *iter;
-    MAKE_STD_ZVAL(iter);
+    zval arg, arg2;
 
+    MAKE_STD_ZVAL(iter);
 
     INIT_PZVAL(&arg);
     ZVAL_STRINGL(&arg, dir, dir_len, 0);
@@ -109,8 +109,15 @@ zval *recursive_directory_iterator_create(char * dir, int dir_len, zval * arg2 T
         return NULL;
     }
 
+    INIT_PZVAL(&arg2);
+#if PHP_VERSION_ID < 50300
+    ZVAL_LONG(&arg2, 0);
+#else
+    ZVAL_LONG(&arg2, options);
+#endif
+
     zend_call_method_with_2_params(&iter, spl_ce_RecursiveDirectoryIterator, 
-            &spl_ce_RecursiveDirectoryIterator->constructor, "__construct", NULL, &arg, arg2);
+            &spl_ce_RecursiveDirectoryIterator->constructor, "__construct", NULL, &arg, &arg2);
 
     if (EG(exception)) {
         // decrease reference count for releasing memory
@@ -164,12 +171,9 @@ PHP_FUNCTION(futil_rmtree)
 {
     char *dir;
     int  dir_len;
-
-
     
     char *error = NULL;
     zend_bool apply_reg = 0;
-    zval iter_options;
 
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "p",
                     &dir, &dir_len
@@ -194,18 +198,11 @@ PHP_FUNCTION(futil_rmtree)
     //       RIT_SELF_FIRST  = 1,
     //       RIT_CHILD_FIRST = 2
     //   } RecursiveIteratorMode;
-    //    
     // ZVAL_LONG(&iter_options, SPL_FILE_DIR_SKIPDOTS|SPL_FILE_DIR_UNIXPATHS);
-    INIT_PZVAL(&iter_options);
-#if PHP_VERSION_ID < 50300
-    ZVAL_LONG(&iter_options, 0);
-#else
-    ZVAL_LONG(&iter_options, SPL_FILE_DIR_SKIPDOTS|SPL_FILE_DIR_UNIXPATHS);
-#endif
 
     zval * iter;
     zval *iteriter;
-    if ( (iter = recursive_directory_iterator_create(dir, dir_len, &iter_options TSRMLS_CC) ) == NULL )
+    if ( (iter = recursive_directory_iterator_create(dir, dir_len, SPL_FILE_DIR_SKIPDOTS|SPL_FILE_DIR_UNIXPATHS   TSRMLS_CC) ) == NULL )
         RETURN_FALSE;
 
     if ( (iteriter = recursive_iterator_iterator_create(iter, RIT_CHILD_FIRST TSRMLS_CC)) == NULL )
