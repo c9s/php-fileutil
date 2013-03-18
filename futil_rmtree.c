@@ -185,7 +185,7 @@ PHP_FUNCTION(futil_rmtree)
     char *error = NULL;
     zend_bool apply_reg = 0;
 
-    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "p",
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s",
                     &dir, &dir_len
                     ) == FAILURE) {
         RETURN_FALSE;

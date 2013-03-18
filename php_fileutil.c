@@ -422,16 +422,16 @@ PHP_FUNCTION(futil_mkdir_if_not_exists)
     zend_bool recursive = 0;
     php_stream_context *context;
 
-    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "p|lbr", &dir, &dir_len, &mode, &recursive, &zcontext) == FAILURE) {
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s|lbr", &dir, &dir_len, &mode, &recursive, &zcontext) == FAILURE) {
         RETURN_FALSE;
     }
 
     if ( dir_len == 0 )
         RETURN_FALSE;
 
-    if ( futil_file_exists(dir,dir_len TSRMLS_CC) ) {
+    if ( futil_file_exists(dir,dir_len TSRMLS_CC) )
         RETURN_FALSE;
-    }
+
     context = php_stream_context_from_zval(zcontext, 0);
     RETURN_BOOL(php_stream_mkdir(dir, mode, (recursive ? PHP_STREAM_MKDIR_RECURSIVE : 0) | REPORT_ERRORS, context));
 }
@@ -447,7 +447,7 @@ PHP_FUNCTION(futil_rmdir_if_exists)
     zend_bool recursive = 0;
     php_stream_context *context;
 
-    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "p|lbr", &dir, &dir_len, &mode, &recursive, &zcontext) == FAILURE) {
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s|lbr", &dir, &dir_len, &mode, &recursive, &zcontext) == FAILURE) {
         RETURN_FALSE;
     }
 
@@ -493,7 +493,7 @@ PHP_FUNCTION(futil_unlink_if_exists)
     php_stream_wrapper *wrapper;
     php_stream_context *context = NULL;
 
-    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "p|r", &filename, &filename_len, &zcontext) == FAILURE) {
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s|r", &filename, &filename_len, &zcontext) == FAILURE) {
         RETURN_FALSE;
     }
 
