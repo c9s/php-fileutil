@@ -322,6 +322,7 @@ class FileUtilTest extends PHPUnit_Framework_ExtensionTestCase
         unlink($newfilename);
     }
 
+
     public function testFilenameSuffixWithoutExtension()
     {
         is( "Hack2" , futil_filename_append_suffix("Hack", "2") );

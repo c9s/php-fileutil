@@ -878,7 +878,6 @@ PHP_FUNCTION(futil_filename_append_suffix)
     int   newfilename_len = 0;
 
     int   len;
-    char *src;
     char *dst;
 
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "ss", &filename, &filename_len, &suffix, &suffix_len ) == FAILURE) {
@@ -899,14 +898,11 @@ PHP_FUNCTION(futil_filename_append_suffix)
 
         dst = newfilename;
         len = (dot - filename);
-        src = filename;
         memcpy(dst, filename, len);
         dst += len;
 
-        src = suffix;
-        memcpy(dst, src, suffix_len);
+        memcpy(dst, suffix, suffix_len);
         dst += suffix_len;
-
 
         len = filename_len - (filename - dot);
         memcpy(dst, dot, len);
