@@ -17,7 +17,4 @@ before_script:
   - phpize
   - ./configure
   - make
-
-script:
-  - phpunit
-  - extunit --phpunit --repeat 500
+script: scripts/test_all.sh
