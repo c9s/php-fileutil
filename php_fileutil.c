@@ -206,8 +206,7 @@ PHP_FUNCTION(futil_scanpath_dir)
     php_stream *stream;
 
     // parse parameters
-    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s",
-                    &dirname, &dirname_len ) == FAILURE) {
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &dirname, &dirname_len ) == FAILURE) {
         php_error_docref(NULL TSRMLS_CC, E_WARNING, "Path argument is required.");
         RETURN_FALSE;
     }
@@ -218,26 +217,23 @@ PHP_FUNCTION(futil_scanpath_dir)
     }
 
     // run is_dir
-    if ( ! futil_is_dir(dirname, dirname_len TSRMLS_CC) ) {
+    if ( ! futil_is_dir(dirname, dirname_len TSRMLS_CC) )
         RETURN_FALSE;
-    }
 
     stream = php_stream_opendir(dirname, REPORT_ERRORS, NULL );
-    if ( ! stream ) {
+    if ( ! stream )
         RETURN_FALSE;
-    }
     // it's not fclose-able
     stream->flags |= PHP_STREAM_FLAG_NO_FCLOSE;
 
     array_init(return_value);
-
+    zval_copy_ctor(return_value);
     phpdir_scandir_with_handler(
             return_value,
             stream, 
             dirname, dirname_len, 
             dir_dir_entry_handler TSRMLS_CC);
     php_stream_close(stream);
-    zval_copy_ctor(return_value);
 }
 
 PHP_FUNCTION(futil_scanpath)
