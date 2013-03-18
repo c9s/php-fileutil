@@ -99,6 +99,13 @@ class FileUtilTest extends PHPUnit_Framework_ExtensionTestCase
         count_ok(3,$parts);
     }
 
+    public function testJoinWithArray()
+    {
+        $joined = futil_pathjoin(array('path1/','path2/','path3'));
+        $this->assertEquals( 'path1/path2/path3' , $joined );
+    }
+
+
     public function testLastmtime()
     {
         $list = array("README.md","config.m4","tests/FileUtilTest.php");
@@ -144,13 +151,8 @@ class FileUtilTest extends PHPUnit_Framework_ExtensionTestCase
         ok( ! file_exists("tests/orz") );
     }
 
-    public function testJoinArray()
-    {
-        $joined = futil_pathjoin(array('path1/','path2/','path3'));
-        $this->assertEquals( 'path1/path2/path3' , $joined );
-    }
 
-    public function testPathAppend()
+    public function testPathsAppend()
     {
         $list = array( 
             "/dir1",
@@ -159,9 +161,28 @@ class FileUtilTest extends PHPUnit_Framework_ExtensionTestCase
         );
         $newlist = futil_paths_append($list, "/file");
         ok( $newlist );
-
         is( "/dir1/file", $newlist[0] );
         is( "/dir2/file", $newlist[1] );
+    }
+
+    public function testPathsAppendValidPath()
+    {
+        $list = array(
+            "tests",
+        );
+        $newlist = futil_paths_append($list, "/bootstrap.php");
+        ok( $newlist );
+        is( "tests/bootstrap.php", $newlist[0] );
+    }
+
+    public function testPathsAppendWithoutSlashValidPath()
+    {
+        $list = array(
+            "tests",
+        );
+        $newlist = futil_paths_append($list, "bootstrap.php");
+        ok( $newlist );
+        is( "tests/bootstrap.php", $newlist[0] );
     }
 
     public function testPathsRemoveBasepath()
