@@ -3,7 +3,7 @@
 class FileUtilTest extends PHPUnit_Framework_ExtensionTestCase
 {
 
-    public $repeat = 5;
+    public $repeat = 10;
 
 
     public function getExtensionName()
@@ -162,43 +162,52 @@ class FileUtilTest extends PHPUnit_Framework_ExtensionTestCase
 
     public function testPathAppend()
     {
-        $list = array( 
-            "/dir1",
-            "/dir2",
-            "/dir3",
-        );
-        $newlist = futil_paths_append($list, "/file");
-        ok( $newlist );
+        $i = $this->repeat;
+        while($i--) {
+            $list = array( 
+                "/dir1",
+                "/dir2",
+                "/dir3",
+            );
+            $newlist = futil_paths_append($list, "/file");
+            ok( $newlist );
 
-        is( "/dir1/file", $newlist[0] );
-        is( "/dir2/file", $newlist[1] );
+            is( "/dir1/file", $newlist[0] );
+            is( "/dir2/file", $newlist[1] );
+        }
     }
 
     public function testPathsRemoveBasepath()
     {
-        $list = array( 
-            "/root/file1",
-            "/root/file2",
-            "/root/file3",
-        );
-        $newlist = futil_paths_remove_basepath($list, "/root");
-        ok( $newlist );
-        is("/file1", $newlist[0]);
-        is("/file2", $newlist[1]);
-        is("/file3", $newlist[2]);
+        $i = $this->repeat;
+        while( $i-- ) {
+            $list = array( 
+                "/root/file1",
+                "/root/file2",
+                "/root/file3",
+            );
+            $newlist = futil_paths_remove_basepath($list, "/root");
+            ok( $newlist );
+            is("/file1", $newlist[0]);
+            is("/file2", $newlist[1]);
+            is("/file3", $newlist[2]);
+        }
     }
 
     public function testPathPrepend()
     {
-        $list = array( 
-            "/file1",
-            "/file2",
-            "/file3",
-        );
-        $newlist = futil_paths_prepend($list, "/root");
-        ok( $newlist );
-        is( "/root/file1", $newlist[0] );
-        is( "/root/file2", $newlist[1] );
+        $i = $this->repeat;
+        while( $i-- ) {
+            $list = array( 
+                "/file1",
+                "/file2",
+                "/file3",
+            );
+            $newlist = futil_paths_prepend($list, "/root");
+            ok( $newlist );
+            is( "/root/file1", $newlist[0] );
+            is( "/root/file2", $newlist[1] );
+        }
     }
 
     public function testRmtree()
@@ -260,9 +269,6 @@ class FileUtilTest extends PHPUnit_Framework_ExtensionTestCase
             $file = futil_replace_extension("manifest","json");
             is( "manifest.json", $file );
         }
-
-        $file = futil_replace_extension("manifest.","json");
-        is( "manifest.json", $file );
     }
 
     public function testPrettySize()
@@ -275,28 +281,34 @@ class FileUtilTest extends PHPUnit_Framework_ExtensionTestCase
 
     public function testFilenameSuffixWithExtension()
     {
-        $filename = "Hack.png";
-        is( "Hack_suffix.png" , futil_filename_append_suffix($filename, "_suffix") );
+        $i = $this->repeat;
+        while ($i--) {
+            $filename = "Hack.png";
+            is( "Hack_suffix.png" , futil_filename_append_suffix($filename, "_suffix") );
+        }
     }
 
     public function testFilenameSuffixWithoutExtension()
     {
-        is( "Hack2" , futil_filename_append_suffix("Hack", "2") );
-        is( "Hack_blah_suffix" , futil_filename_append_suffix("Hack", "_blah_suffix") );
-    }
-
-    public function testGetContentsArrayFromFiles()
-    {
-        $contents = futil_get_contents_array_from_files(array("config.m4","php_fileutil.c"));
-        ok($contents);
-        ok(is_array($contents));
-        foreach( $contents as $content ) {
-            ok($content);
-            ok($content['path']);
-            ok($content['content']);
-            path_ok($content['path']);
+        $i = $this->repeat;
+        while ($i--) {
+            is( "Hack2" , futil_filename_append_suffix("Hack", "2") );
+            is( "Hack_blah_suffix" , futil_filename_append_suffix("Hack", "_blah_suffix") );
         }
     }
+
+#      public function testGetContentsArrayFromFiles()
+#      {
+#          $contents = futil_get_contents_array_from_files(array("config.m4","php_fileutil.c"));
+#          ok($contents,'Get contents');
+#          ok(is_array($contents),'Should be an array');
+#          foreach( $contents as $content ) {
+#              ok($content, "Content OK");
+#              ok($content['path']);
+#              ok($content['content']);
+#              path_ok($content['path']);
+#          }
+#      }
 
     public function testGetContentsFromFiles()
     {

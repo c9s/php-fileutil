@@ -175,13 +175,14 @@ void phpdir_scandir_with_handler(
         int dirname_len,
         char* (*handler)(char*, int, php_stream_dirent* TSRMLS_DC) TSRMLS_DC) 
 {
+    char * newpath;
     php_stream_dirent entry;
     while (php_stream_readdir(stream, &entry)) {
         if (strcmp(entry.d_name, "..") == 0 || strcmp(entry.d_name, ".") == 0) {
             continue;
         }
-        char * newpath = (*handler)(dirname, dirname_len, &entry TSRMLS_CC);
-        if ( newpath ) {
+
+        if ( (newpath = (*handler)(dirname, dirname_len, &entry TSRMLS_CC)) != NULL ) {
             add_next_index_string(z_list, newpath, strlen(newpath) );
         }
     }
@@ -753,14 +754,13 @@ PHP_FUNCTION(futil_get_contents_array_from_files)
                 zval *z_newitem;
                 MAKE_STD_ZVAL(z_newitem);
                 array_init(z_newitem);
-
                 char *contents = NULL;
                 int   contents_len = 0;
                 if ( file_get_contents(filename, filename_len, &contents, &contents_len TSRMLS_CC) ) {
-                    add_assoc_stringl(z_newitem,"content",contents, contents_len, 0);
-                    add_assoc_stringl(z_newitem,"path",filename, filename_len, 0);
+                    add_assoc_stringl(z_newitem, "content", contents, contents_len, 0);
+                    add_assoc_stringl(z_newitem, "path", filename, filename_len, 0);
                 }
-                add_next_index_zval(return_value,z_newitem);
+                add_next_index_zval(return_value, z_newitem);
             }
         }
     }
@@ -890,18 +890,16 @@ PHP_FUNCTION(futil_filename_append_suffix)
 
     dot = strrchr(filename, (int) '.');
     if ( dot != NULL ) {
-        newfilename = emalloc( sizeof(char) * (filename_len + suffix_len + 1) );
+        newfilename = emalloc( sizeof(char) * (filename_len + suffix_len + 2) );
 
+        dst = newfilename;
         len = (dot - filename);
         src = filename;
-        dst = newfilename;
-
         memcpy(dst, src, len);
         dst += len;
 
-        len = suffix_len;
         src = suffix;
-        memcpy(dst, src, len);
+        memcpy(dst, src, suffix_len);
         dst += suffix_len;
 
 

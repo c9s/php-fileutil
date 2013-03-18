@@ -20,4 +20,4 @@ before_script:
 
 script:
   - phpunit
-  - extunit --phpunit
+  - extunit --phpunit --repeat 500

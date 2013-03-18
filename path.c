@@ -134,11 +134,10 @@ char* path_concat_fill(
         src++;
         subpath_len--;
     }
-    while( subpath_len-- && *src != '\0' ) {
-        *dst = *src;
-        dst++;
-        src++;
-    }
+
+    memcpy(dst, src, subpath_len);
+    dst += subpath_len;
+    *dst = '\0';
     return dst;
 }
 
