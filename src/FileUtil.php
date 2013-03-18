@@ -217,7 +217,7 @@ function futil_get_contents_array_from_files($files)
                     'path'    => $file,
                     'content' => $fileContent,
                 );
-                $contents[] = $fileContent;
+                $contents[] = $block;
             }
         }
     }
