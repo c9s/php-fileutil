@@ -302,20 +302,20 @@ class FileUtilTest extends PHPUnit_Framework_ExtensionTestCase
 
     public function testFilenameSuffixWithExtension()
     {
-        $i = $this->repeat;
-        while ($i--) {
-            $filename = "Hack.png";
-            is( "Hack_suffix.png" , futil_filename_append_suffix($filename, "_suffix") );
-        }
+        $filename = "Hack.png";
+        $expected = "Hack_suffix.png";
+        touch($expected);
+
+        $newfilename =  futil_filename_append_suffix($filename, "_suffix");
+        is( $expected , $newfilename );
+        path_ok($newfilename);
+        unlink($newfilename);
     }
 
     public function testFilenameSuffixWithoutExtension()
     {
-        $i = $this->repeat;
-        while ($i--) {
-            is( "Hack2" , futil_filename_append_suffix("Hack", "2") );
-            is( "Hack_blah_suffix" , futil_filename_append_suffix("Hack", "_blah_suffix") );
-        }
+        is( "Hack2" , futil_filename_append_suffix("Hack", "2") );
+        is( "Hack_blah_suffix" , futil_filename_append_suffix("Hack", "_blah_suffix") );
     }
 
 #      public function testGetContentsArrayFromFiles()
