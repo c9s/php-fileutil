@@ -300,13 +300,23 @@ class FileUtilTest extends PHPUnit_Framework_ExtensionTestCase
     }
 
 
-    public function testFilenameSuffixWithExtension()
+    public function filenameSuffixDataProvider()
     {
-        $filename = "Hack.png";
-        $expected = "Hack_suffix.png";
+        return array( 
+            array("Hack_suffix.png",  "Hack.png" , "_suffix"),
+            array("Hack_1234567890123.png",  "Hack.png" , "_1234567890123"),
+            array("Hack_.png",  "Hack.png" , "_"),
+        );
+    }
+
+    /**
+     * @dataProvider filenameSuffixDataProvider
+     */
+    public function testFilenameSuffixWithExtension($expected , $filename, $suffix)
+    {
         touch($expected);
 
-        $newfilename =  futil_filename_append_suffix($filename, "_suffix");
+        $newfilename =  futil_filename_append_suffix($filename, $suffix);
         is( $expected , $newfilename );
         path_ok($newfilename);
         unlink($newfilename);
