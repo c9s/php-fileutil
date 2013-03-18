@@ -1,6 +1,7 @@
 #include "php_fileutil.h"
 #include "path.h"
 #include "zend_alloc.h"
+#include <string.h>
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_futil_scanpath, 0, 0, 1)
     ZEND_ARG_INFO(0, dir)
