@@ -11,14 +11,14 @@
     <active>yes</active>
   </lead>
   <date>2013-03-18</date>
-  <time>14:01:40</time>
+  <time>17:26:50</time>
   <version>
     <release>1.5.0</release>
     <api>1.5.0</api>
   </version>
   <stability>
-    <release>alpha</release>
-    <api>alpha</api>
+    <release>stable</release>
+    <api>stable</api>
   </stability>
   <license>PHP</license>
   <notes>-</notes>
