@@ -318,18 +318,18 @@ class FileUtilTest extends PHPUnit_Framework_ExtensionTestCase
         is( "Hack_blah_suffix" , futil_filename_append_suffix("Hack", "_blah_suffix") );
     }
 
-#      public function testGetContentsArrayFromFiles()
-#      {
-#          $contents = futil_get_contents_array_from_files(array("config.m4","php_fileutil.c"));
-#          ok($contents,'Get contents');
-#          ok(is_array($contents),'Should be an array');
-#          foreach( $contents as $content ) {
-#              ok($content, "Content OK");
-#              ok($content['path']);
-#              ok($content['content']);
-#              path_ok($content['path']);
-#          }
-#      }
+    public function testGetContentsArrayFromFiles()
+    {
+        $contents = futil_get_contents_array_from_files(array("config.m4","php_fileutil.c"));
+        ok($contents,'Get contents');
+        ok(is_array($contents),'Should be an array');
+        foreach( $contents as $content ) {
+            ok($content, "Content OK");
+            ok($content['path']);
+            ok($content['content']);
+            path_ok($content['path']);
+        }
+    }
 
     public function testGetContentsFromFiles()
     {
