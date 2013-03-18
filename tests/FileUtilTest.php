@@ -197,7 +197,6 @@ class FileUtilTest extends PHPUnit_Framework_ExtensionTestCase
         );
         $newlist = futil_paths_prepend($list, "/root");
         ok( $newlist );
-
         is( "/root/file1", $newlist[0] );
         is( "/root/file2", $newlist[1] );
     }
@@ -239,11 +238,18 @@ class FileUtilTest extends PHPUnit_Framework_ExtensionTestCase
     {
         $i = $this->repeat;
         while( $i-- ) {
+            touch("manifest.php");
+            touch("manifest.json");
+
             $file = futil_replace_extension("manifest.yml","json");
             is( "manifest.json", $file );
+            file_exists($file);
+            unlink($file);
 
             $file = futil_replace_extension("manifest.yml","php");
             is( "manifest.php", $file );
+            file_exists($file);
+            unlink($file);
         }
     }
 
@@ -267,14 +273,14 @@ class FileUtilTest extends PHPUnit_Framework_ExtensionTestCase
     }
 
 
-    public function testFilenameSuffix()
+    public function testFilenameSuffixWithExtension()
     {
-        $i = $this->repeat;
-        while( $i-- ) {
-            $filename = "Hack.png";
-            is( "Hack_suffix.png" , futil_filename_append_suffix($filename, "_suffix") );
-        }
-        is( "Hack2.png" , futil_filename_append_suffix($filename, "2") );
+        $filename = "Hack.png";
+        is( "Hack_suffix.png" , futil_filename_append_suffix($filename, "_suffix") );
+    }
+
+    public function testFilenameSuffixWithoutExtension()
+    {
         is( "Hack2" , futil_filename_append_suffix("Hack", "2") );
         is( "Hack_blah_suffix" , futil_filename_append_suffix("Hack", "_blah_suffix") );
     }

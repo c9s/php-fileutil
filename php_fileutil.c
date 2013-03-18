@@ -890,26 +890,26 @@ PHP_FUNCTION(futil_filename_append_suffix)
 
     dot = strrchr(filename, (int) '.');
     if ( dot != NULL ) {
-        newfilename = emalloc( sizeof(char) * (filename_len + suffix_len) );
+        newfilename = emalloc( sizeof(char) * (filename_len + suffix_len + 1) );
 
         len = (dot - filename);
         src = filename;
         dst = newfilename;
 
-        strncpy(dst, src, len);
+        memcpy(dst, src, len);
         dst += len;
 
         len = suffix_len;
         src = suffix;
-        strncpy(dst, src, len);
+        memcpy(dst, src, len);
         dst += suffix_len;
 
 
         len = filename_len - (filename - dot);
         src = dot;
-        strncpy(dst, src, len);
+        memcpy(dst, src, len);
         dst += len;
-
+        *dst = '\0';
         newfilename_len = filename_len + suffix_len;
     } else {
         // simply append the suffix
@@ -949,7 +949,7 @@ PHP_FUNCTION(futil_replace_extension)
 
     dot = strrchr(filename, (int) '.');
     if ( dot != NULL ) {
-        basename_len = dot - filename + 1;
+        basename_len = dot - filename + 1; // contains the dot
     } else {
         basename_len = filename_len;
         char *new_extension = emalloc( sizeof(char) * (extension_len + 1) );
@@ -959,11 +959,11 @@ PHP_FUNCTION(futil_replace_extension)
         extension_len++;
     }
 
-
-    newfilename = emalloc((basename_len + extension_len) * sizeof(char));
+    newfilename_len = basename_len + extension_len;
+    newfilename = emalloc((newfilename_len + 1) * sizeof(char));
     memcpy(newfilename, filename, basename_len);
     memcpy(newfilename + basename_len, extension, extension_len );
-    newfilename_len = basename_len + extension_len;
+    *(newfilename + newfilename_len) = '\0';
     RETURN_STRINGL(newfilename, newfilename_len, 0);
 }
 
