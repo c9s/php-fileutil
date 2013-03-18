@@ -264,6 +264,19 @@ class FileUtilTest extends PHPUnit_Framework_ExtensionTestCase
         is( "Hack2" , futil_filename_append_suffix("Hack", "2") );
     }
 
+    public function testReadFilesAsArray()
+    {
+        $contents = futil_get_contents_array_from_files(array("config.m4","php_fileutil.c"));
+        ok($contents);
+        ok(is_array($contents));
+        foreach( $contents as $content ) {
+            ok($content);
+            ok($content['path']);
+            ok($content['content']);
+            path_ok($content['path']);
+        }
+    }
+
     public function testReadFiles()
     {
         $i = $this->repeat;

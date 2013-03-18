@@ -207,3 +207,21 @@ function futil_get_contents_from_files($files)
 }
 
 
+function futil_get_contents_array_from_files($files)
+{
+    $contents = array();
+    foreach( $files as $file ) {
+        if ( file_exists($file) ) {
+            if ( $fileContent = file_get_contents($file) ) {
+                $block = array(
+                    'path'    => $file,
+                    'content' => $fileContent,
+                );
+                $contents[] = $fileContent;
+            }
+        }
+    }
+    return $contents;
+}
+
+

@@ -61,6 +61,8 @@ PHP_FUNCTION(futil_get_extension);
 PHP_FUNCTION(futil_prettysize);
 PHP_FUNCTION(futil_filename_append_suffix);
 PHP_FUNCTION(futil_get_contents_from_files);
+PHP_FUNCTION(futil_get_contents_array_from_files);
+
 
 #define false 0
 #define true 1

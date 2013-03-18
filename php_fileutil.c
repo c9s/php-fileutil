@@ -36,6 +36,7 @@ static const zend_function_entry fileutil_functions[] = {
     PHP_FE(futil_prettysize, NULL)
     PHP_FE(futil_filename_append_suffix, NULL)
     PHP_FE(futil_get_contents_from_files, NULL)
+    PHP_FE(futil_get_contents_array_from_files, NULL)
     {NULL, NULL, NULL}
 };
 
@@ -622,6 +623,59 @@ PHP_FUNCTION(futil_paths_prepend)
 }
 
 
+
+
+
+
+PHP_FUNCTION(futil_get_contents_array_from_files)
+{
+    zval *zarr;
+    zval **entry_data;
+    HashTable *zarr_hash;
+    HashPosition pointer;
+    int zarr_count;
+
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "a", &zarr) == FAILURE) {
+        RETURN_FALSE;
+    }
+
+    zarr_hash = Z_ARRVAL_P(zarr);
+    zarr_count = zend_hash_num_elements(zarr_hash);
+
+    if (zarr_count == 0)
+        RETURN_FALSE;
+
+    array_init(return_value);
+
+    char *filename = NULL;
+    int filename_len = 0;
+
+    for(zend_hash_internal_pointer_reset_ex(zarr_hash, &pointer); 
+            zend_hash_get_current_data_ex(zarr_hash, (void**) &entry_data, &pointer) == SUCCESS; 
+            zend_hash_move_forward_ex(zarr_hash, &pointer)) 
+    {
+        if ( Z_TYPE_PP(entry_data) == IS_STRING ) {
+            filename = Z_STRVAL_PP(entry_data);
+            filename_len = Z_STRLEN_PP(entry_data);
+
+
+            if ( futil_is_file(filename, filename_len TSRMLS_CC) ) {
+                zval *z_newitem;
+                MAKE_STD_ZVAL(z_newitem);
+                array_init(z_newitem);
+
+                char *contents = NULL;
+                int   contents_len = 0;
+                if ( file_get_contents(filename, filename_len, &contents, &contents_len TSRMLS_CC) ) {
+                    add_assoc_stringl(z_newitem,"content",contents, contents_len,0);
+                    add_assoc_stringl(z_newitem,"path",filename, filename_len,0);
+                }
+                add_next_index_zval(return_value,z_newitem);
+            }
+        }
+    }
+    zval_copy_ctor(return_value);
+}
 
 
 
