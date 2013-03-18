@@ -545,13 +545,18 @@ PHP_FUNCTION(futil_paths_append)
     zarr_hash = Z_ARRVAL_P(zarr);
     zarr_count = zend_hash_num_elements(zarr_hash);
 
-    if (zarr_count == 0)
-        RETURN_FALSE;
-
-    if (! modify) {
+    if ( modify ) {
+        if (zarr_count == 0) {
+            RETURN_FALSE;
+        }
+    } else {
         array_init(return_value);
         zval_copy_ctor(return_value);
+        if ( zarr_count == 0 ) {
+            return;
+        }
     }
+
 
     for(zend_hash_internal_pointer_reset_ex(zarr_hash, &pointer); 
             zend_hash_get_current_data_ex(zarr_hash, (void**) &entry_data, &pointer) == SUCCESS; 
@@ -608,13 +613,19 @@ PHP_FUNCTION(futil_paths_remove_basepath)
     zarr_hash = Z_ARRVAL_P(zarr);
     zarr_count = zend_hash_num_elements(zarr_hash);
 
-    if (zarr_count == 0)
-        RETURN_FALSE;
-
-    if ( ! modify ) {
+    if ( modify ) {
+        if (zarr_count == 0) {
+            RETURN_FALSE;
+        }
+    } else {
         array_init(return_value);
         zval_copy_ctor(return_value);
+        if ( zarr_count == 0 ) {
+            return;
+        }
     }
+
+
 
     // append DEFAULT_SLASH to basepath
     /*
@@ -687,12 +698,17 @@ PHP_FUNCTION(futil_paths_prepend)
     zarr_hash = Z_ARRVAL_P(zarr);
     zarr_count = zend_hash_num_elements(zarr_hash);
 
-    if (zarr_count == 0)
-        RETURN_FALSE;
 
-    if ( ! modify ) {
+    if ( modify ) {
+        if (zarr_count == 0) {
+            RETURN_FALSE;
+        }
+    } else {
         array_init(return_value);
         zval_copy_ctor(return_value);
+        if ( zarr_count == 0 ) {
+            return;
+        }
     }
 
     for(zend_hash_internal_pointer_reset_ex(zarr_hash, &pointer); 
@@ -738,10 +754,11 @@ PHP_FUNCTION(futil_get_contents_array_from_files)
     zarr_hash = Z_ARRVAL_P(zarr);
     zarr_count = zend_hash_num_elements(zarr_hash);
 
-    if (zarr_count == 0)
-        RETURN_FALSE;
-
     array_init(return_value);
+    zval_copy_ctor(return_value);
+
+    if (zarr_count == 0)
+        return;
 
     char *filename = NULL;
     int filename_len = 0;
@@ -769,7 +786,6 @@ PHP_FUNCTION(futil_get_contents_array_from_files)
             }
         }
     }
-    zval_copy_ctor(return_value);
 }
 
 
