@@ -28,24 +28,19 @@ class FileUtilTest extends PHPUnit_Framework_ExtensionTestCase
 
     public function testScanDirOnExistingDir()
     {
-        $i = $this->repeat;
-        while( $i-- ) {
-            $files = futil_scanpath("tests");
-            ok($files,"Should return a file list");
-            ok(is_array($files));
-            foreach($files as $file) {
-                path_ok($file);
-            }
+        $files = futil_scanpath("tests");
+        ok($files,"Should return a file list");
+        ok(is_array($files));
+        foreach($files as $file) {
+            file_exists($file);
+            path_ok($file);
         }
     }
 
     public function testScanDirOnExistingFile()
     {
-        $i = $this->repeat;
-        while( $i-- ) {
-            $files = futil_scanpath("tests/FileUtilTest.php");
-            is(false,$files,"Should return false on file path");
-        }
+        $files = futil_scanpath("tests/FileUtilTest.php");
+        is(false,$files,"Should return false on file path");
     }
 
     public function testScanDirOnNonExistingPath()
@@ -65,34 +60,31 @@ class FileUtilTest extends PHPUnit_Framework_ExtensionTestCase
             $paths = futil_scanpath_dir("/");
             ok( $paths );
             foreach($paths as $path) {
+                file_exists($path);
                 ok(is_dir($path),'is_dir ok');
             }
         }
     }
 
-    public function testJoin()
+    public function testPathJoin()
     {
-        $i = $this->repeat;
-        while( $i-- ) {
-            $joined = futil_pathjoin('path1','path2');
-            ok( $joined );
-            $this->assertEquals( 'path1/path2' , $joined );
-        }
+        $joined = futil_pathjoin('path1','path2');
+        ok( $joined );
+        $this->assertEquals( 'path1/path2' , $joined );
     }
 
-    public function testJoinWithDuplicateSlash()
+    public function testPathJoinWithDuplicateSlash()
     {
-        $i = $this->repeat;
-        while( $i-- ) {
-            $joined = futil_pathjoin('path1/','path2');
-            $this->assertEquals( 'path1/path2' , $joined );
+        $joined = futil_pathjoin('tests/','bootstrap.php');
+        $this->assertEquals( 'tests/bootstrap.php' , $joined );
+        file_exists($joined);
 
-            $joined2 = futil_pathjoin('path1/','/path2');
-            $this->assertEquals( 'path1/path2' , $joined2 );
+        $joined2 = futil_pathjoin('tests/','/bootstrap.php');
+        $this->assertEquals( 'tests/bootstrap.php' , $joined2 );
+        file_exists($joined2);
 
-            $joined3 = futil_pathjoin('path1/','/path2','/path3','/path4');
-            $this->assertEquals( 'path1/path2/path3/path4' , $joined3 );
-        }
+        $joined3 = futil_pathjoin('path1/','/path2','/path3','/path4');
+        $this->assertEquals( 'path1/path2/path3/path4' , $joined3 );
     }
 
     public function testPathSplit()
@@ -237,12 +229,12 @@ class FileUtilTest extends PHPUnit_Framework_ExtensionTestCase
 
         $file = futil_replace_extension("manifest.yml","json");
         is( "manifest.json", $file );
-        file_exists($file);
+        file_exists($file); // ensure it is a valid path
         unlink($file);
 
         $file = futil_replace_extension("manifest.yml","php");
         is( "manifest.php", $file );
-        file_exists($file);
+        file_exists($file); // ensure it is a valid path
         unlink($file);
     }
 
