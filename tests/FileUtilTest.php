@@ -91,12 +91,19 @@ class FileUtilTest extends PHPUnit_Framework_ExtensionTestCase
     {
         $parts = futil_pathsplit("/etc/path2/path3");
         count_ok(4, $parts);
+        is('', $parts[0]);
+        is('etc', $parts[1]);
+        is('path2', $parts[2]);
+        is('path3', $parts[3]);
     }
 
     public function testPathSplitRelative()
     {
         $parts = futil_pathsplit("path1/path2/path3");
         count_ok(3,$parts);
+        is('path1', $parts[0]);
+        is('path2', $parts[1]);
+        is('path3', $parts[2]);
     }
 
     public function testJoinWithArray()
