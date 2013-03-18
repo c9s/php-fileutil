@@ -154,15 +154,15 @@ Recursively delete files and directories through RecursiveDirectoryIterator.
 - Clone the git repository.
 - Run commands under the repository:
 
-    pear channel-discover pear.corneltek.com
-    pear channel-update -f corneltek
-    pear install -f corneltek/Universal
-    pear install -f corneltek/PHPUnit_TestMore
-    pear install -f corneltek/PHPUnit_Framework_ExtensionTestCase
-    pear install -f corneltek/ExtUnit
-    phpize
-    ./configure
-    make
+        pear channel-discover pear.corneltek.com
+        pear channel-update -f corneltek
+        pear install -f corneltek/Universal
+        pear install -f corneltek/PHPUnit_TestMore
+        pear install -f corneltek/PHPUnit_Framework_ExtensionTestCase
+        pear install -f corneltek/ExtUnit
+        phpize
+        ./configure
+        make
 
 - Run extunit to test extension functions:
 
