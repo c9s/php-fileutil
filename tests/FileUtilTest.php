@@ -285,7 +285,7 @@ class FileUtilTest extends PHPUnit_Framework_ExtensionTestCase
         is( "Hack_blah_suffix" , futil_filename_append_suffix("Hack", "_blah_suffix") );
     }
 
-    public function testReadFilesAsArray()
+    public function testGetContentsArrayFromFiles()
     {
         $contents = futil_get_contents_array_from_files(array("config.m4","php_fileutil.c"));
         ok($contents);
@@ -298,7 +298,7 @@ class FileUtilTest extends PHPUnit_Framework_ExtensionTestCase
         }
     }
 
-    public function testReadFiles()
+    public function testGetContentsFromFiles()
     {
         $i = $this->repeat;
         while( $i-- ) {
