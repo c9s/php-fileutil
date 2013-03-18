@@ -72,6 +72,17 @@ if ( false === futil_rmtree("/path/to/delete") ) {
 
 $newfilename = futil_filename_append_suffix("Picture.png", "_suffix");  // Returns "Picture_suffix.png"
 $newfilename = futil_filename_append_suffix("Picture", "_suffix");  // Returns "Picture_suffix"
+
+$content = futil_get_contents_from_files(array("file1","file2","file3"));
+
+$contents = futil_get_contents_array_from_files(array("config.m4","php_fileutil.c"));
+foreach( $contents as $content ) {
+    echo $content['path'];
+    echo $content['content'];
+}
+
+
+
 ```
 
 
