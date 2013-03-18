@@ -183,6 +183,18 @@ class FileUtilTest extends PHPUnit_Framework_ExtensionTestCase
         $newlist = futil_paths_append($list, "bootstrap.php");
         ok( $newlist );
         is( "tests/bootstrap.php", $newlist[0] );
+        path_ok( $newlist[0] );
+    }
+
+    public function testPathsRemoveBasepathValidPath()
+    {
+        $list = array( 
+            "/root/tests/bootstrap.php",
+        );
+        $newlist = futil_paths_remove_basepath($list, "/root/");
+        ok( $newlist );
+        is("tests/bootstrap.php", $newlist[0]);
+        path_ok( $newlist[0] );
     }
 
     public function testPathsRemoveBasepath()
@@ -197,6 +209,17 @@ class FileUtilTest extends PHPUnit_Framework_ExtensionTestCase
         is("/file1", $newlist[0]);
         is("/file2", $newlist[1]);
         is("/file3", $newlist[2]);
+    }
+
+    public function testPathPrependValidPath()
+    {
+        $list = array( 
+            "bootstrap.php",
+        );
+        $newlist = futil_paths_prepend($list, "tests");
+        ok( $newlist );
+        is( "tests/bootstrap.php", $newlist[0] );
+        path_ok( $newlist[0] );
     }
 
     public function testPathPrepend()
