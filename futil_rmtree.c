@@ -93,14 +93,14 @@ int rmtree_iterator(zend_object_iterator *iter, void *puser TSRMLS_DC)
 
 
 
-zval *recursive_directory_iterator_create(char * dir, zval * arg, zval * arg2)
+zval *recursive_directory_iterator_create(char * dir, zval * arg, zval * arg2 TSRMLS_DC)
 {
     zval *iter;
     MAKE_STD_ZVAL(iter);
 
     if (SUCCESS != object_init_ex(iter, spl_ce_RecursiveDirectoryIterator)) {
         zval_ptr_dtor(&iter);
-        zend_throw_exception_ex(spl_ce_BadMethodCallException, 0 TSRMLS_CC, "Unable to instantiate directory iterator for %s", dir);
+        zend_throw_exception_ex(spl_ce_BadMethodCallException, 0 TSRMLS_CC, "Unable to instantiate RecursiveDirectoryIterator for %s", dir);
         return NULL;
     }
 
@@ -108,6 +108,7 @@ zval *recursive_directory_iterator_create(char * dir, zval * arg, zval * arg2)
             &spl_ce_RecursiveDirectoryIterator->constructor, "__construct", NULL, arg, arg2);
 
     if (EG(exception)) {
+        // decrease reference count for releasing memory
         zval_ptr_dtor(&iter);
         return NULL;
     }
@@ -115,6 +116,30 @@ zval *recursive_directory_iterator_create(char * dir, zval * arg, zval * arg2)
 }
 
 
+zval *recursive_iterator_iterator_create(zval * iter, zval *arg TSRMLS_DC)
+{
+    zval * iteriter;
+
+    MAKE_STD_ZVAL(iteriter);
+    if (SUCCESS != object_init_ex(iteriter, spl_ce_RecursiveIteratorIterator)) {
+        zval_ptr_dtor(&iter);
+        zval_ptr_dtor(&iteriter);
+        // zend_throw_exception_ex(spl_ce_BadMethodCallException, 0 TSRMLS_CC, "Unable to instantiate directory iterator for %s", dir);
+        zend_throw_exception_ex(spl_ce_BadMethodCallException, 0 TSRMLS_CC, "Unable to instantiate RecursiveIteratorIterator.");
+        return NULL;
+    }
+
+    zend_call_method_with_2_params(&iteriter, spl_ce_RecursiveIteratorIterator, 
+            &spl_ce_RecursiveIteratorIterator->constructor, "__construct", NULL, iter, arg);
+
+    if (EG(exception)) {
+        // decrease reference count for releasing memory
+        zval_ptr_dtor(&iter);
+        zval_ptr_dtor(&iteriter);
+        return NULL;
+    }
+    return iteriter;
+}
 
 
 
@@ -125,12 +150,10 @@ PHP_FUNCTION(futil_rmtree)
 
 
     
-    char *error, *regex = NULL;
-    int regex_len = 0;
+    char *error = NULL;
     zend_bool apply_reg = 0;
-    zval arg, arg2, *iteriter, *regexiter = NULL;
+    zval arg, arg2;
 
-    zval iteriter_arg2;
 
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "p",
                     &dir, &dir_len
@@ -170,32 +193,21 @@ PHP_FUNCTION(futil_rmtree)
     ZVAL_LONG(&arg2, SPL_FILE_DIR_SKIPDOTS|SPL_FILE_DIR_UNIXPATHS);
 #endif
 
-    zval * iter = recursive_directory_iterator_create(dir, &arg, &arg2 );
-
-
-    MAKE_STD_ZVAL(iteriter);
-    if (SUCCESS != object_init_ex(iteriter, spl_ce_RecursiveIteratorIterator)) {
-        zval_ptr_dtor(&iter);
-        zval_ptr_dtor(&iteriter);
-        zend_throw_exception_ex(spl_ce_BadMethodCallException, 0 TSRMLS_CC, "Unable to instantiate directory iterator for %s", dir);
+    zval * iter;
+    if ( (iter = recursive_directory_iterator_create(dir, &arg, &arg2  TSRMLS_CC) ) == NULL )
         RETURN_FALSE;
-    }
 
-    INIT_PZVAL(&iteriter_arg2);
+    zval *iteriter;
+    zval iteriter_arg;
+    INIT_PZVAL(&iteriter_arg);
 #if PHP_VERSION_ID < 50300
-    ZVAL_LONG(&iteriter_arg2, 0);
+    ZVAL_LONG(&iteriter_arg, 0);
 #else
-    ZVAL_LONG(&iteriter_arg2, RIT_CHILD_FIRST);
+    ZVAL_LONG(&iteriter_arg, RIT_CHILD_FIRST);
 #endif
 
-    zend_call_method_with_2_params(&iteriter, spl_ce_RecursiveIteratorIterator, 
-            &spl_ce_RecursiveIteratorIterator->constructor, "__construct", NULL, iter, &iteriter_arg2);
-
-    if (EG(exception)) {
-        zval_ptr_dtor(&iter);
-        zval_ptr_dtor(&iteriter);
+    if ( (iteriter = recursive_iterator_iterator_create(iter, &iteriter_arg TSRMLS_CC)) == NULL )
         RETURN_FALSE;
-    }
 
     zval_ptr_dtor(&iter);
 
