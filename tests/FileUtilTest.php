@@ -22,6 +22,9 @@ class FileUtilTest extends PHPUnit_Framework_ExtensionTestCase
             'futil_lastmtime',
             'futil_lastctime',
             'futil_replace_extension',
+            'futil_get_extension',
+            'futil_get_contents_array_from_files',
+            'futil_get_contents_from_files',
         );
     }
 
@@ -45,24 +48,18 @@ class FileUtilTest extends PHPUnit_Framework_ExtensionTestCase
 
     public function testScanDirOnNonExistingPath()
     {
-        $i = $this->repeat;
-        while( $i-- ) {
-            $files = futil_scanpath("blah/blah");
-            is(false,$files,"Should return false on file path");
-        }
+        $files = futil_scanpath("blah/blah");
+        is(false,$files,"Should return false on file path");
     }
 
 
     public function testScanDirDir()
     {
-        $i = $this->repeat;
-        while( $i-- ) {
-            $paths = futil_scanpath_dir("/");
-            ok( $paths );
-            foreach($paths as $path) {
-                file_exists($path);
-                ok(is_dir($path),'is_dir ok');
-            }
+        $paths = futil_scanpath_dir("/");
+        ok( $paths );
+        foreach($paths as $path) {
+            file_exists($path);
+            ok(is_dir($path),'is_dir ok');
         }
     }
 
