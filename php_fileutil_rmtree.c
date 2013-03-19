@@ -1,8 +1,6 @@
-
 #include "php_fileutil.h"
+#include "php_fileutil_rmtree.h"
 #include "path.h"
-
-
 
 int rmtree_iterator(zend_object_iterator *iter, void *puser TSRMLS_DC)
 {

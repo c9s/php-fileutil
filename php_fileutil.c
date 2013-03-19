@@ -1,4 +1,5 @@
 #include "php_fileutil.h"
+#include "php_fileutil_rmtree.h"
 #include "path.h"
 #include "zend_alloc.h"
 #include <string.h>
