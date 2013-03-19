@@ -20,8 +20,8 @@ int rmtree_iterator(zend_object_iterator *iter, void *puser TSRMLS_DC)
     }
 
     switch (Z_TYPE_PP(value)) {
-        case IS_UNICODE:
-            zval_unicode_to_string(*(value) TSRMLS_CC);
+        // case IS_UNICODE:
+        //    zval_unicode_to_string(*(value) TSRMLS_CC);
         case IS_STRING:
             break;
         case IS_OBJECT:

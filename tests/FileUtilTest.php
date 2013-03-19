@@ -57,7 +57,6 @@ class FileUtilTest extends PHPUnit_Framework_ExtensionTestCase
     {
         $paths = futil_scanpath_dir(".");
         ok( $paths, "Got paths" );
-        var_dump( $paths );
         foreach($paths as $path) {
             path_ok($path);
             ok(is_dir($path),"Should only returns dir.");
