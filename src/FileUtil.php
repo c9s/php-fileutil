@@ -167,6 +167,36 @@ function futil_paths_prepend(& $paths,$path2, $modify = false)
     }
 }
 
+/**
+ * @param array $paths filter out directories
+ */
+function futil_paths_filter_file($paths)
+{
+    $newpaths = array();
+    foreach( $paths as $path ) {
+        if ( is_file($path) ) {
+            $newpaths[] = $path;
+        }
+    }
+    return $newpaths;
+}
+
+
+/**
+ * @param array $paths filter out directories
+ */
+function futil_paths_filter_dir($paths)
+{
+    $newpaths = array();
+    foreach( $paths as $path ) {
+        if ( is_dir($path) ) {
+            $newpaths[] = $path;
+        }
+    }
+    return $newpaths;
+}
+
+
 function futil_replace_extension($filename, $newext)
 {
     $parts = explode('.',$filename);
@@ -182,6 +212,7 @@ function futil_get_extension($filename)
 {
     return pathinfo($filename, PATHINFO_EXTENSION);
 }
+
 
 
 function futil_prettysize($bytes)

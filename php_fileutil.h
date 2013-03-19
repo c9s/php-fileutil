@@ -48,11 +48,16 @@ PHP_FUNCTION(futil_scanpath);
 PHP_FUNCTION(futil_scanpath_dir);
 PHP_FUNCTION(futil_pathjoin);
 PHP_FUNCTION(futil_pathsplit);
-PHP_FUNCTION(futil_paths_prepend);
+
 PHP_FUNCTION(futil_paths_append);
+PHP_FUNCTION(futil_paths_prepend);
 PHP_FUNCTION(futil_paths_remove_basepath);
+PHP_FUNCTION(futil_paths_filter_dir);
+PHP_FUNCTION(futil_paths_filter_file);
+
 PHP_FUNCTION(futil_lastmtime);
 PHP_FUNCTION(futil_lastctime);
+
 PHP_FUNCTION(futil_unlink_if_exists);
 PHP_FUNCTION(futil_rmdir_if_exists);
 PHP_FUNCTION(futil_mkdir_if_not_exists);
@@ -63,7 +68,6 @@ PHP_FUNCTION(futil_prettysize);
 PHP_FUNCTION(futil_filename_append_suffix);
 PHP_FUNCTION(futil_get_contents_from_files);
 PHP_FUNCTION(futil_get_contents_array_from_files);
-
 
 #define false 0
 #define true 1

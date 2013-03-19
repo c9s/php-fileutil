@@ -63,6 +63,32 @@ class FileUtilTest extends PHPUnit_Framework_ExtensionTestCase
         }
     }
 
+    public function testPathsFilterFile()
+    {
+        $paths = array(
+            "src",
+            "tests",
+            "config.m4",
+        );
+        $newpaths = futil_paths_filter_file($paths);
+        $this->assertNotContains("src", $newpaths);
+        $this->assertNotContains("tests", $newpaths);
+        $this->assertContains("config.m4", $newpaths);
+    }
+
+    public function testPathsFilterDir()
+    {
+        $paths = array(
+            "src",
+            "tests",
+            "config.m4",
+        );
+        $newpaths = futil_paths_filter_dir($paths);
+        $this->assertContains("src", $newpaths);
+        $this->assertContains("tests", $newpaths);
+        $this->assertNotContains("config.m4", $newpaths);
+    }
+
     public function testPathJoin()
     {
         $joined = futil_pathjoin('path1','path2');

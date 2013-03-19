@@ -31,6 +31,8 @@ static const zend_function_entry fileutil_functions[] = {
     PHP_FE(futil_paths_append, NULL)
     PHP_FE(futil_paths_prepend, NULL)
     PHP_FE(futil_paths_remove_basepath, NULL)
+    PHP_FE(futil_paths_filter_dir, NULL)
+    PHP_FE(futil_paths_filter_file, NULL)
     PHP_FE(futil_lastmtime, arginfo_futil_lastmtime)
     PHP_FE(futil_lastctime, arginfo_futil_lastctime)
     PHP_FE(futil_unlink_if_exists, NULL)
@@ -504,6 +506,81 @@ PHP_FUNCTION(futil_unlink_if_exists)
         RETURN_FALSE;
     }
     RETURN_BOOL( futil_unlink_file(filename, filename_len, zcontext TSRMLS_CC) );
+}
+
+
+
+
+/* filter out dir from paths  */
+PHP_FUNCTION(futil_paths_filter_dir)
+{
+    zval *zarr;
+    zval **entry_data;
+    HashTable *zarr_hash;
+    HashPosition pointer;
+    int zarr_count;
+    char * path;
+    int    path_len;
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "a", &zarr) == FAILURE) {
+        RETURN_FALSE;
+    }
+    zarr_hash = Z_ARRVAL_P(zarr);
+    zarr_count = zend_hash_num_elements(zarr_hash);
+    array_init(return_value);
+    zval_copy_ctor(return_value);
+    if ( zarr_count == 0 ) {
+        return;
+    }
+    for(zend_hash_internal_pointer_reset_ex(zarr_hash, &pointer); 
+            zend_hash_get_current_data_ex(zarr_hash, (void**) &entry_data, &pointer) == SUCCESS; 
+            zend_hash_move_forward_ex(zarr_hash, &pointer)) 
+    {
+        if ( Z_TYPE_PP(entry_data) == IS_STRING ) {
+            path = Z_STRVAL_PP(entry_data);
+            path_len = Z_STRLEN_PP(entry_data);
+
+            if ( futil_is_dir(path, path_len TSRMLS_CC) ) {
+                add_next_index_stringl(return_value, path, path_len, 1);
+            }
+        }
+    }
+}
+
+
+
+/* filter out dir from paths  */
+PHP_FUNCTION(futil_paths_filter_file)
+{
+    zval *zarr;
+    zval **entry_data;
+    HashTable *zarr_hash;
+    HashPosition pointer;
+    int zarr_count;
+    char * path;
+    int    path_len;
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "a", &zarr) == FAILURE) {
+        RETURN_FALSE;
+    }
+    zarr_hash = Z_ARRVAL_P(zarr);
+    zarr_count = zend_hash_num_elements(zarr_hash);
+    array_init(return_value);
+    zval_copy_ctor(return_value);
+    if ( zarr_count == 0 ) {
+        return;
+    }
+    for(zend_hash_internal_pointer_reset_ex(zarr_hash, &pointer); 
+            zend_hash_get_current_data_ex(zarr_hash, (void**) &entry_data, &pointer) == SUCCESS; 
+            zend_hash_move_forward_ex(zarr_hash, &pointer)) 
+    {
+        if ( Z_TYPE_PP(entry_data) == IS_STRING ) {
+            path = Z_STRVAL_PP(entry_data);
+            path_len = Z_STRLEN_PP(entry_data);
+
+            if ( futil_is_file(path, path_len TSRMLS_CC) ) {
+                add_next_index_stringl(return_value, path, path_len, 1);
+            }
+        }
+    }
 }
 
 
