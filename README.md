@@ -84,7 +84,9 @@ foreach( $contents as $content ) {
 }
 
 
+$dirs = futil_paths_filter_dir($allfiles);
 
+$files = futil_paths_filter_files($allfiles);
 ```
 
 
