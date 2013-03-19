@@ -15,14 +15,13 @@ int rmtree_iterator(zend_object_iterator *iter, void *puser TSRMLS_DC)
     }
     if (!value) {
         /* failure in get_current_data */
-        // zend_throw_exception_ex(spl_ce_UnexpectedValueException, 0 TSRMLS_CC, "Iterator %v returned no value", ce->name);
         zend_throw_exception_ex(spl_ce_UnexpectedValueException, 0 TSRMLS_CC, "Iterator returned no value");
         return ZEND_HASH_APPLY_STOP;
     }
 
     switch (Z_TYPE_PP(value)) {
-//          case IS_UNICODE:
-//              zval_unicode_to_string(*(value) TSRMLS_CC);
+        case IS_UNICODE:
+            zval_unicode_to_string(*(value) TSRMLS_CC);
         case IS_STRING:
             break;
         case IS_OBJECT:
@@ -60,6 +59,7 @@ int rmtree_iterator(zend_object_iterator *iter, void *puser TSRMLS_DC)
 #else
                         fname = expand_filepath(intern->file_name, NULL TSRMLS_CC);
 #endif
+
                         if (!fname) {
                             zend_throw_exception_ex(spl_ce_UnexpectedValueException, 0 TSRMLS_CC, "Could not resolve file path");
                             return ZEND_HASH_APPLY_STOP;
@@ -71,20 +71,14 @@ int rmtree_iterator(zend_object_iterator *iter, void *puser TSRMLS_DC)
                             fname_len = strlen(fname);
                             futil_unlink_file(fname, fname_len, NULL TSRMLS_CC);
                         }
-
-                        // goto phar_spl_fileinfo;
                         return ZEND_HASH_APPLY_KEEP;
                 }
             }
             /* fall-through */
         default:
-            // zend_throw_exception_ex(spl_ce_UnexpectedValueException, 0 TSRMLS_CC, "Iterator %v returned an invalid value (must return a string)", ce->name);
             zend_throw_exception_ex(spl_ce_UnexpectedValueException, 0 TSRMLS_CC, "Iterator returned an invalid value (must return a string)");
             return ZEND_HASH_APPLY_STOP;
     }
-    
-
-    // printf("got value: %s\n", Z_STRVAL_PP(value) );
     return ZEND_HASH_APPLY_KEEP;
 }
 

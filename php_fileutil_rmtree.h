@@ -1,5 +1,5 @@
-#ifndef FUTIL_RMTREE_H
-#define FUTIL_RMTREE_H 1
+#ifndef PHP_FUTIL_RMTREE_H
+#define PHP_FUTIL_RMTREE_H 1
 
 PHP_FUNCTION(futil_rmtree);
 
