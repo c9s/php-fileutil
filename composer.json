@@ -9,5 +9,8 @@
     ],
     "require": {
 
+    },
+    "autoload": {
+        "files": ["src/FileUtil.php"]
     }
 }
