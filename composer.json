@@ -2,10 +2,7 @@
     "name": "corneltek/fileutil",
     "description": "Fast File Utility Extension",
     "authors": [
-        {
-            "name": "c9s",
-            "email": "cornelius.howl@gmail.com"
-        }
+        { "name": "c9s", "email": "cornelius.howl@gmail.com" }
     ],
     "require": { },
     "autoload": { "files": ["src/FileUtil.php"] }
