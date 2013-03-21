@@ -13,6 +13,7 @@ before_script:
   - pear install -f corneltek/ExtUnit
   - curl -O https://raw.github.com/c9s/Onion/master/onion
   - php onion -q install
+  - composer install --dev
   - phpenv rehash
   - phpize
   - ./configure > /dev/null
