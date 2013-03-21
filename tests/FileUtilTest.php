@@ -136,6 +136,13 @@ class FileUtilTest extends PHPUnit_Framework_ExtensionTestCase
     }
 
 
+    public function testCTimeCompare()
+    {
+        touch('tests/data/new');
+        is(1, futil_ctime_compare('tests/data/new','tests/data/old') );
+        is(-1, futil_ctime_compare('tests/data/old','tests/data/new') );
+    }
+
     public function testMTimeCompare()
     {
         touch('tests/data/new');
