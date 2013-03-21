@@ -1,4 +1,5 @@
 <?php
+if ( ! extension_loaded('fileutil') ) {
 
 define('SIZE_KB', 1024);
 define('SIZE_MB', 1048576);
@@ -279,4 +280,4 @@ function futil_get_contents_array_from_files($files)
     return $contents;
 }
 
-
+}
