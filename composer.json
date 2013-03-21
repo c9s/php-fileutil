@@ -7,10 +7,7 @@
             "email": "cornelius.howl@gmail.com"
         }
     ],
-    "require": {
-
-    },
-    "autoload": {
-        "files": ["src/FileUtil.php"]
-    }
+    "require": { },
+    "minimum-stability": "stable",
+    "autoload": { "files": ["src/FileUtil.php"] }
 }
