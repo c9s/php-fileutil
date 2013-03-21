@@ -42,6 +42,34 @@ function futil_scanpath_dir($path)
     return $newlist;
 }
 
+function futil_ctime_compare($filename1, $filename2)
+{
+    $t1 = filectime($filename1);
+    $t2 = filectime($filename2);
+    if ( $t1 > $t2 ) {
+        return 1;
+    } elseif ( $t1 == $t2 ) {
+        return 0;
+    } elseif ( $t1 < $t2 ) {
+        return -1;
+    }
+    return false;
+}
+
+function futil_mtime_compare($filename1, $filename2)
+{
+    $t1 = filemtime($filename1);
+    $t2 = filemtime($filename2);
+    if ( $t1 > $t2 ) {
+        return 1;
+    } elseif ( $t1 == $t2 ) {
+        return 0;
+    } elseif ( $t1 < $t2 ) {
+        return -1;
+    }
+    return false;
+}
+
 function futil_lastmtime($filelist)
 {
     $lastmtime = 0;

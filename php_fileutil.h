@@ -57,6 +57,8 @@ PHP_FUNCTION(futil_paths_filter_file);
 
 PHP_FUNCTION(futil_lastmtime);
 PHP_FUNCTION(futil_lastctime);
+PHP_FUNCTION(futil_mtime_compare);
+PHP_FUNCTION(futil_ctime_compare);
 
 PHP_FUNCTION(futil_unlink_if_exists);
 PHP_FUNCTION(futil_rmdir_if_exists);

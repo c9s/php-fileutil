@@ -36,6 +36,8 @@ static const zend_function_entry fileutil_functions[] = {
     PHP_FE(futil_paths_filter_file, NULL)
     PHP_FE(futil_lastmtime, arginfo_futil_lastmtime)
     PHP_FE(futil_lastctime, arginfo_futil_lastctime)
+    PHP_FE(futil_mtime_compare, NULL)
+    PHP_FE(futil_ctime_compare, NULL)
     PHP_FE(futil_unlink_if_exists, NULL)
     PHP_FE(futil_rmdir_if_exists, NULL)
     PHP_FE(futil_mkdir_if_not_exists, NULL)
@@ -283,6 +285,72 @@ PHP_FUNCTION(futil_scanpath)
 }
 
 
+
+PHP_FUNCTION(futil_ctime_compare)
+{
+    char *filename1, *filename2;
+    int   filename1_len, filename2_len;
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "ss",
+                    &filename1, &filename1_len, &filename2, &filename2_len
+                    ) == FAILURE) {
+        php_error_docref(NULL TSRMLS_CC, E_WARNING, "Wrong parameters.");
+        RETURN_FALSE;
+    }
+    zval time1;
+    zval time2;
+    php_stat(filename1, filename1_len, FS_CTIME, &time1 TSRMLS_CC);
+    php_stat(filename2, filename2_len, FS_CTIME, &time2 TSRMLS_CC);
+
+    if (Z_LVAL(time1) > Z_LVAL(time2) ) {
+        RETURN_LONG(1);
+    } else if (Z_LVAL(time1) == Z_LVAL(time2)) {
+        RETURN_LONG(0);
+    } else if (Z_LVAL(time1) < Z_LVAL(time2) ) {
+        RETURN_LONG(-1);
+    }
+    RETURN_FALSE;
+
+}
+
+PHP_FUNCTION(futil_mtime_compare)
+{
+    char *filename1, *filename2;
+    int   filename1_len, filename2_len;
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "ss",
+                    &filename1, &filename1_len, &filename2, &filename2_len
+                    ) == FAILURE) {
+        php_error_docref(NULL TSRMLS_CC, E_WARNING, "Wrong parameters.");
+        RETURN_FALSE;
+    }
+    zval time1;
+    zval time2;
+    php_stat(filename1, filename1_len, FS_MTIME, &time1 TSRMLS_CC);
+    php_stat(filename2, filename2_len, FS_MTIME, &time2 TSRMLS_CC);
+
+    if (Z_LVAL(time1) > Z_LVAL(time2) ) {
+        RETURN_LONG(1);
+    } else if (Z_LVAL(time1) == Z_LVAL(time2)) {
+        RETURN_LONG(0);
+    } else if (Z_LVAL(time1) < Z_LVAL(time2) ) {
+        RETURN_LONG(-1);
+    }
+    RETURN_FALSE;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 PHP_FUNCTION(futil_lastctime)
 {
     zval *zarr;
@@ -293,7 +361,7 @@ PHP_FUNCTION(futil_lastctime)
     long lastctime = 0;
     char *path;
     int path_len;
-    zval mtime;
+    zval time;
 
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "a",
                     &zarr
@@ -317,9 +385,9 @@ PHP_FUNCTION(futil_lastctime)
             path = Z_STRVAL_PP(entry_data);
             path_len  = Z_STRLEN_PP(entry_data);
 
-            php_stat(path, path_len, FS_MTIME, &mtime TSRMLS_CC);
-            if (mtime.value.lval > lastctime ) {
-                lastctime = mtime.value.lval;
+            php_stat(path, path_len, FS_CTIME, &time TSRMLS_CC);
+            if ( Z_LVAL(time) > lastctime ) {
+                lastctime = Z_LVAL(time);
             }
         }
     }
