@@ -8,6 +8,5 @@
         }
     ],
     "require": { },
-    "minimum-stability": "stable",
     "autoload": { "files": ["src/FileUtil.php"] }
 }
