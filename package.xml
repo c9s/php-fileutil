@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package xmlns="http://pear.php.net/dtd/package-2.0" xmlns:tasks="http://pear.php.net/dtd/tasks-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" packagerversion="1.4.10" version="2.0" xsi:schemaLocation="http://pear.php.net/dtd/tasks-1.0               http://pear.php.net/dtd/tasks-1.0.xsd               http://pear.php.net/dtd/package-2.0               http://pear.php.net/dtd/package-2.0.xsd">
   <name>FileUtil</name>
-  <channel>pecl.php.net</channel>
+  <channel>pear.corneltek.com</channel>
   <summary>Fast File Utility Functions for PHP</summary>
   <description>Fast File Utility Functions for PHP</description>
   <lead>
@@ -11,7 +11,7 @@
     <active>yes</active>
   </lead>
   <date>2013-03-22</date>
-  <time>12:11:12</time>
+  <time>12:29:55</time>
   <version>
     <release>1.6.1</release>
     <api>1.6.1</api>
@@ -24,7 +24,6 @@
   <notes>-</notes>
   <contents>
     <dir name="/">
-      <file name="src/FileUtil.php" role="php" md5sum="2f8e1e48a71c427d47312c88667b4ccf"/>
       <file name="config.h" role="src" md5sum="9abb14c31b78d8143fca3b07e30c38d6"/>
       <file name="path.h" role="src" md5sum="00b4764e79a1e73709f1f8e20b2b65ad"/>
       <file name="php_fileutil.h" role="src" md5sum="5360543778dd2a81a1739f758948ee67"/>
