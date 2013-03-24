@@ -19,6 +19,8 @@ function futil_scanpath($path)
 
     $list = scandir($path);
     foreach( $list as &$item ) {
+        if ( "." === $item || ".." === $item ) 
+            continue;
         $item = $path . DIRECTORY_SEPARATOR . $item;
     }
     return $list;
@@ -35,7 +37,10 @@ function futil_scanpath_dir($path)
     $list = scandir($path);
     $newlist = array();
     foreach( $list as $item ) {
-        if ( is_dir($item) ) {
+        if ( "." === $item || ".." === $item ) 
+            continue;
+
+        if ( is_dir($path . DIRECTORY_SEPARATOR . $item) ) {
             $newlist[] = $path . DIRECTORY_SEPARATOR . $item;
         }
     }
