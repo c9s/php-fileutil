@@ -27,6 +27,7 @@
 #include <ext/standard/php_standard.h>
 #include <ext/standard/php_filestat.h>
 #include <ext/standard/php_string.h>
+#include <ext/standard/file.h>
 
 // these flags are inside the ext/spl/spl_iterators.c, 
 // we can not reuse it by including the header file.
@@ -63,6 +64,7 @@ PHP_FUNCTION(futil_ctime_compare);
 PHP_FUNCTION(futil_unlink_if_exists);
 PHP_FUNCTION(futil_rmdir_if_exists);
 PHP_FUNCTION(futil_mkdir_if_not_exists);
+PHP_FUNCTION(futil_copy_if_not_exists);
 PHP_FUNCTION(futil_rmtree);
 PHP_FUNCTION(futil_replace_extension);
 PHP_FUNCTION(futil_get_extension);

@@ -41,6 +41,7 @@ static const zend_function_entry fileutil_functions[] = {
     PHP_FE(futil_unlink_if_exists, NULL)
     PHP_FE(futil_rmdir_if_exists, NULL)
     PHP_FE(futil_mkdir_if_not_exists, NULL)
+    PHP_FE(futil_copy_if_not_exists, NULL)
     PHP_FE(futil_rmtree, NULL)
     PHP_FE(futil_replace_extension, NULL)
     PHP_FE(futil_get_extension, NULL)
@@ -478,10 +479,36 @@ PHP_FUNCTION(futil_pathsplit)
     php_explode(&zdelim, &zstr, return_value, LONG_MAX); // LONG_MAX means no limit
 }
 
+PHP_FUNCTION(futil_copy_if_not_exists)
+{
+    char *source, *target;
+    int source_len, target_len;
+
+    zval *zcontext = NULL;
+    php_stream_context *context;
+
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "pp|r", &source, &source_len, &target, &target_len, &zcontext) == FAILURE) {
+        return;
+    }
+
+    if ( futil_file_exists(target, target_len TSRMLS_CC) ) {
+        RETURN_FALSE;
+    }
+
+    if (php_check_open_basedir(source TSRMLS_CC)) {
+        RETURN_FALSE;
+    }
+
+    context = php_stream_context_from_zval(zcontext, 0);
+    if (php_copy_file_ctx(source, target, 0, context TSRMLS_CC) == SUCCESS) {
+        RETURN_TRUE;
+    } else {
+        RETURN_FALSE;
+    }
+}
 
 PHP_FUNCTION(futil_mkdir_if_not_exists)
 {
-
     char *dir;
     int dir_len;
     zval *zcontext = NULL;

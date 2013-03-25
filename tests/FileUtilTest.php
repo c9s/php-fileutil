@@ -151,6 +151,7 @@ class FileUtilTest extends PHPUnit_Framework_ExtensionTestCase
     }
 
 
+
     public function testLastmtime()
     {
         touch(".last");
@@ -423,6 +424,16 @@ class FileUtilTest extends PHPUnit_Framework_ExtensionTestCase
             unset($content);
         }
     }
+
+
+    public function testCopyIfNotExists()
+    {
+        futil_copy_if_not_exists("README.md",".tmp");
+        path_ok(".tmp");
+        unlink(".tmp");
+    }
+
+
 }
 
 
