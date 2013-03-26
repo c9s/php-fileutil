@@ -45,6 +45,8 @@ typedef enum {
 #include <ext/spl/spl_iterators.h>
 #endif
 
+PHP_FUNCTION(futil_findbin);
+
 PHP_FUNCTION(futil_scanpath);
 PHP_FUNCTION(futil_scanpath_dir);
 PHP_FUNCTION(futil_pathjoin);

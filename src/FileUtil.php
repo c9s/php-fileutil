@@ -5,6 +5,17 @@ define('SIZE_KB', 1024);
 define('SIZE_MB', 1048576);
 define('SIZE_GB', 1073741824);
 
+function futil_findbin($bin, $pathstr = null)
+{
+    $paths = explode(':', $pathstr ?: getenv('PATH') );
+    foreach( $paths as $path ) {
+        if( file_exists($path . DIRECTORY_SEPARATOR . $bin) ) {
+            return $path . DIRECTORY_SEPARATOR . $bin;
+        }
+    }
+    return false;
+}
+
 function futil_pathsplit($path)
 {
     return explode(DIRECTORY_SEPARATOR, $path);

@@ -433,6 +433,12 @@ class FileUtilTest extends PHPUnit_Framework_ExtensionTestCase
         unlink(".tmp");
     }
 
+    public function testFindBin()
+    {
+        $bin = futil_findbin('ls');
+        ok($bin);
+        path_ok($bin);
+    }
 
 }
 

@@ -27,6 +27,7 @@ ZEND_END_ARG_INFO()
 static const zend_function_entry fileutil_functions[] = {
     PHP_FE(futil_scanpath, arginfo_futil_scanpath)
     PHP_FE(futil_scanpath_dir, arginfo_futil_scanpath_dir)
+    PHP_FE(futil_findbin, NULL)
     PHP_FE(futil_pathjoin, NULL)
     PHP_FE(futil_pathsplit, NULL)
     PHP_FE(futil_paths_append, NULL)
@@ -1183,6 +1184,42 @@ PHP_FUNCTION(futil_prettysize)
         sprintf(str, "%.1f GB", (double) (bytes / SIZE_GB));
     }
     RETURN_STRING( str, 0);
+}
+
+PHP_FUNCTION(futil_findbin)
+{
+    char *bin;
+    int   bin_len;
+
+    char  *path;
+    int    path_len;
+
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s|s",
+                    &bin, &bin_len, &path, &path_len) == FAILURE) {
+        RETURN_FALSE;
+    }
+
+    if ( path == NULL ) {
+        path = getenv("PATH");
+        path_len = strlen(path);
+    }
+
+    if ( path_len == 0 ) {
+        RETURN_FALSE;
+    }
+
+
+    char *p;
+    char *binpath;
+    int   binpath_len;
+    p = strtok(path,":");
+
+    while( p != NULL ) {
+        binpath = sprintf("%s/%s",p,bin);
+        binpath_len = strlen(p) + 1 + bin_len;
+    }
+
+    RETURN_STRING(binpath);
 }
 
 
