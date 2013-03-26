@@ -1191,8 +1191,8 @@ PHP_FUNCTION(futil_findbin)
     char *bin;
     int   bin_len;
 
-    char  *path;
-    int    path_len;
+    char  *path = NULL;
+    int    path_len = 0;
 
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s|s",
                     &bin, &bin_len, &path, &path_len) == FAILURE) {
@@ -1204,22 +1204,34 @@ PHP_FUNCTION(futil_findbin)
         path_len = strlen(path);
     }
 
-    if ( path_len == 0 ) {
+    if ( path == NULL ) {
         RETURN_FALSE;
     }
 
-
     char *p;
-    char *binpath;
+    char  *binpath;
     int   binpath_len;
+
     p = strtok(path,":");
+    binpath = emalloc(sizeof(char) * 128);
 
     while( p != NULL ) {
-        binpath = sprintf("%s/%s",p,bin);
         binpath_len = strlen(p) + 1 + bin_len;
-    }
 
-    RETURN_STRING(binpath);
+        if ( binpath_len > 128 ) {
+            php_error_docref(NULL TSRMLS_CC, E_WARNING, "binpath overflow");
+            RETURN_FALSE;
+        }
+
+        sprintf(binpath, "%s/%s",p,bin);
+
+        if ( futil_is_file(binpath,binpath_len TSRMLS_CC) ) {
+            RETURN_STRINGL(binpath, binpath_len,0);
+        }
+
+        p = strtok( NULL ,":");
+    }
+    RETURN_FALSE;
 }
 
 
