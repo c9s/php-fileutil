@@ -1,5 +1,5 @@
 <?php
-if ( ! extension_loaded('fileutil') ) {
+if ( ! extension_loaded('fileutil') && ! function_exists('futil_pathsplit') ) {
 
 define('SIZE_KB', 1024);
 define('SIZE_MB', 1048576);
