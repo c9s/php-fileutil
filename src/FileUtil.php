@@ -324,6 +324,14 @@ function futil_get_contents_array_from_files($files)
     return $contents;
 }
 
+function futil_copy_if_newer($source,$dest) 
+{
+    if ( file_exists($dest) && ( filemtime($source) < filemtime($dest) ) ) {
+        return false;
+    }
+    copy($source, $dest);
+}
+
 function futil_copy_if_not_exists($source,$dest)
 {
     if ( ! file_exists($dest) ) {
