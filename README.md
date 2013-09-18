@@ -45,10 +45,21 @@ $path = futil_pathjoin("etc","folder","file1");
 
 $subpaths  = futil_pathsplit("etc/folder/file1");
 
+// replace current extension with another extension.
 $newFilename = futil_replace_extension("manifest.yml","json"); // Returns manifest.json
 
+// get extension from the filename.
 $extension = futil_get_extension("manifest.yml");   // Returns "yml"
 
+// copy file if the mtime of source is newer than the mtime of destination.
+futil_copy_if_newer("source_file","target_file");
+
+
+// copy file if destination does not exist.
+futil_copy_if_not_exists("source_file", "target_file");
+
+
+// prepend path to an array that contains paths.
 $filelist = array(
     "file1",
     "file2",
