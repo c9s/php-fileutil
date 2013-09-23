@@ -154,12 +154,12 @@ function futil_rmdir_if_exists($path)
 
 function futil_rmtree($path)
 {
-    $iter = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($path), RecursiveIteratorIterator::CHILD_FIRST);
-    foreach($iter as $fileinfo){
+    foreach (
+        $iterator = new RecursiveIteratorIterator(
+        new RecursiveDirectoryIterator($path, RecursiveDirectoryIterator::SKIP_DOTS),
+        RecursiveIteratorIterator::CHILD_FIRST) as $fileinfo )
+    {
         if( $fileinfo->isDir() ) {
-            if (  $fileinfo->getFilename() === "." 
-                || $fileinfo->getFilename() === ".." )
-                continue;
             rmdir( $fileinfo->getPathname() );
         } elseif ($fileinfo->isFile()) {
             unlink( $fileinfo->getPathname() );
